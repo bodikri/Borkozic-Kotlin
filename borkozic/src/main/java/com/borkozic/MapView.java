@@ -120,6 +120,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 	private float smoothB = 0;
 	private float smoothBS = 0;
 	public float bearing = 0;
+	public float fingerBearing = 0;
 	private float speed = 0;
 	private double mpp = 0;
 	private int vectorLength = 0;
@@ -357,9 +358,16 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 
 
 		if (isTrackUp) {
-			//върти картината за да е курса винаги на горе
-			canvas.rotate(-bearing, lookAheadXY[0] + cx, lookAheadXY[1] + cy);//Тук завърта картата спрямо самолетчето(lookAheadXY), иначе я върти спрямоцентъра на картата
-			application.drawMap(bearing, mapCenter, lookAheadXY, loadBestMap, getWidth(), getHeight(), canvas);//изчертава подложката на картата
+			if (!scaled && !isFollowing)//когато не е в режим на следване fingerBearing
+			{Log.i(TAG, "fingerBearing" + fingerBearing);
+				//върти картината за да е курса винаги на горе
+				canvas.rotate(-fingerBearing, lookAheadXY[0] + cx, lookAheadXY[1] + cy);//Тук завърта картата спрямо самолетчето(lookAheadXY), иначе я върти спрямоцентъра на картата
+				application.drawMap(fingerBearing, mapCenter, lookAheadXY, loadBestMap, getWidth(), getHeight(), canvas);//изчертава подложката на картата
+			}else {
+				//върти картината за да е курса винаги на горе
+				canvas.rotate(-bearing, lookAheadXY[0] + cx, lookAheadXY[1] + cy);//Тук завърта картата спрямо самолетчето(lookAheadXY), иначе я върти спрямоцентъра на картата
+				application.drawMap(bearing, mapCenter, lookAheadXY, loadBestMap, getWidth(), getHeight(), canvas);//изчертава подложката на картата
+			}
 		}else {
 			application.drawMap(0, mapCenter, lookAheadXY, loadBestMap, getWidth(), getHeight(), canvas);//изчертава подложката на картата
 		}
@@ -422,7 +430,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 
 		}
 
-		if (!scaled && !isFollowing)
+		if (!scaled && !isFollowing)//когато не е в режим на следване
 		{
 			canvas.drawCircle(0, 0, 1, crossPaint);
 			canvas.drawCircle(0, 0, 40, crossPaint);
@@ -432,7 +440,7 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 			canvas.drawLine(0, -20, 0, -120, crossPaint);
 		}
 
-		if (isMoving && isFollowing && isFixed)
+		if (isMoving && isFollowing && isFixed)//плавно отместване самолетчето назад при стартирване на Follwing(режим на следване)
 		{
 			lookAheadC = lookAhead;
 		}
@@ -740,8 +748,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 		{
 			try
 			{
-				MapActivity androzic = (MapActivity) getContext();
-				androzic.setFollowing(!isFollowing);
+				MapActivity borkozic = (MapActivity) getContext();
+				borkozic.setFollowing(!isFollowing);
 			}
 			catch (Exception e)
 			{
@@ -999,13 +1007,16 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
+		float d = 0f;
+		float angle = 0;
 		if (multiTouchController.onTouchEvent(event))
 		{
+
 			wasMultitouch = true;
 			return true;
 		}
 
-		int action = event.getAction();
+		int action = event.getAction() & MotionEvent.ACTION_MASK;
 
 		switch (action)
 		{
@@ -1030,8 +1041,9 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 				penOY = penY = (int) event.getY();
 				break;
 			case MotionEvent.ACTION_MOVE:
+
 				if (!wasMultitouch && (!isFollowing || !strictUnfollow))
-				{
+				{//Log.i(TAG, "ACTION_MOVE" );
 					int x = (int) event.getX();
 					int y = (int) event.getY();
 
@@ -1048,6 +1060,17 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 					{
 						if (!strictUnfollow)
 							setFollowingThroughContext(false);
+					}
+				}else {
+					if (event.getPointerCount() == 2)
+					{
+						Log.i(TAG, "ACTION_MOVE;getPointerCount=2" );
+						//променлива отчитаща завъртане чрез пръсти
+						float newRot = rotation(event);
+						float r = newRot - d;
+						fingerBearing = r;
+
+
 					}
 				}
 				break;
@@ -1077,6 +1100,14 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 				wasMultitouch = false;
 				wasDoubleTap = false;
 				cancelMotionEvent();
+				break;
+			case MotionEvent.ACTION_POINTER_DOWN:
+				Log.i(TAG, "ACTION_POINTER_DOWN" );
+				d = rotation(event);
+				break;
+			case MotionEvent.ACTION_POINTER_UP:
+				Log.i(TAG, "ACTION_POINTER_UP" );
+				//d = rotation(event);
 				break;
 		}
 
@@ -1316,6 +1347,8 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 			{
 				pinch = touchPoint.getMultiTouchDiameterSq();
 			}
+			fingerBearing = touchPoint.getMultiTouchAngle();
+			Log.i(TAG, "setPositionAndScale" + fingerBearing);
 			synchronized (lock)
 			{
 				scale = touchPoint.getMultiTouchDiameterSq() / pinch;
@@ -1330,5 +1363,13 @@ public class MapView extends SurfaceView implements SurfaceHolder.Callback, Mult
 			}
 		}
 		return true;
+	}
+
+
+	private float rotation(MotionEvent event) {
+		double delta_x = (event.getX(0) - event.getX(1));
+		double delta_y = (event.getY(0) - event.getY(1));
+		double radians = Math.atan2(delta_y, delta_x);
+		return (float) Math.toDegrees(radians);
 	}
 }
