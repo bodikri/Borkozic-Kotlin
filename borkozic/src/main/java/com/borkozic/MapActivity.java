@@ -561,13 +561,21 @@ public class MapActivity extends AppCompatActivity implements View.OnClickListen
         bindService(new Intent(this, LocationService.class), locationConnection, BIND_AUTO_CREATE);
         bindService(new Intent(this, NavigationService.class), navigationConnection, BIND_AUTO_CREATE);
 
-        registerReceiver(broadcastReceiver, new IntentFilter(NavigationService.BROADCAST_NAVIGATION_STATUS));
-        registerReceiver(broadcastReceiver, new IntentFilter(NavigationService.BROADCAST_NAVIGATION_STATE));
-        registerReceiver(broadcastReceiver, new IntentFilter(LocationService.BROADCAST_LOCATING_STATUS));
-        registerReceiver(broadcastReceiver, new IntentFilter(LocationService.BROADCAST_TRACKING_STATUS));
-        registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
-        registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(broadcastReceiver, new IntentFilter(NavigationService.BROADCAST_NAVIGATION_STATUS), Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(broadcastReceiver, new IntentFilter(NavigationService.BROADCAST_NAVIGATION_STATE), Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(broadcastReceiver, new IntentFilter(LocationService.BROADCAST_LOCATING_STATUS), Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(broadcastReceiver, new IntentFilter(LocationService.BROADCAST_TRACKING_STATUS), Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF), Context.RECEIVER_NOT_EXPORTED);
+            registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON), Context.RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(broadcastReceiver, new IntentFilter(NavigationService.BROADCAST_NAVIGATION_STATUS));
+            registerReceiver(broadcastReceiver, new IntentFilter(NavigationService.BROADCAST_NAVIGATION_STATE));
+            registerReceiver(broadcastReceiver, new IntentFilter(LocationService.BROADCAST_LOCATING_STATUS));
+            registerReceiver(broadcastReceiver, new IntentFilter(LocationService.BROADCAST_TRACKING_STATUS));
+            registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_SCREEN_OFF));
+            registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_SCREEN_ON));
+        }
         if (application.hasEnsureVisible())
         {
             setFollowing(false);

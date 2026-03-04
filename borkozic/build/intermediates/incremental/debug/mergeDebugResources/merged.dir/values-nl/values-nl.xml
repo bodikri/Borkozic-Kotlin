@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>waar</item>
+    <item>magnetisch</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>DD.DDDDDD</item>
+    <item>DD° MM.MMMM\'</item>
+    <item>DD° MM\' SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Ozf2, ozfx3 kaart ondersteunen</item>
+    <item>Pictogram</item>
+    <item>Kleurenkiezer initiële code</item>
+    <item>Zoekbalk voorkeur initiële code</item>
+    <item>Zonsopgang / zonsondergang calculatie</item>
+    <item>Drag\'n\'drop lijst initiële code</item>
+    <item>Multitouch controller</item>
+    <item>Showcase bibliotheek</item>
+    <item>Interface iconen</item>
+    <item>Waypoint pictogrammen</item>
+    <item>Tsjechische lokalisatie</item>
+    <item>Franse lokalisatie</item>
+    <item>Finse lokalisatie</item>
+    <item>Bulgaarse lokalisatie</item>
+    <item>Duitse lokalisatie</item>
+    <item>Turkse lokalisatie</item>
+    <item>Italiaanse lokalisatie</item>
+    <item>Spaanse lokalisatie</item>
+    <item>Zweedse lokalisatie</item>
+    <item>Oekraïense lokalisatie</item>
+    <item>Portugese lokalisatie</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Geen</item>
+    <item>Nabijheids afstand</item>
+    <item>Tijd (minuten)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>mi</item>
+    <item>mi</item>
+    <item>nm</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>yd</item>
+    <item>ft</item>
+    <item>nmˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>meters</item>
+    <item>yards</item>
+    <item>voet</item>
+    <item>(zeemijl)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>kilometers/meters</item>
+    <item>mijl/yards</item>
+    <item>mijl/voet</item>
+    <item>zeemijl</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>ft</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>meters</item>
+    <item>voet</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Dubbele tik op Back</item>
+    <item>Dialoogvenster voor bevestiging</item>
+    <item>Niets</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Voorkeur kaart raster</item>
+    <item>Voorkeur gebruikers raster</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Nooit</item>
+    <item>Dagelijks</item>
+    <item>Wekelijks</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Apparaat standaard</item>
+    <item>Portret</item>
+    <item>Landschap</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Inzoomen</item>
+    <item>Uitzoomen</item>
+    <item>﻿Meer geschaalde kaarten</item>
+    <item>Minder geschaalde kaarten</item>
+    <item>Kaarten op cursor</item>
+    <item>Waypoint beheren</item>
+    <item>Toon informatie</item>
+    <item>Volgen / stop volgen</item>
+    <item>Locatie verkrijgen</item>
+    <item>Track schrijven</item>
+    <item>Toon/Verberg statusbalk</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Nee</item>
+    <item>Handmatig</item>
+    <item>Altijd</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/u</item>
+    <item>mph</item>
+    <item>kts</item>
+    <item>m/s</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>kilometers per uur</item>
+    <item>mijl per uur</item>
+    <item>knopen</item>
+    <item>meters per seconde</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Officieel</item>
+    <item>Civiel</item>
+    <item>Nautische</item>
+    <item>Astronomische</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Navigeren naar startpositie"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Omhoog navigeren"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Meer opties"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Klaar"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Alles tonen"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Een app selecteren"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"UIT"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"AAN"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt +"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl +"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"Delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"Enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Functie +"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta +"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift +"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"spatie"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym +"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu +"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Zoeken…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Zoekopdracht wissen"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Zoekopdracht"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Zoeken"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Zoekopdracht verzenden"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Gesproken zoekopdracht"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Delen met"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Delen met <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Samenvouwen"</string>
+    <string name="accuracy">Nauwkeurigheid</string>
+    <string name="action_bar_sort_alpha">Alfabetisch</string>
+    <string name="action_bar_sort_distance">Door afstand</string>
+    <string name="advanced">Geavanceerd</string>
+    <string name="advanced_name">Geavanceerde eigenschappen</string>
+    <string name="alg_a">Cruise</string>
+    <string name="alg_b">Strook</string>
+    <string name="algorithm">Algoritme</string>
+    <string name="altitude">Hoogte</string>
+    <string name="app_eula">This program is distributed under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License./n/n
+    This application is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details./n/n
+    All rights granted under this License are granted for the term of copyright
+    on the Program, and are irrevocable provided the stated conditions are met.
+    This License explicitly affirms your unlimited permission to run the unmodified
+    Program./n/n
+    You are not required to accept this License in order to receive or run a copy of
+    the Program. Ancillary propagation of a covered work occurring solely as
+    a consequence of using peer-to-peer transmission to receive a copy likewise does
+    not require acceptance. However, nothing other than this License grants you
+    permission to propagate or modify any covered work. These actions infringe
+    copyright if you do not accept this License. Therefore, by modifying or propagating
+    a covered work, you indicate your acceptance of this License to do so./n/n
+    For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">U heeft de route bestemming bereikt</string>
+    <string name="backQuit">Druk opnieuw op terug om te stoppen</string>
+    <string name="badmaps">Kaart index fout</string>
+    <string name="bearing">Richting</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Beantwoorden"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Weigeren"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Ophangen"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Inkomend gesprek"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Actief gesprek"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Een inkomend gesprek screenen"</string>
+    <string name="cancel">Annuleren</string>
+    <string name="change">Wijzigen</string>
+    <string name="coarse">grof</string>
+    <string name="color">Kleur</string>
+    <string name="coordformat">Coördinaten-formaat</string>
+    <string name="coordinates_name">Nieuwe coördinaten</string>
+    <string name="credits_name">Programma credits</string>
+    <string name="currentloc">Huidige locatie</string>
+    <string name="declination">Declinatie</string>
+    <string name="degmag">mag.</string>
+    <string name="degtrue">waar</string>
+    <string name="description">Omschrijving</string>
+    <string name="direction">Selecteer richting</string>
+    <string name="distance">Afstand</string>
+    <string name="donation_required">Deze functie is alleen beschikbaar voor donateurs</string>
+    <string name="done">Klaar</string>
+    <string name="easting">Oosten</string>
+    <string name="err_no_network_provider">Geen netwerkprovider locatie beschikbaar</string>
+    <string name="err_noconnection">Netwerk verbindingsfout</string>
+    <string name="err_nofile">Onbekend bestand</string>
+    <string name="err_nogps">Geen GPS-apparaat gevonden</string>
+    <string name="err_nomemory">Te weinig geheugen gedetecteerd, kunt u dit melden aan de ontwikkelaar</string>
+    <string name="err_nosdcard">SD-kaart niet beschikbaar</string>
+    <string name="err_notconfigured">Niet geconfigureerd</string>
+    <string name="err_read">Kan bestand niet lezen</string>
+    <string name="err_shortroute">Route moet minimaal twee waypoints hebben</string>
+    <string name="err_write">Kan bestand niet schrijven</string>
+    <string name="err_wrongformat">Verkeerde bestandsformaat</string>
+    <string name="exporttrack_name">Track exporteren</string>
+    <string name="faquri">http://androzic.com/wiki/nl/FAQ</string>
+    <string name="filename">Bestandsnaam</string>
+    <string name="fine">fijn</string>
+    <string name="following_disabled">Volgen uitgeschakeld</string>
+    <string name="following_enabled">Volgen ingeschakeld</string>
+    <string name="format">Formaat</string>
+    <string name="from">Van</string>
+    <string name="from_date">Vanaf</string>
+    <string name="generate">Genereren</string>
+    <string name="gotit">Snap het</string>
+    <string name="hdop">HDOP</string>
+    <string name="hemisphere">Halfrond</string>
+    <string name="homepage">Homepage: http://androzic.com/</string>
+    <string name="hsi_name">HSI</string>
+    <string name="icon">Pictogram</string>
+    <string name="information_name">Informatie</string>
+    <string name="lastfix">Laatste fix</string>
+    <string name="latitude">Breedte</string>
+    <string name="line_width">Lijnbreedte</string>
+    <string name="loadroute_name">Laad route van bestand</string>
+    <string name="loadtrack_name">Laad track van bestand</string>
+    <string name="loadwaypoints_name">Open waypoint set</string>
+    <string name="longitude">Lengte</string>
+    <string name="manageroutes_name">Routes</string>
+    <string name="managetracks_name">Tracks</string>
+    <string name="managewaypoints_name">Waypoints</string>
+    <string name="mapinformation_name">Kaartinformatie</string>
+    <string name="maplist_name">Kaarten</string>
+    <string name="markercolor">Markeer kleur</string>
+    <string name="markericon_name">Selecteer markering pictogram</string>
+    <string name="menu_addtoroute">Route toevoegen</string>
+    <string name="menu_addwaypoint">Waypoint toevoegen</string>
+    <string name="menu_all">Alle</string>
+    <string name="menu_anchor">Set anker</string>
+    <string name="menu_atcursor">Op cursor</string>
+    <string name="menu_change">Wijzigen</string>
+    <string name="menu_clear">Wissen</string>
+    <string name="menu_clearcurrenttrack">Wis huidige track</string>
+    <string name="menu_compass">Kompas</string>
+    <string name="menu_copy">Naar klembord kopiëren</string>
+    <string name="menu_delete">Verwijderen</string>
+    <string name="menu_details">Details</string>
+    <string name="menu_dismiss">Ontslaan</string>
+    <string name="menu_edit">Bewerken</string>
+    <string name="menu_expandcurrenttrack">Toon volledige huidige track</string>
+    <string name="menu_exportcurrenttrack">Exporteren van de huidige track</string>
+    <string name="menu_follow">Volgen inschakelen</string>
+    <string name="menu_gps">GPS-instellingen</string>
+    <string name="menu_hsi">HSI</string>
+    <string name="menu_information">Informatie</string>
+    <string name="menu_load">Laden uit bestand</string>
+    <string name="menu_location">Locatie</string>
+    <string name="menu_manage">Beheren</string>
+    <string name="menu_maps">Kaarten</string>
+    <string name="menu_navigate">Navigeren</string>
+    <string name="menu_navigation">Navigatie</string>
+    <string name="menu_new">Nieuw</string>
+    <string name="menu_new_waypoint">Nieuwe waypoint</string>
+    <string name="menu_newroute">Nieuwe route</string>
+    <string name="menu_newwaypointset">Nieuwe set</string>
+    <string name="menu_nextnavpoint">Ga naar de volgende</string>
+    <string name="menu_open">Openen</string>
+    <string name="menu_paste">Plakken vanaf klembord</string>
+    <string name="menu_preferences">Instellingen</string>
+    <string name="menu_prevnavpoint">Ga naar de vorige</string>
+    <string name="menu_project">Nieuwe project</string>
+    <string name="menu_properties">Eigenschappen</string>
+    <string name="menu_remove">Verwijderen</string>
+    <string name="menu_resetindex">Reset index</string>
+    <string name="menu_routes">Routes</string>
+    <string name="menu_save">Opslaan in bestand</string>
+    <string name="menu_search">Zoeken</string>
+    <string name="menu_share">Delen</string>
+    <string name="menu_sort">Sorteren</string>
+    <string name="menu_sort_alphabetically">Alfabetisch sorteren</string>
+    <string name="menu_sort_distance">Sorteren op afstand</string>
+    <string name="menu_startnavigation">Navigeren via route</string>
+    <string name="menu_stopnavigation">Stop navigeren</string>
+    <string name="menu_thisnavpoint">Navigeer hier</string>
+    <string name="menu_track2route">Converteren naar route</string>
+    <string name="menu_tracks">Tracks</string>
+    <string name="menu_view">Weergave</string>
+    <string name="menu_visible">Maak zichtbaar</string>
+    <string name="menu_waypoints">Waypoints</string>
+    <string name="more">Meer</string>
+    <string name="msg_badtrackimplementation">Houd er rekening mee dat prestaties zullen afnemen op lange tracks, wees geduldig.</string>
+    <string name="msg_cleaning">Opschonen</string>
+    <string name="msg_clearcurrenttrack">Dit wist bewegende geschiedenis, weet u dat zeker?</string>
+    <string name="msg_connectingtoserver">Verbinding maken met server…</string>
+    <string name="msg_empty_route_list">Geen routes beschikbaar. Gebruik menu om de route te maken of te laden uit bestand.</string>
+    <string name="msg_empty_track_list">Geen tracks beschikbaar. Menu gebruiken om track bestand te laden.</string>
+    <string name="msg_emptytracksegment">Geselecteerde track segment is leeg, niets om op te slaan</string>
+    <string name="msg_expandcurrenttrack">Als u uw huidige track voor een lange tijd niet gewist, dit kan de prestaties aanzienlijk verminderen. Wilt u doorgaan?</string>
+    <string name="msg_initializingdata">Activeren data</string>
+    <string name="msg_initializingmaps">Activeren kaarten</string>
+    <string name="msg_initializingplugins">Initialiseren plugins…</string>
+    <string name="msg_initializingview">Activeren beeld</string>
+    <string name="msg_loadingimagefile">Wachten AUB</string>
+    <string name="msg_loadingmapfile">Laden wereldkaart data-bestand</string>
+    <string name="msg_newdatafolder">Op veler verzoek werkt Androzic nu anders met mappen. U kunt nu elke map van kaarten en gegevens selecteren. Datamap is nu uniform voor alle gegevenstypen: waypoints, tracks en routes. U moet uw bestaande gegevensbestanden handmatig kopiëren naar de volgende map van de autocreated: \'%s\'.</string>
+    <string name="msg_nothing_found">Niets werd gevonden. Neem in aanmerking dat gegevens alleen als het wordt geladen in Androzic, benoemde locaties worden doorzocht als Internet-verbinding beschikbaar is.</string>
+    <string name="msg_paid">Donatie versie</string>
+    <string name="msg_scansdcard">Scannen SD-kaart</string>
+    <string name="msg_wait">Een ogenblik geduld…</string>
+    <string name="n">N</string>
+    <string name="name">Naam</string>
+    <string name="navigate">Navigeren</string>
+    <string name="never">nooit</string>
+    <string name="new_coordinates">Nieuwe coördinaten gekregen van %s</string>
+    <string name="no">Nee</string>
+    <string name="nomaps">Geen kaarten gevonden</string>
+    <string name="nomaps_explained">Kaart-map \'%s\' is leeg. Downloaden en installeren van de kaart van de wereld (250 KB)?</string>
+    <string name="northing">Noorden</string>
+    <string name="notif_loc_short">Zoeken</string>
+    <string name="notif_loc_started">Androzic zoekt uw locatie</string>
+    <string name="notif_loc_waiting">Androzic wacht op locatie</string>
+    <string name="notif_nav_short">Navigeren</string>
+    <string name="notif_nav_started">Androzic navigeert u</string>
+    <string name="notif_nav_to">Androzic navigeert naar %s</string>
+    <string name="notif_trk_failure">Androzic heeft probleem met tracking</string>
+    <string name="notif_trk_started">Androzic volgt uw bewegingen</string>
+    <string name="ok">OK</string>
+    <string name="perm_location_description">Toegangslocatie geboden door Androzic</string>
+    <string name="perm_location_title">Locatie</string>
+    <string name="perm_navigation_description">Geïnitieerde/wijzigen navigatie geboden door Androzic</string>
+    <string name="perm_navigation_title">Navigatie starten</string>
+    <string name="perm_read_map_data_title">Gegevens ophalen uit Androzic kaart</string>
+    <string name="perm_read_preferences_title">Lees Androzic gebruikersvoorkeuren</string>
+    <string name="perm_tracking_description">Ontvangen track geboden door Androzic</string>
+    <string name="perm_tracking_title">Track krijgen</string>
+    <string name="perm_write_map_data_title">Gegevens toevoegen aan Androzic kaart</string>
+    <string name="pref_about_title">Over Androzic</string>
+    <string name="pref_advanced_title">Geavanceerd</string>
+    <string name="pref_application_title">Over en feedback</string>
+    <string name="pref_charset_summary">De tekenset voor kaart en gegevens tekstbestanden. Let op: u kunt bestanden in Android native (UTF-8) en nationale tekensets, verandering deze instelling alleen als al uw bestanden in nationale codering, anders handmatig recode de bestanden die niet in UTF-8-codering niet mengen. Neemt invloed op alleen nadat de toepassing opnieuw hebt gestart.</string>
+    <string name="pref_charset_title">Tekstcodering bestand</string>
+    <string name="pref_credits_title">Credits</string>
+    <string name="pref_cursor_title">Bewegende cursor</string>
+    <string name="pref_cursorcolor_title">Actieve kleur</string>
+    <string name="pref_cursorvector_summary">Selecteer base voor vector lijn lengte</string>
+    <string name="pref_cursorvector_title">Vector lijntype</string>
+    <string name="pref_cursorvectormlpr_summary">Selecteren hoeveel vector lijnen zullen worden gebruikt om de lengte in te stellen</string>
+    <string name="pref_cursorvectormlpr_title">Vector lijn vermenigvuldiger</string>
+    <string name="pref_donate_google_title">Doneren via Google Play winkel</string>
+    <string name="pref_donate_paypal_title">Doneren via PayPal</string>
+    <string name="pref_exit_title">Bevestig stoppen</string>
+    <string name="pref_facebook_title">Zoals op Facebook</string>
+    <string name="pref_faq_title">FAQ</string>
+    <string name="pref_feature_title">Feedback en ondersteuning</string>
+    <string name="pref_folder_data_title">Datamap</string>
+    <string name="pref_folder_icon_title">Pictogram folder</string>
+    <string name="pref_folder_map_title">Mappen map</string>
+    <string name="pref_folder_prefix_caution">Deze optie is alleen voor gevorderde gebruikers. Gebruik het met voorzichtigheid: Als verkeerd is ingesteld kan het programma niet starten.</string>
+    <string name="pref_folder_prefix_title">Programma map</string>
+    <string name="pref_folder_title">Mappen</string>
+    <string name="pref_googleplus_title">Join op Google+</string>
+    <string name="pref_grid_mapshow_title">Toon kaart raster</string>
+    <string name="pref_grid_preference_title">Raster voorkeur</string>
+    <string name="pref_grid_title">Rasters</string>
+    <string name="pref_grid_usermpp_summary">Maximale meter per pixel schaal waarbij aangepast raster zichtbaar zal worden</string>
+    <string name="pref_grid_usermpp_title">Aangepast raster beperking</string>
+    <string name="pref_grid_userscale_title">Aangepast raster interval</string>
+    <string name="pref_grid_usershow_title">Aangepaste raster tonen</string>
+    <string name="pref_grid_userunit_title">Aangepast raster eenheid</string>
+    <string name="pref_hideactionbar_summary">Markeer om te verbergen van toepassing voor de actie bar wanneer de kaart wordt weergegeven. Werkt alleen nadat de toepassing opnieuw wordt gestart.</string>
+    <string name="pref_hideactionbar_title">Action bar verbergen</string>
+    <string name="pref_loc_gpstimeout_summary">Geef time-out in seconden van de laatste GPS-fix waarna locatie zal bepaald worden door netwerken</string>
+    <string name="pref_loc_gpstimeout_title">GPS locatie timeout</string>
+    <string name="pref_loc_store_summary">Markeer om applicatie te starten op laatste locatie</string>
+    <string name="pref_loc_store_title">Onthoud laatste locatie</string>
+    <string name="pref_loc_title">Locatie</string>
+    <string name="pref_loc_usenetwork_summary">Markeer om locatie van netwerken te gebruiken als GPS-locatie niet beschikbaar is</string>
+    <string name="pref_loc_usenetwork_title">Gebruik netwerk</string>
+    <string name="pref_locale_title">Taal</string>
+    <string name="pref_lookahead_summary">Scherm bedrag om vooruit te kijken</string>
+    <string name="pref_lookahead_title">Kijk vooruit</string>
+    <string name="pref_map_title">Kaart</string>
+    <string name="pref_mapadjacent_summary">Markeer om weer te geven van aangrenzende en betere kaarten (experimenteel, kan aanzienlijk worden afgebroken prestaties!)</string>
+    <string name="pref_mapadjacent_title">Aangrenzende kaarten</string>
+    <string name="pref_mapbest_summary">Markeer om de beste kaart te laten laden voor de huidige locatie</string>
+    <string name="pref_mapbest_title">Beste kaart laden</string>
+    <string name="pref_mapbestinterval_summary">Tijd tussen beste kaart zoekactie</string>
+    <string name="pref_mapbestinterval_title">Beste kaart interval</string>
+    <string name="pref_mapcropborder_summary">Markeer om kaart te snijden samen met hoek markeringen</string>
+    <string name="pref_mapcropborder_title">verklein kaart margin</string>
+    <string name="pref_mapdim_summary">Markeer om het scherm \'s nachts automatisch te dimmen</string>
+    <string name="pref_mapdim_title">Dim scherm automatisch</string>
+    <string name="pref_mapdimvalue_title">Dim hoeveelheid</string>
+    <string name="pref_mapdrawborder_summary">Markeer rand langs hoek markeringen</string>
+    <string name="pref_mapdrawborder_title">Teken map rand</string>
+    <string name="pref_mapfollowonloc_title">Volgen van eerste locatie</string>
+    <string name="pref_maphideondrag_summary">Markeer om kaartobjecten te verbergen bij slepen</string>
+    <string name="pref_maphideondrag_title">Verberg objecten bij slepen</string>
+    <string name="pref_maprenderinterval_summary">Minimale periode tussen kaartupdates</string>
+    <string name="pref_maprenderinterval_title">Update-interval</string>
+    <string name="pref_name">Androzic instellingen</string>
+    <string name="pref_navigation_linewidth_summary">Breedte van een richtingslijn naar huidige navigatie-waypoint</string>
+    <string name="pref_navigation_linewidth_title">Richting lijnbreedte</string>
+    <string name="pref_navigation_loadlast_summary">Markeer om niet afgemaakte route te laden bij het opnieuw opstarten</string>
+    <string name="pref_navigation_loadlast_title">Laad laatste route</string>
+    <string name="pref_navigation_proximity_summary">Nabijheid in meters waarbij route navigatie zal overgaan tot de volgende beschikbare waypoint</string>
+    <string name="pref_navigation_proximity_title">Waypoint nabijheid</string>
+    <string name="pref_navigation_proximitycircle_summary">Markeer om nabijheids cirkel te tekenen rond route waypoints tijdens de navigatie</string>
+    <string name="pref_navigation_proximitycircle_title">Nabijheid cirkel</string>
+    <string name="pref_navigation_title">Navigatie</string>
+    <string name="pref_navigation_traverse_summary">Markeer om traverse logica te gebruiken samen met de nabijheid voor het overschakelen naar de volgende waypoint route</string>
+    <string name="pref_navigation_traverse_title">Gebruik traverse logica</string>
+    <string name="pref_onlinemap_summary">Bron van de online kaart</string>
+    <string name="pref_onlinemap_title">Kaart-provider</string>
+    <string name="pref_onlinemaps_title">Online kaart</string>
+    <string name="pref_onlinemapscale_summary">Zoom niveau die zal worden geïnterpreteerd als 100 %</string>
+    <string name="pref_onlinemapscale_title">Standaard zoomniveau</string>
+    <string name="pref_orientation_title">Schermoriëntatie</string>
+    <string name="pref_panelactions_title">Schuifpaneel acties</string>
+    <string name="pref_plugins_title">Plugins</string>
+    <string name="pref_route_linewidth_summary">Pixel breedte van de route lijn</string>
+    <string name="pref_route_linewidth_title">Lijnbreedte</string>
+    <string name="pref_route_pointwidth_summary">De pixelgrootte van route waypoint marker</string>
+    <string name="pref_route_pointwidth_title">Grootte markering</string>
+    <string name="pref_route_preload_hidden_summary">Voorgeladen routes verbergen totdat ze worden bekeken, bewerkt of genavigeerd</string>
+    <string name="pref_route_preload_hidden_title">Voorgeladen routes verbergen</string>
+    <string name="pref_route_preload_summary">Markeer om vooraf laden routes van bestanden bij opstarten</string>
+    <string name="pref_route_preload_title">Preload routes</string>
+    <string name="pref_route_showname_summary">Markeer om route waypoint naam weer te geven naast een marker</string>
+    <string name="pref_route_showname_title">Toon waypoint naam</string>
+    <string name="pref_route_title">Routes</string>
+    <string name="pref_scalebarcolor_title">Schaal kleur</string>
+    <string name="pref_show_title">Weergave</string>
+    <string name="pref_showaccuracy_summary">Markeer om nauwkeurigheids cirkel rond de positie cursor weer te geven</string>
+    <string name="pref_showaccuracy_title">Weergeven nauwkeurigheids cirkel </string>
+    <string name="pref_showcurrenttrack_summary">Markeer om huidige track zichtbaar te maken op kaart</string>
+    <string name="pref_showcurrenttrack_title">Toon huidige track</string>
+    <string name="pref_showdistance_title">Toon afstand</string>
+    <string name="pref_showmapinfo_summary">Markeer om de huidige kaart naam en het zoomniveau te tonen</string>
+    <string name="pref_showmapinfo_title">Toon kaart panel</string>
+    <string name="pref_showsatinfo_summary">Markeer om de huidige coördinaten en GPS-status paneel te tonen</string>
+    <string name="pref_showsatinfo_title">Satelliet paneel weergeven</string>
+    <string name="pref_tracking_currentcolor_title">Huidige track kleur</string>
+    <string name="pref_tracking_currentlength_summary">Maximum aantal punten in de huidige track einde</string>
+    <string name="pref_tracking_currentlength_title">Huidige track lengte</string>
+    <string name="pref_tracking_currentload_summary">Markeer voor het laden van de huidige track einde na programma start</string>
+    <string name="pref_tracking_currentload_title">Laad huidige track</string>
+    <string name="pref_tracking_linewidth_summary">Pixelbreedte van tracklijn</string>
+    <string name="pref_tracking_linewidth_title">Lijnbreedte</string>
+    <string name="pref_tracking_mindistance_summary">Minimale afstand in meters die moet worden afgelegd voordat een ander track punt wordt verkregen</string>
+    <string name="pref_tracking_mindistance_title">Minimale afstand</string>
+    <string name="pref_tracking_mintime_summary">Minimale tijd in milliseconden dat verstrijken moet voordat een ander track punt wordt verkregen</string>
+    <string name="pref_tracking_mintime_title">Minimale tijd</string>
+    <string name="pref_tracking_title">Tracks</string>
+    <string name="pref_twitter_title">Volg op Twitter</string>
+    <string name="pref_unfollowontap_title">Stop volgen bij slepen</string>
+    <string name="pref_unit_title">Eenheden</string>
+    <string name="pref_unitangle_title">Afwijking</string>
+    <string name="pref_unitcoordinate_title">Coördinaten</string>
+    <string name="pref_unitdistance_title">Afstand</string>
+    <string name="pref_unitelevation_title">Hoogte</string>
+    <string name="pref_unitprecision_title">Extra precision</string>
+    <string name="pref_unitspeed_title">Snelheid</string>
+    <string name="pref_unitsunrise_title">Zonsopgang/zonsondergang</string>
+    <string name="pref_uri_summary">Druk naar website link te gaan</string>
+    <string name="pref_usemapindex_title">Gebruik kaart index</string>
+    <string name="pref_useonlinemap_title">Online kaart gebruiken</string>
+    <string name="pref_wakelock_summary">Markeer om scherm aan te houden en helder wanneer kaart wordt weergegeven</string>
+    <string name="pref_wakelock_title">Houd scherm aan</string>
+    <string name="pref_waypoint_bgcolor_title">Naam achtergrond kleur</string>
+    <string name="pref_waypoint_color_title">Markeer kleur</string>
+    <string name="pref_waypoint_namecolor_title">Naam kleur</string>
+    <string name="pref_waypoint_showname_summary">Markeer om waypoint naam naast een markering weer te geven</string>
+    <string name="pref_waypoint_showname_title">Toon naam</string>
+    <string name="pref_waypoint_title">Waypoints</string>
+    <string name="pref_waypoint_visible_summary">Mark naar het midden van de kaart op de zojuist gemaakte waypoint</string>
+    <string name="pref_waypoint_visible_title">Zichtbaar op aanmaken</string>
+    <string name="pref_waypoint_width_summary">De pixelgrootte van waypoint marker</string>
+    <string name="pref_waypoint_width_title">Grootte markering</string>
+    <string name="primary">Primaire</string>
+    <string name="provider">Provider</string>
+    <string name="proximity">Nabijheid</string>
+    <string name="quit">Stoppen</string>
+    <string name="quitQuestion">Wilt u stoppen?</string>
+    <string name="removeWaypointQuestion">Verwijderen waypoint?</string>
+    <string name="restart_needed">Programma opnieuw starten</string>
+    <string name="restart_needed_explained">Deze functie vereist volledige programma herstart. Dit betekent niet stoppen maar ook uit de Android instellingen.</string>
+    <string name="routedetails_name">Route details</string>
+    <string name="routeproperties_name">Bewerk route</string>
+    <string name="s">Z</string>
+    <string name="sat_firstfix">GPS-actief</string>
+    <string name="sat_start">GPS aan</string>
+    <string name="sat_stop">GPS uitgeschakeld</string>
+    <string name="satellites">Satellieten</string>
+    <string name="save">Opslaan</string>
+    <string name="saveroute_name">Bewaar route naar bestand</string>
+    <string name="savetrack_name">Track opslaan naar bestand</string>
+    <string name="search_hint">Voer adres of naam in</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Zoeken"</string>
+    <string name="search_name">Zoekresultaten</string>
+    <string name="selectroute_name">Selecteer route</string>
+    <string name="send_me_bugs">Als je een probleem tegen bent gekomen welke je verholpen wilt hebben, plaats dan een bericht op de project pagina.</string>
+    <string name="sensitivity">Gevoeligheid</string>
+    <string name="show">Tonen</string>
+    <string name="showcase_add_waypoint_description">Tik op de actie pictogram als u een nieuwe waypoint snel wilt toevoegen op de huidige cursorpositie.</string>
+    <string name="showcase_add_waypoint_title">Waypoint toevoegen</string>
+    <string name="showcase_follow_description">Pers Volg pictogram na modus inschakelen. In deze modus zal de kaart op uw huidige positie worden bevestigd. Als alternatief kunt u dubbele klik op de kaart om te schakelen na modus in- en uitschakelen.</string>
+    <string name="showcase_follow_title">De volgende locatie</string>
+    <string name="showcase_load_waypoints_description">Tik op de actie pictogram om waypoint file te laden. Geladen waypoints zijn gegroepeerd in een set. Telkens wanneer die u een reeks wijzigt wordt bijbehorende bestand automatisch bijgewerkt.</string>
+    <string name="showcase_load_waypoints_title">Laden van waypoints</string>
+    <string name="showcase_panel_description">Schuif of sleep glijdend paneel voor toegang tot snelle acties. Snelle acties kunnen worden geconfigureerd in de instellingen.</string>
+    <string name="showcase_panel_title">Snelle acties</string>
+    <string name="showcase_search_description">U kunt specifieke coördinaten typen in verschillende formaten om ze te vinden op kaart, doorzoeken geladen waypoint of route namen en beschrijvingen, zoeken naar plaatsen en adressen via Google geocoding service (Internet-verbinding vereist).</string>
+    <string name="showcase_search_title">Zoeken</string>
+    <string name="showcase_waypointset_actions_description">Lange klik op een waypoint titel voor toegang tot aanvullende acties instellen.</string>
+    <string name="showcase_waypointset_actions_title">Waypoint instellen acties</string>
+    <string name="skip_single_locations">Enkele locaties overslaan</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Zonsopgang</string>
+    <string name="sunset">Zonsondergang</string>
+    <string name="t2r_explained"><b>Experimenteel</b> Track moet logisch zijn. Het moet gaan van punt A naar punt B dus niet naar een willekeurig punt. Probeer beide algoritmes en kijk wat het beste voor u. Het \'Cruise\' algoritme is lineair en de route tijd die gegenereerd wordt is de meest waarschijnlijke, terwijl \'Flounce\' onvoorspelbaar is. Coarse gevoeligheid kan bepaalde waypoints niet aangeven terwijl Fine gevoeligheid ongewenste waypoints kan toevoegen.</string>
+    <string name="textcolor">Naam kleur</string>
+    <string name="till_date">Eindigt op</string>
+    <string name="track2route_name">Zet track om naar route</string>
+    <string name="trackproperties_name">Track bewerken</string>
+    <string name="update_almanac">Almanak update aanvragen</string>
+    <string name="upto">Tot %.0f meter</string>
+    <string name="vdop">VDOP</string>
+    <string name="version">Versie: %s</string>
+    <string name="warning">Waarschuwing</string>
+    <string name="waypointproject_name">Laat nieuwe waypoint zien</string>
+    <string name="waypointproperties_name">Waypoint bewerken</string>
+    <string name="waypointset">Instellen</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Ja</string>
+    <string name="zone">Zone</string>
+</resources>

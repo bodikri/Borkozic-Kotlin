@@ -1,0 +1,475 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Borkozic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
+   Copyright (C) 2010-2013  Andrey Novikov <http://andreynovikov.info/>
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.borkozic"
+    android:installLocation="auto"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="34" />
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
+    <uses-feature
+        android:name="android.hardware.location"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.gps"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.location.network"
+        android:required="false" />
+
+    <permission
+        android:name="com.borkozic.permission.RECEIVE_LOCATION"
+        android:description="@string/perm_location_description"
+        android:icon="@drawable/icon"
+        android:label="@string/perm_location_title"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="com.borkozic.permission.RECEIVE_TRACK"
+        android:description="@string/perm_tracking_description"
+        android:icon="@drawable/icon"
+        android:label="@string/perm_tracking_title"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="com.borkozic.permission.NAVIGATION"
+        android:description="@string/perm_navigation_description"
+        android:icon="@drawable/icon"
+        android:label="@string/perm_navigation_title"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="com.borkozic.permission.READ_PREFERENCES"
+        android:label="@string/perm_read_preferences_title"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="com.borkozic.permission.READ_MAP_DATA"
+        android:label="@string/perm_read_map_data_title"
+        android:protectionLevel="dangerous" />
+    <permission
+        android:name="com.borkozic.permission.WRITE_MAP_DATA"
+        android:label="@string/perm_write_map_data_title"
+        android:protectionLevel="dangerous" />
+
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <!--
+     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="com.borkozic.permission.RECEIVE_LOCATION" />
+    <uses-permission android:name="com.borkozic.permission.RECEIVE_TRACK" />
+    <uses-permission android:name="com.borkozic.permission.NAVIGATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <permission
+        android:name="com.borkozic.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="com.borkozic.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+
+    <application
+        android:name="com.borkozic.Borkozic"
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:backupAgent="com.borkozic.Backup"
+        android:debuggable="true"
+        android:description="@string/homepage"
+        android:extractNativeLibs="true"
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:restoreAnyVersion="true"
+        android:testOnly="true"
+        android:theme="@style/Theme.AppCompat"
+        android:usesCleartextTraffic="true" >
+
+        <!-- android:theme="@style/ApplicationTheme"> -->
+        <activity
+            android:name="com.borkozic.Splash"
+            android:configChanges="orientation"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.borkozic.MapActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop" >
+            <meta-data
+                android:name="android.app.default_searchable"
+                android:value=".SearchableActivity" />
+        </activity>
+        <activity
+            android:name="com.borkozic.ExternalActions"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.borkozic.PLOT_ROUTE" />
+                <action android:name="com.google.android.radar.SHOW_RADAR" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <data android:scheme="geo" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.borkozic.SearchableActivity"
+            android:exported="true"
+            android:label="@string/search_name"
+            android:launchMode="singleTop" >
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
+        </activity>
+        <activity
+            android:name="com.borkozic.HSIActivity"
+            android:label="@string/hsi_name" />
+        <activity
+            android:name="com.borkozic.Information"
+            android:label="@string/information_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.Credits"
+            android:label="@string/credits_name" />
+        <activity
+            android:name="com.borkozic.Preferences"
+            android:label="@string/pref_name"
+            android:screenOrientation="portrait" />
+        <activity android:name="com.borkozic.Preferences$PluginsPreferences" />
+        <activity android:name="com.borkozic.Preferences$InnerPreferences" />
+        <activity android:name="com.borkozic.Preferences$OnlineMapPreferences" />
+        <activity android:name="com.borkozic.Preferences$ApplicationPreferences" />
+        <activity
+            android:name="com.borkozic.PreferencesHC"
+            android:label="@string/pref_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.MapList"
+            android:label="@string/maplist_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.ErrorDialog"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.map.MapInformation"
+            android:label="@string/mapinformation_name" />
+        <activity
+            android:name="com.borkozic.waypoint.WaypointListActivity"
+            android:label="@string/managewaypoints_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.waypoint.WaypointProperties"
+            android:label="@string/waypointproperties_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.ui.MarkerPickerActivity"
+            android:exported="true"
+            android:label="@string/markericon_name"
+            android:theme="@style/Dialog" >
+            <intent-filter>
+                <action android:name="com.borkozic.PICK_ICON" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.borkozic.waypoint.WaypointInfo"
+            android:screenOrientation="portrait"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.waypoint.WaypointProject"
+            android:label="@string/waypointproject_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.waypoint.WaypointFileList"
+            android:label="@string/loadwaypoints_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.waypoint.WaypointFileLoad"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.wpt" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.kml" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:mimeType="*/*" />
+                <data android:pathPattern=".*\\.gpx" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.borkozic.waypoint.CoordinatesReceived"
+            android:label="@string/coordinates_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.track.TrackListActivity"
+            android:label="@string/managetracks_name" />
+        <activity
+            android:name="com.borkozic.track.TrackProperties"
+            android:label="@string/trackproperties_name" />
+        <activity
+            android:name="com.borkozic.track.TrackFileList"
+            android:label="@string/loadtrack_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.track.TrackToRoute"
+            android:label="@string/track2route_name" />
+        <activity
+            android:name="com.borkozic.track.TrackSave"
+            android:label="@string/savetrack_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.route.RouteFileList"
+            android:label="@string/loadroute_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.route.RouteStart"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.route.RouteListActivity"
+            android:label="@string/manageroutes_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.route.RouteEdit"
+            android:screenOrientation="portrait"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.route.RouteSave"
+            android:label="@string/saveroute_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.route.RouteProperties"
+            android:label="@string/routeproperties_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.route.RouteDetails"
+            android:label="@string/routedetails_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.area.AreaFileList"
+            android:label="@string/loadarea_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.area.AreaStart"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.area.AreaListActivity"
+            android:label="@string/manageareas_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.area.AreaEdit"
+            android:screenOrientation="portrait"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.area.AreaSave"
+            android:label="@string/savearea_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.area.AreaProperties"
+            android:label="@string/areaproperties_name"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="com.borkozic.area.AreaDetails"
+            android:label="@string/areadetails_name"
+            android:screenOrientation="portrait" />
+
+        <!--
+        <activity
+            android:name="com.borkozic.plugin.locationshare.SituationList"
+            android:label="@string/pref_sharing_title"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="com.borkozic.plugins.view" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.borkozic.plugin.locationshare.SharingPreferences"
+            android:label="@string/pref_sharing_title"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="com.borkozic.plugins.preferences" />
+            </intent-filter>
+        </activity>
+        -->
+
+        <receiver
+            android:name="com.borkozic.ActionsReceiver"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="com.borkozic.COORDINATES_RECEIVED" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.borkozic.CENTER_ON_COORDINATES" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.borkozic.LocationWidget"
+            android:exported="true"
+            android:icon="@drawable/icon"
+            android:label="@string/widget_name" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/location_widget" />
+        </receiver>
+
+        <provider
+            android:name="com.borkozic.provider.PreferencesProvider"
+            android:authorities="com.borkozic.PreferencesProvider"
+            android:exported="true"
+            android:readPermission="com.borkozic.permission.READ_PREFERENCES" />
+        <provider
+            android:name="com.borkozic.provider.DataProvider"
+            android:authorities="com.borkozic.DataProvider"
+            android:exported="true"
+            android:readPermission="com.borkozic.permission.READ_MAP_DATA"
+            android:writePermission="com.borkozic.permission.WRITE_MAP_DATA" />
+        <provider
+            android:name="com.borkozic.provider.SuggestionProvider"
+            android:authorities="com.borkozic.SuggestionProvider"
+            android:exported="false" />
+
+        <service
+            android:name="com.borkozic.track.TrackingService"
+            android:exported="true"
+            android:icon="@drawable/icon"
+            android:permission="com.borkozic.permission.RECEIVE_TRACK" >
+            <intent-filter>
+                <action android:name="com.borkozic.tracking" />
+                <action android:name="com.borkozic.track.ITrackingRemoteService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.borkozic.location.LocationService"
+            android:exported="true"
+            android:foregroundServiceType="location"
+            android:icon="@drawable/icon"
+            android:permission="com.borkozic.permission.RECEIVE_LOCATION" > <!-- този ред е нов -->
+            <intent-filter>
+                <action android:name="com.borkozic.location" />
+                <action android:name="com.borkozic.location.ILocationRemoteService" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.borkozic.navigation.NavigationService"
+            android:exported="true"
+            android:foregroundServiceType="location"
+            android:icon="@drawable/icon"
+            android:permission="com.borkozic.permission.NAVIGATION" >
+            <intent-filter>
+                <action android:name="com.borkozic.navigateMapObjectWithId" />
+                <action android:name="com.borkozic.navigateMapObject" />
+                <action android:name="com.borkozic.navigateRoute" />
+            </intent-filter>
+        </service>
+        <service
+            android:name="com.borkozic.WidgetService"
+            android:icon="@drawable/widget_icon"
+            android:process=":widget" />
+
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAIQMCPbh1CGZy5QovaZA_o6cJgv-SaYlYVxGQ5MQ" />
+
+        <activity
+            android:name="com.borkozic.BtnsProceduresSet"
+            android:label="Emergency Procedures List"
+            android:parentActivityName="com.borkozic.MapActivity"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name="com.borkozic.Procedures_Text"
+            android:label="Procedures List"
+            android:parentActivityName="com.borkozic.MapActivity" />
+
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="com.borkozic.androidx-startup"
+            android:exported="false" >
+            <meta-data
+                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+                android:value="androidx.startup" />
+            <meta-data
+                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+                android:value="androidx.startup" />
+        </provider>
+
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

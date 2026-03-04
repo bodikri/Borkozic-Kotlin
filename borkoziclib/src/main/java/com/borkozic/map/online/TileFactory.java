@@ -1,23 +1,3 @@
-/*
- * Androzic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
- * Copyright (C) 2010-2013  Andrey Novikov <http://andreynovikov.info/>
- *
- * This file is part of Androzic application.
- *
- * Androzic is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
-
- * Androzic is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
-
- * You should have received a copy of the GNU General Public License
- * along with Androzic.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package com.borkozic.map.online;
 
 import java.io.ByteArrayOutputStream;
@@ -25,6 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -32,6 +13,7 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
+import android.util.Log;
 
 import com.borkozic.BaseApplication;
 import com.borkozic.map.Tile;
@@ -39,22 +21,79 @@ import com.borkozic.map.TileRAMCache;
 
 public class TileFactory
 {
+	private static final int MAX_REDIRECTS = 5;
+
 	public static Bitmap downloadTile(TileProvider provider, int x, int y, byte z)
 	{
 		String url = provider.getTileUri(x, y, z);
+		Log.d("TILE_DEBUG", "Attempting to download: " + url);
+
+		HttpURLConnection connection = null;
+		int redirectCount = 0;
+		String currentUrl = url;
+
 		try
 		{
-			//ако има нет търси и downlod-ва необходимото парче от картата със съответния размер
-			URLConnection c = new URL(url).openConnection();
-			c.setConnectTimeout(50000);
-			c.connect();
-			return BitmapFactory.decodeStream(c.getInputStream());
+			while (redirectCount < MAX_REDIRECTS) {
+				URL tileUrl = new URL(currentUrl);
+				connection = (HttpURLConnection) tileUrl.openConnection();
+				connection.setRequestProperty("User-Agent", "Borkozic/1.0 (Android)");
+				connection.setConnectTimeout(50000);
+				connection.setReadTimeout(30000);
+				connection.setInstanceFollowRedirects(false); // управляваме пренасочванията ръчно
+
+				int status = connection.getResponseCode();
+
+				// Проверка за пренасочване (3xx)
+				if (status == HttpURLConnection.HTTP_MOVED_PERM ||
+						status == HttpURLConnection.HTTP_MOVED_TEMP ||
+						status == HttpURLConnection.HTTP_SEE_OTHER ||
+						status == 307 || status == 308) {
+					String newUrl = connection.getHeaderField("Location");
+					Log.d("TILE_DEBUG", "Redirect (" + status + ") to: " + newUrl);
+
+					connection.disconnect();
+					connection = null;
+					currentUrl = newUrl;
+					redirectCount++;
+					continue;
+				}
+
+				// Ако не е 200 OK, отказваме
+				if (status != HttpURLConnection.HTTP_OK) {
+					Log.w("TILE_DEBUG", "Server returned HTTP " + status + " for " + currentUrl);
+					return null;
+				}
+
+				// Проверка на Content-Type
+				String contentType = connection.getContentType();
+				if (contentType == null || !contentType.startsWith("image/")) {
+					Log.w("TILE_DEBUG", "Content-Type is not image: " + contentType);
+					return null;
+				}
+
+				// Декодиране на изображението
+				Bitmap bitmap = BitmapFactory.decodeStream(connection.getInputStream());
+				if (bitmap != null) {
+					Log.d("TILE_DEBUG", "Download successful: " + x + "," + y + " zoom=" + z);
+				} else {
+					Log.w("TILE_DEBUG", "Download returned null (bitmap decoding failed)");
+				}
+				return bitmap;
+			}
+
+			Log.w("TILE_DEBUG", "Too many redirects for: " + url);
+			return null;
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			Log.e("TILE_DEBUG", "Download failed: " + e.getMessage(), e);
+			return null;
+		} finally {
+			if (connection != null) {
+				connection.disconnect();
+			}
 		}
-		return null;
 	}
 
 	public static void downloadTile(TileProvider provider, Tile t)
@@ -72,14 +111,13 @@ public class TileFactory
 		BaseApplication application = BaseApplication.getApplication();
 		if (application == null)
 			return null;
-		
+
 		String filename = z + File.separator + tx + "-" + ty;
 		File file = new File(application.getRootPath() + File.separator + "tiles" + File.separator + provider.code + File.separator + filename);
 		if (file.exists() == false)
 			return null;
 		try
 		{
-			//ako парчето от картата го има като файл го зарежда тук от: Borkozic/tiles/osm/...
 			FileInputStream fileInputStream;
 			fileInputStream = new FileInputStream(file);
 			byte[] dat = new byte[(int) file.length()];
@@ -97,10 +135,17 @@ public class TileFactory
 	public static void loadTile(TileProvider provider, Tile t)
 	{
 		byte[] data = loadTile(provider, t.x, t.y, t.zoomLevel);
-		if (data != null)
+		if (data != null) {
+			Log.d("TILE_DEBUG", "Tile loaded from disk: " + t.x + "," + t.y + " zoom=" + t.zoomLevel + " data size=" + data.length);
 			t.bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+			if (t.bitmap == null) {
+				Log.w("TILE_DEBUG", "BitmapFactory.decodeByteArray returned null – possibly corrupt file");
+			}
+		} else {
+			Log.d("TILE_DEBUG", "Tile NOT found on disk: " + t.x + "," + t.y + " zoom=" + t.zoomLevel);
+		}
 	}
-	
+
 	public static void generateTile(TileProvider provider, TileRAMCache cache, Tile t)
 	{
 		byte parentTileZoom = (byte) (t.zoomLevel - 1);
@@ -143,7 +188,7 @@ public class TileFactory
 		BaseApplication application = BaseApplication.getApplication();
 		if (application == null)
 			return;
-		
+
 		String filename = tx + "-" + ty;
 		File file = new File(application.getRootPath() + File.separator + "tiles" + File.separator + provider.code + File.separator + z + File.separator);
 		file.mkdirs();
@@ -172,7 +217,12 @@ public class TileFactory
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			t.bitmap.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
 			byte[] data = bos.toByteArray();
+			Log.d("TILE_DEBUG", "Saving tile to disk: " + t.x + "," + t.y + " zoom=" + t.zoomLevel + " size=" + data.length);
 			saveTile(provider, data, t.x, t.y, t.zoomLevel);
-		}			
+		}
+		else
+		{
+			Log.w("TILE_DEBUG", "Cannot save tile – bitmap is null or recycled: " + t.x + "," + t.y);
+		}
 	}
 }

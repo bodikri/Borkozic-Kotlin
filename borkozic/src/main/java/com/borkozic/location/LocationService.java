@@ -22,11 +22,11 @@ package com.borkozic.location;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -41,24 +41,25 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.location.GpsSatellite;
-import android.location.GpsStatus;
+import android.graphics.Color;
 import android.location.GpsStatus.NmeaListener;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.location.LocationProvider;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.preference.PreferenceManager;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -68,22 +69,17 @@ import com.borkozic.R;
 import com.borkozic.Splash;
 import com.borkozic.data.Track;
 
-public class LocationService extends BaseLocationService implements LocationListener, NmeaListener, GpsStatus.Listener, OnSharedPreferenceChangeListener {
+public class LocationService extends BaseLocationService implements LocationListener, NmeaListener, OnSharedPreferenceChangeListener {
 	private static final String TAG = "Location";
 	private static final int NOTIFICATION_ID = 24161;
+	private static final String NOTIFICATION_CHANNEL_ID = "com.borkozic.location";
+	private static final String ChannelName = "Background Location Service";
 	private static final boolean DEBUG_ERRORS = false;
-	/**
-	 * Intent action to enable locating
-	 */
-	public static final String ENABLE_LOCATIONS = "enableLocations";
-	/**
-	 * Intent action to disable locating
-	 */
-	public static final String DISABLE_LOCATIONS = "disableLocations";
 
+	public static final String ENABLE_LOCATIONS = "enableLocations";
+	public static final String DISABLE_LOCATIONS = "disableLocations";
 	public static final String ENABLE_TRACK = "enableTrack";
 	public static final String DISABLE_TRACK = "disableTrack";
-
 	public static final String BROADCAST_TRACKING_STATUS = "com.borkozic.trackingStatusChanged";
 
 	private boolean locationsEnabled = false;
@@ -93,10 +89,11 @@ public class LocationService extends BaseLocationService implements LocationList
 	private LocationManager locationManager = null;
 
 	private int gpsStatus = GPS_OFF;
+	private int gnssStatus = GPS_OFF;
 
-	private float[] speed = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	private float[] speedav = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-	private float[] speedavex = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private final float[] speed = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private final float[] speedav = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+	private final float[] speedavex = new float[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 
 	private long lastLocationMillis = 0;
 	private long tics = 0;
@@ -122,50 +119,53 @@ public class LocationService extends BaseLocationService implements LocationList
 	private long timeFromLastWriting = 0;
 
 	private long minTime = 2000; // 2 seconds (default)
-	private long maxTime = 300000; // 5 minutes
+	private final long maxTime = 300000; // 5 minutes
 	private int minDistance = 3; // 3 meters (default)
 
 	private final Binder binder = new LocalBinder();
-	private final RemoteCallbackList<ILocationCallback> locationRemoteCallbacks = new RemoteCallbackList<ILocationCallback>();
-	private final Set<ILocationListener> locationCallbacks = new HashSet<ILocationListener>();
-	private final RemoteCallbackList<ITrackingCallback> trackingRemoteCallbacks = new RemoteCallbackList<ITrackingCallback>();
-	private final Set<ITrackingListener> trackingCallbacks = new HashSet<ITrackingListener>();
+	private final RemoteCallbackList<ILocationCallback> locationRemoteCallbacks = new RemoteCallbackList<>();
+	private final Set<ILocationListener> locationCallbacks = new HashSet<>();
+	private final RemoteCallbackList<ITrackingCallback> trackingRemoteCallbacks = new RemoteCallbackList<>();
+	private final Set<ITrackingListener> trackingCallbacks = new HashSet<>();
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
+		Log.e(TAG, "onCreate()");
 
 		lastKnownLocation = new Location("unknown");
 
-		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-		// Location preferences
+		SharedPreferences sharedPreferences = getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE);
 		onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_loc_usenetwork));
 		onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_loc_gpstimeout));
-		// Tracking preferences
 		onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_tracking_mintime));
 		onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_tracking_mindistance));
 
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
-		Log.i(TAG, "Service started");
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+			startMyOwnForeground();
+		} else {
+			startForeground(NOTIFICATION_ID, new Notification());
+		}
 	}
 
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {//Функция която връща Какво прави този клас при инициализиране на някаква команда(onStartCommand)
+	public int onStartCommand(Intent intent, int flags, int startId) {
 		if (intent == null || intent.getAction() == null)
-			return 0;
+			return Service.START_NOT_STICKY;
 
-		if (intent.getAction().equals(ENABLE_LOCATIONS) && !locationsEnabled) {// инициализира локация и записване/споделяне на местонахождението(предполагам все още)
+		String action = intent.getAction();
+		if (action.equals(ENABLE_LOCATIONS) && !locationsEnabled) {
 			locationsEnabled = true;
-			connect();//сввързване с датчиците за локация
+			connect();
 			sendBroadcast(new Intent(BROADCAST_LOCATING_STATUS));
 			if (trackingEnabled) {
 				sendBroadcast(new Intent(BROADCAST_TRACKING_STATUS));
 			}
-		}
-		if (intent.getAction().equals(DISABLE_LOCATIONS) && locationsEnabled) {// прекратява локация и записване/споделяне на местонахождението
+		} else if (action.equals(DISABLE_LOCATIONS) && locationsEnabled) {
 			locationsEnabled = false;
-			disconnect();//прекратява(отвързване) с датчиците за локация - TODO да преминава на автономен режим ползвайки акселерометър и жироскоп
+			disconnect();
 			updateProvider(LocationManager.GPS_PROVIDER, false);
 			updateProvider(LocationManager.NETWORK_PROVIDER, false);
 			sendBroadcast(new Intent(BROADCAST_LOCATING_STATUS));
@@ -173,31 +173,28 @@ public class LocationService extends BaseLocationService implements LocationList
 				closeDatabase();
 				sendBroadcast(new Intent(BROADCAST_TRACKING_STATUS));
 			}
-		}
-		if (intent.getAction().equals(ENABLE_TRACK) && !trackingEnabled) {//Стартира записване на следата
+		} else if (action.equals(ENABLE_TRACK) && !trackingEnabled) {
 			errorMsg = "";
 			errorTime = 0;
 			trackingEnabled = true;
 			isContinous = false;
-			openDatabase();//Отваря БД за запис
+			openDatabase();
 			sendBroadcast(new Intent(BROADCAST_TRACKING_STATUS));
-		}
-		if (intent.getAction().equals(DISABLE_TRACK) && trackingEnabled) {//Спира записа на следата
+		} else if (action.equals(DISABLE_TRACK) && trackingEnabled) {
 			trackingEnabled = false;
-			closeDatabase();//Затваря БД за запис
+			closeDatabase();
 			errorMsg = "";
 			errorTime = 0;
 			sendBroadcast(new Intent(BROADCAST_TRACKING_STATUS));
 		}
-		updateNotification();//информира потребителя, че извършена процедура по избраното действие
-
-		return Service.START_REDELIVER_INTENT | Service.START_STICKY;
+		updateNotification();
+		return Service.START_REDELIVER_INTENT;
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+		getSharedPreferences(getPackageName() + "_preferences", Context.MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this);
 		disconnect();
 		closeDatabase();
 		Log.i(TAG, "Service stopped");
@@ -254,12 +251,12 @@ public class LocationService extends BaseLocationService implements LocationList
 		} else if (getString(R.string.pref_tracking_mintime).equals(key)) {
 			try {
 				minTime = Integer.parseInt(sharedPreferences.getString(key, "500"));
-			} catch (NumberFormatException e) {
+			} catch (NumberFormatException ignored) {
 			}
 		} else if (getString(R.string.pref_tracking_mindistance).equals(key)) {
 			try {
 				minDistance = Integer.parseInt(sharedPreferences.getString(key, "5"));
-			} catch (NumberFormatException e) {
+			} catch (NumberFormatException ignored) {
 			}
 		} else if (getString(R.string.pref_folder_data).equals(key)) {
 			closeDatabase();
@@ -269,53 +266,40 @@ public class LocationService extends BaseLocationService implements LocationList
 
 	private void connect() {
 		locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-		if (locationManager != null) {
-			lastLocationMillis = 0;
-			pause = 1;
-			isContinous = false;
-			justStarted = true;
-			smoothSpeed = 0.0f;
-			avgSpeed = 0.0f;
-			if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-				// TODO: Consider calling
-				//    ActivityCompat#requestPermissions
-				// here to request the missing permissions, and then overriding
-				//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-				//                                          int[] grantResults)
-				// to handle the case where the user grants the permission. See the documentation
-				// for ActivityCompat#requestPermissions for more details.
-				return;
-			}
+		if (locationManager == null) return;
 
-			locationManager.addGpsStatusListener(this);
+		lastLocationMillis = 0;
+		pause = 1;
+		isContinous = false;
+		justStarted = true;
+		smoothSpeed = 0.0f;
+		avgSpeed = 0.0f;
 
-			if (useNetwork) {
-				try {
-					locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
-					Log.d(TAG, "Network provider set");
-				} catch (IllegalArgumentException e) {
-					Toast.makeText(this, getString(R.string.err_no_network_provider), Toast.LENGTH_LONG).show();
-				}
-			}
-			try {
-				locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-				//locationManager.addNmeaListener(mNmeaListener);//това може би не е нужно
-				//locationManager.addNmeaListener(this);// да проуча как трябва да го направя!!!
-				Log.d(TAG, "Gps provider set");
-			} catch (IllegalArgumentException e) {
-				Log.d(TAG, "Cannot set gps provider, likely no gps on device");
-			}
-			startForeground(NOTIFICATION_ID, getNotification());//изпраща съпбщение че има връзка и започва локацията, както и записа на следата
+		if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+			return;
 		}
+
+		if (useNetwork) {
+			try {
+				locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, this);
+				Log.d(TAG, "Network provider set");
+			} catch (IllegalArgumentException e) {
+				Toast.makeText(this, getString(R.string.err_no_network_provider), Toast.LENGTH_LONG).show();
+			}
+		}
+		try {
+			locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+			Log.d(TAG, "Gps provider set");
+		} catch (IllegalArgumentException e) {
+			Log.d(TAG, "Cannot set gps provider, likely no gps on device");
+		}
+
+		updateNotification(); // само обновява нотификацията, без да стартира отново foreground
 	}
 
 	private void disconnect() {
 		if (locationManager != null) {
-			//locationManager.removeNmeaListener(OnNmeaMessageListener listener);
-			//locationManager.removeNmeaListener(this);
 			locationManager.removeUpdates(this);
-
-			locationManager.removeGpsStatusListener(this);
 			locationManager = null;
 			stopForeground(true);
 		}
@@ -328,11 +312,18 @@ public class LocationService extends BaseLocationService implements LocationList
 			msgId = R.string.notif_trk_started;
 			ntfId = R.drawable.ic_stat_tracking;
 		}
-		if (gpsStatus != LocationService.GPS_OK) {
+		if (gpsStatus != GPS_OK) {
 			msgId = R.string.notif_loc_waiting;
 			ntfId = R.drawable.ic_stat_waiting;
 		}
-		if (gpsStatus == LocationService.GPS_OFF) {
+		if (gpsStatus == GPS_OFF) {
+			ntfId = R.drawable.ic_stat_off;
+		}
+		if (gnssStatus != GPS_OK) {
+			msgId = R.string.notif_loc_waiting;
+			ntfId = R.drawable.ic_stat_waiting;
+		}
+		if (gnssStatus == GPS_OFF) {
 			ntfId = R.drawable.ic_stat_off;
 		}
 		if (errorTime > 0) {
@@ -340,31 +331,62 @@ public class LocationService extends BaseLocationService implements LocationList
 			ntfId = R.drawable.ic_stat_failure;
 		}
 
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
 		builder.setWhen(errorTime);
 		builder.setSmallIcon(ntfId);
 		Intent intent = new Intent(Intent.ACTION_MAIN);
 		intent.addCategory(Intent.CATEGORY_LAUNCHER);
 		intent.setComponent(new ComponentName(getApplicationContext(), Splash.class));
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
-		PendingIntent contentIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, intent, 0);
+		PendingIntent contentIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, intent, PendingIntent.FLAG_IMMUTABLE);
 		builder.setContentIntent(contentIntent);
 		builder.setContentTitle(getText(R.string.notif_loc_short));
-		if (errorTime > 0 && DEBUG_ERRORS)
+		if (errorTime > 0 && DEBUG_ERRORS) {
 			builder.setContentText(errorMsg);
-		else
+		} else {
 			builder.setContentText(getText(msgId));
+		}
 		builder.setOngoing(true);
-
-		Notification notification = builder.build(); //builder.getNotification();
-
-		return notification;
+		return builder.build();
 	}
 
 	private void updateNotification() {
 		if (locationManager != null) {
 			NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 			notificationManager.notify(NOTIFICATION_ID, getNotification());
+		}
+	}
+
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	private void startMyOwnForeground() {
+		NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, ChannelName, NotificationManager.IMPORTANCE_NONE);
+		chan.setLightColor(Color.BLUE);
+		chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (manager != null) {
+			manager.createNotificationChannel(chan);
+		}
+
+		NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
+		notificationBuilder.setOngoing(true)
+				.setSmallIcon(R.drawable.info)
+				.setContentTitle("App is running in background")
+				.setPriority(NotificationManager.IMPORTANCE_MIN)
+				.setCategory(Notification.CATEGORY_SERVICE);
+
+		Notification notification = notificationBuilder.build();
+		Log.d(TAG, "startMyOwnForeground");
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+			startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+		} else {
+			startForeground(NOTIFICATION_ID, notification);
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+				Log.w(TAG, "POST_NOTIFICATIONS permission not granted");
+				// Нотификацията няма да се покаже, но услугата ще работи
+			}
 		}
 	}
 
@@ -386,9 +408,10 @@ public class LocationService extends BaseLocationService implements LocationList
 			return;
 		}
 		File path = new File(dir, "myTrack.db");
-		android.util.Log.i(TAG, path.toString());
+		Log.i(TAG, path.toString());
 		try {
-			trackDB = SQLiteDatabase.openDatabase(path.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY | SQLiteDatabase.NO_LOCALIZED_COLLATORS);
+			trackDB = SQLiteDatabase.openDatabase(path.getAbsolutePath(), null,
+					SQLiteDatabase.OPEN_READWRITE | SQLiteDatabase.CREATE_IF_NECESSARY | SQLiteDatabase.NO_LOCALIZED_COLLATORS);
 			Cursor cursor = trackDB.rawQuery("SELECT DISTINCT tbl_name FROM sqlite_master WHERE tbl_name = 'track'", null);
 			if (cursor.getCount() == 0) {
 				trackDB.execSQL("CREATE TABLE track (_id INTEGER PRIMARY KEY, latitude REAL, longitude REAL, code INTEGER, elevation REAL, speed REAL, track REAL, accuracy REAL, datetime INTEGER)");
@@ -415,88 +438,121 @@ public class LocationService extends BaseLocationService implements LocationList
 	}
 
 	public Track getTrack(long limit) {
-		if (trackDB == null)
-			openDatabase();
+		if (trackDB == null) openDatabase();
 		Track track = new Track();
-		if (trackDB == null)
-			return track;
+		if (trackDB == null) return track;
+
 		String limitStr = limit > 0 ? " LIMIT " + limit : "";
 		Cursor cursor = trackDB.rawQuery("SELECT * FROM track ORDER BY _id DESC" + limitStr, null);
+		if (cursor == null) return track;
+
+		int latIdx = cursor.getColumnIndex("latitude");
+		int lonIdx = cursor.getColumnIndex("longitude");
+		int eleIdx = cursor.getColumnIndex("elevation");
+		int speedIdx = cursor.getColumnIndex("speed");
+		int bearingIdx = cursor.getColumnIndex("track");
+		int accIdx = cursor.getColumnIndex("accuracy");
+		int codeIdx = cursor.getColumnIndex("code");
+		int timeIdx = cursor.getColumnIndex("datetime");
+
+		if (latIdx == -1 || lonIdx == -1 || eleIdx == -1 || speedIdx == -1 ||
+				bearingIdx == -1 || accIdx == -1 || codeIdx == -1 || timeIdx == -1) {
+			Log.e(TAG, "Database schema mismatch: missing columns");
+			cursor.close();
+			return track;
+		}
+
 		for (boolean hasItem = cursor.moveToLast(); hasItem; hasItem = cursor.moveToPrevious()) {
-			double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
-			double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
-			double elevation = cursor.getDouble(cursor.getColumnIndex("elevation"));
-			double speed = cursor.getDouble(cursor.getColumnIndex("speed"));
-			double bearing = cursor.getDouble(cursor.getColumnIndex("track"));
-			double accuracy = cursor.getDouble(cursor.getColumnIndex("accuracy"));
-			int code = cursor.getInt(cursor.getColumnIndex("code"));
-			long time = cursor.getLong(cursor.getColumnIndex("datetime"));
-			track.addPoint(code == 0, latitude, longitude, elevation, speed, bearing, accuracy, time);
+			double lat = cursor.getDouble(latIdx);
+			double lon = cursor.getDouble(lonIdx);
+			double ele = cursor.getDouble(eleIdx);
+			double spd = cursor.getDouble(speedIdx);
+			double brg = cursor.getDouble(bearingIdx);
+			double acc = cursor.getDouble(accIdx);
+			int code = cursor.getInt(codeIdx);
+			long tm = cursor.getLong(timeIdx);
+			track.addPoint(code == 0, lat, lon, ele, spd, brg, acc, tm);
 		}
 		cursor.close();
 		return track;
 	}
 
 	public Track getTrack(long start, long end) {
-		if (trackDB == null)
-			openDatabase();
+		if (trackDB == null) openDatabase();
 		Track track = new Track();
-		if (trackDB == null)
+		if (trackDB == null) return track;
+
+		Cursor cursor = trackDB.rawQuery("SELECT * FROM track WHERE datetime >= ? AND datetime <= ? ORDER BY _id DESC",
+				new String[]{String.valueOf(start), String.valueOf(end)});
+		if (cursor == null) return track;
+
+		int latIdx = cursor.getColumnIndex("latitude");
+		int lonIdx = cursor.getColumnIndex("longitude");
+		int eleIdx = cursor.getColumnIndex("elevation");
+		int speedIdx = cursor.getColumnIndex("speed");
+		int bearingIdx = cursor.getColumnIndex("track");
+		int accIdx = cursor.getColumnIndex("accuracy");
+		int codeIdx = cursor.getColumnIndex("code");
+		int timeIdx = cursor.getColumnIndex("datetime");
+
+		if (latIdx == -1 || lonIdx == -1 || eleIdx == -1 || speedIdx == -1 ||
+				bearingIdx == -1 || accIdx == -1 || codeIdx == -1 || timeIdx == -1) {
+			Log.e(TAG, "Database schema mismatch: missing columns");
+			cursor.close();
 			return track;
-		Cursor cursor = trackDB.rawQuery("SELECT * FROM track WHERE datetime >= ? AND datetime <= ? ORDER BY _id DESC", new String[]{String.valueOf(start), String.valueOf(end)});
+		}
+
 		for (boolean hasItem = cursor.moveToLast(); hasItem; hasItem = cursor.moveToPrevious()) {
-			double latitude = cursor.getDouble(cursor.getColumnIndex("latitude"));
-			double longitude = cursor.getDouble(cursor.getColumnIndex("longitude"));
-			double elevation = cursor.getDouble(cursor.getColumnIndex("elevation"));
-			double speed = cursor.getDouble(cursor.getColumnIndex("speed"));
-			double bearing = cursor.getDouble(cursor.getColumnIndex("track"));
-			double accuracy = cursor.getDouble(cursor.getColumnIndex("accuracy"));
-			int code = cursor.getInt(cursor.getColumnIndex("code"));
-			long time = cursor.getLong(cursor.getColumnIndex("datetime"));
-			track.addPoint(code == 0, latitude, longitude, elevation, speed, bearing, accuracy, time);
+			double lat = cursor.getDouble(latIdx);
+			double lon = cursor.getDouble(lonIdx);
+			double ele = cursor.getDouble(eleIdx);
+			double spd = cursor.getDouble(speedIdx);
+			double brg = cursor.getDouble(bearingIdx);
+			double acc = cursor.getDouble(accIdx);
+			int code = cursor.getInt(codeIdx);
+			long tm = cursor.getLong(timeIdx);
+			track.addPoint(code == 0, lat, lon, ele, spd, brg, acc, tm);
 		}
 		cursor.close();
 		return track;
 	}
 
 	public long getTrackStartTime() {
-		long res = Long.MIN_VALUE;
-		if (trackDB == null)
-			openDatabase();
-		if (trackDB == null)
-			return res;
+		if (trackDB == null) openDatabase();
+		if (trackDB == null) return Long.MIN_VALUE;
 		Cursor cursor = trackDB.rawQuery("SELECT MIN(datetime) FROM track WHERE datetime > 0", null);
-		if (cursor.moveToFirst())
+		long res = Long.MIN_VALUE;
+		if (cursor.moveToFirst()) {
 			res = cursor.getLong(0);
+		}
 		cursor.close();
 		return res;
 	}
 
 	public long getTrackEndTime() {
-		long res = Long.MAX_VALUE;
-		if (trackDB == null)
-			openDatabase();
-		if (trackDB == null)
-			return res;
+		if (trackDB == null) openDatabase();
+		if (trackDB == null) return Long.MAX_VALUE;
 		Cursor cursor = trackDB.rawQuery("SELECT MAX(datetime) FROM track", null);
-		if (cursor.moveToFirst())
+		long res = Long.MAX_VALUE;
+		if (cursor.moveToFirst()) {
 			res = cursor.getLong(0);
+		}
 		cursor.close();
 		return res;
 	}
 
 	public void clearTrack() {
-		if (trackDB == null)
-			openDatabase();
-		if (trackDB != null)
+		if (trackDB == null) openDatabase();
+		if (trackDB != null) {
 			trackDB.execSQL("DELETE FROM track");
+		}
 	}
 
-	public void addPoint(boolean continous, double latitude, double longitude, double elevation, float speed, float bearing, float accuracy, long time) {
+	public void addPoint(boolean continous, double latitude, double longitude, double elevation,
+						 float speed, float bearing, float accuracy, long time) {
 		if (trackDB == null) {
 			openDatabase();
-			if (trackDB == null)
-				return;
+			if (trackDB == null) return;
 		}
 
 		ContentValues values = new ContentValues();
@@ -524,17 +580,20 @@ public class LocationService extends BaseLocationService implements LocationList
 		Log.d(TAG, "Fix needs writing");
 		lastWritenLocation = loc;
 		distanceFromLastWriting = 0;
-		addPoint(continous, loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), loc.getSpeed(), loc.getBearing(), loc.getAccuracy(), loc.getTime());
+		addPoint(continous, loc.getLatitude(), loc.getLongitude(), loc.getAltitude(),
+				loc.getSpeed(), loc.getBearing(), loc.getAccuracy(), loc.getTime());
 
 		for (ITrackingListener callback : trackingCallbacks) {
-			callback.onNewPoint(continous, loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), loc.getSpeed(), loc.getBearing(), loc.getAccuracy(), loc.getTime());
+			callback.onNewPoint(continous, loc.getLatitude(), loc.getLongitude(),
+					loc.getAltitude(), loc.getSpeed(), loc.getBearing(), loc.getAccuracy(), loc.getTime());
 		}
 
-		final int n = trackingRemoteCallbacks.beginBroadcast();
+		int n = trackingRemoteCallbacks.beginBroadcast();
 		for (int i = 0; i < n; i++) {
-			final ITrackingCallback callback = trackingRemoteCallbacks.getBroadcastItem(i);
+			ITrackingCallback callback = trackingRemoteCallbacks.getBroadcastItem(i);
 			try {
-				callback.onNewPoint(continous, loc.getLatitude(), loc.getLongitude(), loc.getAltitude(), loc.getSpeed(), loc.getBearing(), loc.getAccuracy(), loc.getTime());
+				callback.onNewPoint(continous, loc.getLatitude(), loc.getLongitude(),
+						loc.getAltitude(), loc.getSpeed(), loc.getBearing(), loc.getAccuracy(), loc.getTime());
 			} catch (RemoteException e) {
 				Log.e(TAG, "Point broadcast error", e);
 			}
@@ -542,27 +601,32 @@ public class LocationService extends BaseLocationService implements LocationList
 		trackingRemoteCallbacks.finishBroadcast();
 	}
 
-	private void writeTrack(Location loc, boolean continous, boolean geoid, float smoothspeed, float avgspeed) {
+	private void writeTrack(Location loc, boolean continous) {
 		boolean needsWrite = false;
 		if (lastLocation != null) {
 			distanceFromLastWriting += loc.distanceTo(lastLocation);
 		}
-		if (lastWritenLocation != null)
+		if (lastWritenLocation != null) {
 			timeFromLastWriting = loc.getTime() - lastWritenLocation.getTime();
+		}
 
-		if (lastLocation == null || lastWritenLocation == null || !continous || timeFromLastWriting > maxTime || distanceFromLastWriting > minDistance && timeFromLastWriting > minTime) {
+		if (lastLocation == null || lastWritenLocation == null || !continous ||
+				timeFromLastWriting > maxTime ||
+				(distanceFromLastWriting > minDistance && timeFromLastWriting > minTime)) {
 			needsWrite = true;
 		}
 
 		lastLocation = loc;
 
-		if (needsWrite)
+		if (needsWrite) {
 			writeLocation(loc, continous);
+		}
 	}
 
 	private void tearTrack() {
-		if (lastLocation != null && (lastWritenLocation == null || !lastLocation.toString().equals(lastWritenLocation.toString())))
+		if (lastLocation != null && (lastWritenLocation == null || !lastLocation.toString().equals(lastWritenLocation.toString()))) {
 			writeLocation(lastLocation, isContinous);
+		}
 		isContinous = false;
 	}
 
@@ -573,27 +637,18 @@ public class LocationService extends BaseLocationService implements LocationList
 		final float smoothspeed = smoothSpeed;
 		final float avgspeed = avgSpeed;
 
-		final Handler handler = new Handler();
+		Handler handler = new Handler();
 
 		if (trackingEnabled) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					writeTrack(location, continous, geoid, smoothspeed, avgspeed);
-				}
-			});
+			handler.post(() -> writeTrack(location, continous));
 		}
-		for (final ILocationListener callback : locationCallbacks) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					callback.onLocationChanged(location, continous, geoid, smoothspeed, avgspeed);
-				}
-			});
+		for (ILocationListener callback : locationCallbacks) {
+			handler.post(() -> callback.onLocationChanged(location, continous, geoid, smoothspeed, avgspeed));
 		}
-		final int n = locationRemoteCallbacks.beginBroadcast();
+
+		int n = locationRemoteCallbacks.beginBroadcast();
 		for (int i = 0; i < n; i++) {
-			final ILocationCallback callback = locationRemoteCallbacks.getBroadcastItem(i);
+			ILocationCallback callback = locationRemoteCallbacks.getBroadcastItem(i);
 			try {
 				callback.onLocationChanged(location, continous, geoid, smoothspeed, avgspeed);
 			} catch (RemoteException e) {
@@ -601,37 +656,38 @@ public class LocationService extends BaseLocationService implements LocationList
 			}
 		}
 		locationRemoteCallbacks.finishBroadcast();
-		//Log.d(TAG, "Location dispatched: " + (locationCallbacks.size() + n));
 	}
 
 	private void updateLocation(final ILocationListener callback) {
-		if (!"unknown".equals(lastKnownLocation.getProvider()))
+		if (!"unknown".equals(lastKnownLocation.getProvider())) {
 			callback.onLocationChanged(lastKnownLocation, isContinous, !Float.isNaN(nmeaGeoidHeight), smoothSpeed, avgSpeed);
+		}
 	}
 
 	private void updateProvider(final String provider, final boolean enabled) {
-		if (LocationManager.GPS_PROVIDER.equals(provider))
+		if (LocationManager.GPS_PROVIDER.equals(provider)) {
 			updateNotification();
-		final Handler handler = new Handler();
-		for (final ILocationListener callback : locationCallbacks) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					if (enabled)
-						callback.onProviderEnabled(provider);
-					else
-						callback.onProviderDisabled(provider);
+		}
+		Handler handler = new Handler();
+		for (ILocationListener callback : locationCallbacks) {
+			handler.post(() -> {
+				if (enabled) {
+					callback.onProviderEnabled(provider);
+				} else {
+					callback.onProviderDisabled(provider);
 				}
 			});
 		}
-		final int n = locationRemoteCallbacks.beginBroadcast();
+
+		int n = locationRemoteCallbacks.beginBroadcast();
 		for (int i = 0; i < n; i++) {
-			final ILocationCallback callback = locationRemoteCallbacks.getBroadcastItem(i);
+			ILocationCallback callback = locationRemoteCallbacks.getBroadcastItem(i);
 			try {
-				if (enabled)
+				if (enabled) {
 					callback.onProviderEnabled(provider);
-				else
+				} else {
 					callback.onProviderDisabled(provider);
+				}
 			} catch (RemoteException e) {
 				Log.e(TAG, "Provider broadcast error", e);
 			}
@@ -641,35 +697,11 @@ public class LocationService extends BaseLocationService implements LocationList
 	}
 
 	private void updateProvider(final ILocationListener callback) {
-		if (gpsStatus == GPS_OFF)
+		if (gpsStatus == GPS_OFF) {
 			callback.onProviderDisabled(LocationManager.GPS_PROVIDER);
-		else
+		} else {
 			callback.onProviderEnabled(LocationManager.GPS_PROVIDER);
-	}
-
-	private void updateGpsStatus(final int status, final int fsats, final int tsats) {
-		gpsStatus = status;
-		updateNotification();
-		final Handler handler = new Handler();
-		for (final ILocationListener callback : locationCallbacks) {
-			handler.post(new Runnable() {
-				@Override
-				public void run() {
-					callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, status, fsats, tsats);
-				}
-			});
 		}
-		final int n = locationRemoteCallbacks.beginBroadcast();
-		for (int i = 0; i < n; i++) {
-			final ILocationCallback callback = locationRemoteCallbacks.getBroadcastItem(i);
-			try {
-				callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, status, fsats, tsats);
-			} catch (RemoteException e) {
-				Log.e(TAG, "Status broadcast error", e);
-			}
-		}
-		locationRemoteCallbacks.finishBroadcast();
-		//Log.d(TAG, "GPS status dispatched: " + (locationCallbacks.size() + n));
 	}
 
 	@Override
@@ -679,7 +711,6 @@ public class LocationService extends BaseLocationService implements LocationList
 		boolean fromGps = false;
 		boolean sendUpdate = false;
 		long time = SystemClock.elapsedRealtime();
-		// Log.i(TAG, "Location arrived: "+location.toString());
 
 		if (LocationManager.NETWORK_PROVIDER.equals(location.getProvider())) {
 			if (useNetwork && (gpsStatus == GPS_OFF || (gpsStatus == GPS_SEARCHING && time > lastLocationMillis + gpsLocationTimeout))) {
@@ -691,9 +722,8 @@ public class LocationService extends BaseLocationService implements LocationList
 			} else {
 				return;
 			}
-		} else {//получено е ново местоположение от GPS-a
+		} else {
 			fromGps = true;
-			//Log.d(TAG, "Fix arrived");
 			long prevLocationMillis = lastLocationMillis;
 			float prevSpeed = lastKnownLocation.getSpeed();
 			float prevTrack = lastKnownLocation.getBearing();
@@ -709,12 +739,12 @@ public class LocationService extends BaseLocationService implements LocationList
 			if (justStarted) {
 				justStarted = prevSpeed == 0;
 			} else if (lastKnownLocation.getSpeed() > 0) {
-				// filter speed outrages///-защо правитази проверка?-нима тук се намира проблема със скоростта(от време на време изчезва)
 				double a = 2 * 9.8 * (lastLocationMillis - prevLocationMillis) / 1000;
-				if (Math.abs(lastKnownLocation.getSpeed() - prevSpeed) > a)
+				if (Math.abs(lastKnownLocation.getSpeed() - prevSpeed) > a) {
 					lastKnownLocation.setSpeed(prevSpeed);
+				}
 			}
-			// smooth speed // за какво ми е това?
+
 			float smoothspeed = 0;
 			float curspeed = lastKnownLocation.getSpeed();
 			for (int i = speed.length - 1; i > 1; i--) {
@@ -729,24 +759,18 @@ public class LocationService extends BaseLocationService implements LocationList
 			speed[1] = speed[0];
 			lastKnownLocation.setSpeed(speed[1]);
 			speed[0] = curspeed;
-			if (speed[0] == 0 && speed[1] == 0)
-				smoothspeed = 0;
-			else
-				smoothspeed = smoothspeed / speed.length;
+			smoothspeed = (speed[0] == 0 && speed[1] == 0) ? 0 : smoothspeed / speed.length;
 
-			// average speed
 			float avspeed = 0;
-			for (int i = speedav.length - 1; i >= 0; i--) {
-				avspeed += speedav[i];
+			for (float v : speedav) {
+				avspeed += v;
 			}
-			avspeed = avspeed / speedav.length;
+			avspeed /= speedav.length;
 			if (tics % pause == 0) {
 				if (avspeed > 0) {
 					float diff = curspeed / avspeed;
 					if (0.95 < diff && diff < 1.05) {
-						for (int i = speedav.length - 1; i > 0; i--) {
-							speedav[i] = speedav[i - 1];
-						}
+						System.arraycopy(speedav, 0, speedav, 1, speedav.length - 1);
 						speedav[0] = curspeed;
 					}
 				}
@@ -757,13 +781,10 @@ public class LocationService extends BaseLocationService implements LocationList
 				}
 				fluct += speedavex[0] / curspeed;
 				speedavex[0] = curspeed;
-				fluct = fluct / speedavex.length;
+				fluct /= speedavex.length;
 				if (0.95 < fluct && fluct < 1.05) {
-					for (int i = speedav.length - 1; i >= 0; i--) {
-						speedav[i] = speedavex[i];
-					}
-					if (pause < 5)
-						pause++;
+					System.arraycopy(speedavex, 0, speedav, 0, speedav.length);
+					if (pause < 5) pause++;
 				}
 			}
 
@@ -771,30 +792,20 @@ public class LocationService extends BaseLocationService implements LocationList
 			avgSpeed = avspeed;
 		}
 
-		/*
-		 * lastKnownLocation.setSpeed(20); lastKnownLocation.setBearing(55);
-		 * lastKnownLocation.setAltitude(169);
-		 * lastKnownLocation.setLatitude(55.852527);
-		 * lastKnownLocation.setLongitude(29.451150);
-		 */
-
-		if (sendUpdate)
+		if (sendUpdate) {
 			updateLocation();
-
+		}
 		isContinous = fromGps;
 	}
 
 	@Override
 	public void onNmeaReceived(long timestamp, String nmea) {
-		if (nmea.indexOf('\n') == 0)
-			return;
+		if (nmea.indexOf('\n') == 0) return;
 		if (nmea.indexOf('\n') > 0) {
 			nmea = nmea.substring(0, nmea.indexOf('\n') - 1);
 		}
 		int len = nmea.length();
-		if (len < 9) {
-			return;
-		}
+		if (len < 9) return;
 		if (nmea.charAt(len - 3) == '*') {
 			nmea = nmea.substring(0, len - 3);
 		}
@@ -802,33 +813,20 @@ public class LocationService extends BaseLocationService implements LocationList
 		String sentenceId = tokens[0].length() > 5 ? tokens[0].substring(3, 6) : "";
 
 		try {
-			if (sentenceId.equals("GGA") && tokens.length > 11) {
-				// String time = tokens[1];
-				// String latitude = tokens[2];
-				// String latitudeHemi = tokens[3];
-				// String longitude = tokens[4];
-				// String longitudeHemi = tokens[5];
-				// String fixQuality = tokens[6];
-				// String numSatellites = tokens[7];
-				// String horizontalDilutionOfPrecision = tokens[8];
-				// String altitude = tokens[9];
-				// String altitudeUnits = tokens[10];
+			if ("GGA".equals(sentenceId) && tokens.length > 11) {
 				String heightOfGeoid = tokens[11];
-				if (!"".equals(heightOfGeoid))
+				if (!"".equals(heightOfGeoid)) {
 					nmeaGeoidHeight = Float.parseFloat(heightOfGeoid);
-				// String heightOfGeoidUnits = tokens[12];
-				// String timeSinceLastDgpsUpdate = tokens[13];
-			} else if (sentenceId.equals("GSA") && tokens.length > 17) {
-				// String selectionMode = tokens[1]; // m=manual, a=auto 2d/3d
-				// String mode = tokens[2]; // 1=no fix, 2=2d, 3=3d
-				@SuppressWarnings("unused")
-				String pdop = tokens[15];
+				}
+			} else if ("GSA".equals(sentenceId) && tokens.length > 17) {
 				String hdop = tokens[16];
 				String vdop = tokens[17];
-				if (!"".equals(hdop))
+				if (!"".equals(hdop)) {
 					HDOP = Float.parseFloat(hdop);
-				if (!"".equals(vdop))
+				}
+				if (!"".equals(vdop)) {
 					VDOP = Float.parseFloat(vdop);
+				}
 			}
 		} catch (NumberFormatException e) {
 			Log.e(TAG, "NFE", e);
@@ -850,147 +848,78 @@ public class LocationService extends BaseLocationService implements LocationList
 	@Override
 	public void onStatusChanged(String provider, int status, Bundle extras) {
 		if (LocationManager.GPS_PROVIDER.equals(provider)) {
-			switch (status) {
-				case LocationProvider.TEMPORARILY_UNAVAILABLE:
-				case LocationProvider.OUT_OF_SERVICE:
-					tearTrack();
-					updateNotification();
-					break;
+			if (status == LocationProvider.TEMPORARILY_UNAVAILABLE || status == LocationProvider.OUT_OF_SERVICE) {
+				tearTrack();
+				updateNotification();
 			}
 		}
 	}
 
-	@Override
-	public void onGpsStatusChanged(int event) {
-		switch (event) {
-			case GpsStatus.GPS_EVENT_STARTED:
-				updateProvider(LocationManager.GPS_PROVIDER, true);
-				updateGpsStatus(GPS_SEARCHING, 0, 0);
-				break;
-			case GpsStatus.GPS_EVENT_FIRST_FIX:
-				isContinous = false;
-				break;
-			case GpsStatus.GPS_EVENT_STOPPED:
-				tearTrack();
-				updateGpsStatus(GPS_OFF, 0, 0);
-				updateProvider(LocationManager.GPS_PROVIDER, false);
-				break;
-			case GpsStatus.GPS_EVENT_SATELLITE_STATUS:
-				if (locationManager == null)
-					return;
-				if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-					// TODO: Consider calling
-					//    ActivityCompat#requestPermissions
-					// here to request the missing permissions, and then overriding
-					//   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-					//                                          int[] grantResults)
-					// to handle the case where the user grants the permission. See the documentation
-					// for ActivityCompat#requestPermissions for more details.
-					return;
-				}
-				GpsStatus gpsStatus = locationManager.getGpsStatus(null);
-				Iterator<GpsSatellite> it = gpsStatus.getSatellites().iterator();
-				int tSats = 0;
-				int fSats = 0;
-				while (it.hasNext())
-				{
-					tSats++;
-					GpsSatellite sat = (GpsSatellite) it.next();
-					if (sat.usedInFix())
-						fSats++;
-				}
-				if (SystemClock.elapsedRealtime() - lastLocationMillis < 3000)
-				{
-					updateGpsStatus(GPS_OK, fSats, tSats);
-				}
-				else
-				{
-					tearTrack();
-					updateGpsStatus(GPS_SEARCHING, fSats, tSats);
-				}
-				break;
-		}
-	}
-
-	public class LocalBinder extends Binder implements ILocationService
-	{
+	public class LocalBinder extends Binder implements ILocationService {
 		@Override
-		public void registerLocationCallback(ILocationListener callback)
-		{
+		public void registerLocationCallback(ILocationListener callback) {
 			updateProvider(callback);
 			updateLocation(callback);
 			locationCallbacks.add(callback);
 		}
 
 		@Override
-		public void unregisterLocationCallback(ILocationListener callback)
-		{
+		public void unregisterLocationCallback(ILocationListener callback) {
 			locationCallbacks.remove(callback);
 		}
 
 		@Override
-		public void registerTrackingCallback(com.borkozic.location.ITrackingListener callback)
-		{
+		public void registerTrackingCallback(ITrackingListener callback) {
 			trackingCallbacks.add(callback);
 		}
 
 		@Override
-		public void unregisterTrackingCallback(com.borkozic.location.ITrackingListener callback)
-		{
+		public void unregisterTrackingCallback(ITrackingListener callback) {
 			trackingCallbacks.remove(callback);
 		}
 
 		@Override
-		public boolean isLocating()
-		{
+		public boolean isLocating() {
 			return locationsEnabled;
 		}
 
 		@Override
-		public boolean isTracking()
-		{
+		public boolean isTracking() {
 			return trackingEnabled;
 		}
 
 		@Override
-		public float getHDOP()
-		{
+		public float getHDOP() {
 			return HDOP;
 		}
 
 		@Override
-		public float getVDOP()
-		{
+		public float getVDOP() {
 			return VDOP;
 		}
 
 		@Override
-		public Track getTrack()
-		{
+		public Track getTrack() {
 			return LocationService.this.getTrack();
 		}
 
 		@Override
-		public Track getTrack(long start, long end)
-		{
+		public Track getTrack(long start, long end) {
 			return LocationService.this.getTrack(start, end);
 		}
 
 		@Override
-		public void clearTrack()
-		{
+		public void clearTrack() {
 			LocationService.this.clearTrack();
 		}
 
 		@Override
-		public long getTrackStartTime()
-		{
+		public long getTrackStartTime() {
 			return LocationService.this.getTrackStartTime();
 		}
 
 		@Override
-		public long getTrackEndTime()
-		{
+		public long getTrackEndTime() {
 			return LocationService.this.getTrackEndTime();
 		}
 	}

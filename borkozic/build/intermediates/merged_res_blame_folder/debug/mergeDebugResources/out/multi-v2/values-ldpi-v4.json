@@ -1,0 +1,26 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.borkozic-mergeDebugResources-23:/values-ldpi-v4/values-ldpi-v4.xml",
+            "map": [
+                {
+                    "source": "D:\\Borkozic_Versions\\Borkozic-Java_Oki\\borkozic\\src\\main\\res\\values-ldpi\\integers.xml",
+                    "from": {
+                        "startLines": "4,3,5,2",
+                        "startColumns": "0,0,0,0",
+                        "startOffsets": "147,98,200,51",
+                        "endColumns": "52,48,48,46",
+                        "endOffsets": "199,146,248,97"
+                    },
+                    "to": {
+                        "startLines": "2,3,4,5",
+                        "startColumns": "4,4,4,4",
+                        "startOffsets": "55,112,165,218",
+                        "endColumns": "56,52,52,50",
+                        "endOffsets": "107,160,213,264"
+                    }
+                }
+            ]
+        }
+    ]
+}

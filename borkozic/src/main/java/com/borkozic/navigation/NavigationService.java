@@ -20,19 +20,28 @@
 
 package com.borkozic.navigation;
 
+import android.Manifest;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.content.pm.PackageManager;
+import android.content.pm.ServiceInfo;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
+
+import androidx.annotation.RequiresApi;
 import androidx.core.app.NotificationCompat;
 import android.util.Log;
 
@@ -40,6 +49,7 @@ import com.borkozic.Borkozic;
 import com.borkozic.HSIActivity;
 import com.borkozic.MapActivity;
 import com.borkozic.R;
+import com.borkozic.data.Area;
 import com.borkozic.data.MapObject;
 import com.borkozic.data.Route;
 import com.borkozic.location.ILocationListener;
@@ -52,6 +62,8 @@ public class NavigationService extends BaseNavigationService implements OnShared
 {
     private static final String TAG = "Navigation";
 	private static final int NOTIFICATION_ID = 24163;
+	private static final String NOTIFICATION_CHANNEL_ID = "com.borkozic.navigation";
+	private static final String ChannelName = "Background Navigation Service";
 	
 	private Borkozic application;
 	
@@ -83,7 +95,10 @@ public class NavigationService extends BaseNavigationService implements OnShared
 	 */
 	public int navCurrentRoutePoint = -1;
 	private double navRouteDistance = -1;
-
+	/**
+	 * Active area
+	 */
+	public Area navArea = null;
 	/**
 	 * Distance to active waypoint
 	 */
@@ -114,17 +129,44 @@ public class NavigationService extends BaseNavigationService implements OnShared
 		sharedPreferences.registerOnSharedPreferenceChangeListener(this);
 
 
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID);
 		builder.setContentIntent(contentIntent);
 		builder.setSmallIcon(R.drawable.ic_stat_navigation);
 		builder.setWhen(0);
 		builder.setContentTitle(getText(R.string.notif_nav_short));
 		builder.setContentText(getText(R.string.notif_nav_started));
 		notification = builder.build();
-
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+				Log.w(TAG, "POST_NOTIFICATIONS permission not granted");
+				// Нотификацията няма да се покаже, но услугата ще работи
+			}
+		}
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+			startMyOwnForeground();
+		else
+			startForeground(NOTIFICATION_ID, new Notification());
 		Log.i(TAG, "Service started");
 	}
+	@RequiresApi(api = Build.VERSION_CODES.O)
+	private void startMyOwnForeground() {
+		NotificationChannel chan = new NotificationChannel(NOTIFICATION_CHANNEL_ID, ChannelName, NotificationManager.IMPORTANCE_NONE);
+		chan.setLightColor(Color.BLUE);
+		chan.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+		NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		if (manager != null) {
+			manager.createNotificationChannel(chan);
+		}
 
+		Log.d(TAG, "startMyOwnForeground");
+
+		// За Android 14+ (API 34) трябва да укажем типа на foreground service
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // 34
+			startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION);
+		} else {
+			startForeground(NOTIFICATION_ID, notification);
+		}
+	}
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId)
 	{
@@ -133,7 +175,7 @@ public class NavigationService extends BaseNavigationService implements OnShared
 			Intent activity = new Intent(this, MapActivity.class).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
 			String action = intent.getAction();
 			if (action == null)
-				return 0;
+				return START_STICKY;;//return 0;
 			Bundle extras = intent.getExtras();
 			if (action.equals(NAVIGATE_MAPOBJECT))
 			{
@@ -167,6 +209,19 @@ public class NavigationService extends BaseNavigationService implements OnShared
 				if (start != -1)
 					setRouteWaypoint(start);
 			}
+			/*
+			if (action.equals(NAVIGATE_AREA))
+			{//todo - не съм сигурен как действа този код и дали не трябва да добавя допълнителни константи които да отчитат добавеният от мен елемент
+				int index = extras.getInt(EXTRA_AREA_INDEX);
+				MapObject mo = new MapObject();
+				mo.name = extras.getString(EXTRA_NAME);// EXTRA_NAME_AREA
+				mo.latitude = extras.getDouble(EXTRA_LATITUDE);// EXTRA_LATITUDE_AREA
+				mo.longitude = extras.getDouble(EXTRA_LONGITUDE);// EXTRA_LONGITUDE_AREA
+				mo.proximity = extras.getInt(EXTRA_PROXIMITY);// EXTRA_PROXIMITY_AREA
+				activity.putExtra("launch", HSIActivity.class);
+				contentIntent = PendingIntent.getActivity(this, NOTIFICATION_ID, activity, PendingIntent.FLAG_CANCEL_CURRENT);
+				navigateTo(mo);
+			}*/
 		}
 		return START_STICKY;
 	}
@@ -238,6 +293,7 @@ public class NavigationService extends BaseNavigationService implements OnShared
 		navWaypoint = null;
 		prevWaypoint = null;
 		navRoute = null;
+		navArea = null;
 
 		navDirection = 0;
 		navCurrentRoutePoint = -1;		
@@ -263,6 +319,10 @@ public class NavigationService extends BaseNavigationService implements OnShared
 	public boolean isNavigatingViaRoute()
 	{
 		return navRoute != null;
+	}
+	public boolean isNavigatingViaArea()
+	{
+		return navArea != null;
 	}
 
 	public void navigateTo(final MapObject waypoint)

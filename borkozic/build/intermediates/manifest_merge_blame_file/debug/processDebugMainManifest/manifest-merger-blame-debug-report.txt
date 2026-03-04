@@ -1,0 +1,903 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<!--
+3   Borkozic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
+4   Copyright (C) 2010-2013  Andrey Novikov <http://andreynovikov.info/>
+5-->
+6<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+7    package="com.borkozic"
+8    android:installLocation="auto"
+9    android:versionCode="1"
+10    android:versionName="1.0" >
+11
+12    <uses-sdk
+13        android:minSdkVersion="21"
+14        android:targetSdkVersion="34" />
+15
+16    <supports-screens
+16-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:8:5-13:40
+17        android:anyDensity="true"
+17-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:9:9-34
+18        android:largeScreens="true"
+18-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:10:9-36
+19        android:normalScreens="true"
+19-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:11:9-37
+20        android:smallScreens="true"
+20-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:12:9-36
+21        android:xlargeScreens="true" />
+21-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:13:9-37
+22
+23    <uses-feature
+23-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:15:5-17:36
+24        android:name="android.hardware.location"
+24-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:16:9-49
+25        android:required="false" />
+25-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:17:9-33
+26    <uses-feature
+26-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:18:5-20:36
+27        android:name="android.hardware.location.gps"
+27-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:19:9-53
+28        android:required="false" />
+28-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:20:9-33
+29    <uses-feature
+29-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:21:5-23:36
+30        android:name="android.hardware.location.network"
+30-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:22:9-57
+31        android:required="false" />
+31-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:23:9-33
+32
+33    <permission
+33-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:25:5-30:47
+34        android:name="com.borkozic.permission.RECEIVE_LOCATION"
+34-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:26:9-64
+35        android:description="@string/perm_location_description"
+35-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:27:9-64
+36        android:icon="@drawable/icon"
+36-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:28:9-38
+37        android:label="@string/perm_location_title"
+37-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:29:9-52
+38        android:protectionLevel="dangerous" />
+38-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:30:9-44
+39    <permission
+39-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:31:5-36:47
+40        android:name="com.borkozic.permission.RECEIVE_TRACK"
+40-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:32:9-61
+41        android:description="@string/perm_tracking_description"
+41-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:33:9-64
+42        android:icon="@drawable/icon"
+42-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:34:9-38
+43        android:label="@string/perm_tracking_title"
+43-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:35:9-52
+44        android:protectionLevel="dangerous" />
+44-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:36:9-44
+45    <permission
+45-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:37:5-42:47
+46        android:name="com.borkozic.permission.NAVIGATION"
+46-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:38:9-58
+47        android:description="@string/perm_navigation_description"
+47-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:39:9-66
+48        android:icon="@drawable/icon"
+48-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:40:9-38
+49        android:label="@string/perm_navigation_title"
+49-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:41:9-54
+50        android:protectionLevel="dangerous" />
+50-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:42:9-44
+51    <permission
+51-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:43:5-46:47
+52        android:name="com.borkozic.permission.READ_PREFERENCES"
+52-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:44:9-64
+53        android:label="@string/perm_read_preferences_title"
+53-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:45:9-60
+54        android:protectionLevel="dangerous" />
+54-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:46:9-44
+55    <permission
+55-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:47:5-50:47
+56        android:name="com.borkozic.permission.READ_MAP_DATA"
+56-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:48:9-61
+57        android:label="@string/perm_read_map_data_title"
+57-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:49:9-57
+58        android:protectionLevel="dangerous" />
+58-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:50:9-44
+59    <permission
+59-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:51:5-54:47
+60        android:name="com.borkozic.permission.WRITE_MAP_DATA"
+60-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:52:9-62
+61        android:label="@string/perm_write_map_data_title"
+61-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:53:9-58
+62        android:protectionLevel="dangerous" />
+62-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:54:9-44
+63
+64    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+64-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:55:5-77
+64-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:55:22-74
+65    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+65-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:56:5-86
+65-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:56:22-83
+66    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+66-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:57:5-81
+66-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:57:22-78
+67    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+67-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:58:5-79
+67-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:58:22-76
+68    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+68-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:59:5-89
+68-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:59:22-86
+69    <!--
+70     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+71     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+72    -->
+73    <uses-permission android:name="android.permission.INTERNET" />
+73-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:63:6-68
+73-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:63:23-65
+74    <uses-permission android:name="com.borkozic.permission.RECEIVE_LOCATION" />
+74-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:64:6-81
+74-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:64:23-78
+75    <uses-permission android:name="com.borkozic.permission.RECEIVE_TRACK" />
+75-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:65:6-78
+75-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:65:23-75
+76    <uses-permission android:name="com.borkozic.permission.NAVIGATION" />
+76-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:66:6-75
+76-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:66:23-72
+77    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+77-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:67:5-77
+77-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:67:22-74
+78
+79    <permission
+79-->[androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+80        android:name="com.borkozic.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
+80-->[androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+81        android:protectionLevel="signature" />
+81-->[androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+82
+83    <uses-permission android:name="com.borkozic.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+83-->[androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+83-->[androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+84
+85    <application
+85-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:69:6-420:19
+86        android:name="com.borkozic.Borkozic"
+86-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:70:10-34
+87        android:allowBackup="true"
+87-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:71:10-36
+88        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+88-->[androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
+89        android:backupAgent="com.borkozic.Backup"
+89-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:72:10-39
+90        android:debuggable="true"
+91        android:description="@string/homepage"
+91-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:73:10-48
+92        android:extractNativeLibs="true"
+93        android:icon="@drawable/icon"
+93-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:74:10-39
+94        android:label="@string/app_name"
+94-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:75:10-42
+95        android:restoreAnyVersion="true"
+95-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:76:10-42
+96        android:testOnly="true"
+97        android:theme="@style/Theme.AppCompat"
+97-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:77:10-48
+98        android:usesCleartextTraffic="true" >
+98-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:78:10-45
+99
+100        <!-- android:theme="@style/ApplicationTheme"> -->
+101        <activity
+101-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:80:9-91:20
+102            android:name="com.borkozic.Splash"
+102-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:81:13-35
+103            android:configChanges="orientation"
+103-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:82:13-48
+104            android:exported="true"
+104-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:85:13-36
+105            android:label="@string/app_name"
+105-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:83:13-45
+106            android:launchMode="singleTop" >
+106-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:84:13-43
+107            <intent-filter>
+107-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:86:13-90:29
+108                <action android:name="android.intent.action.MAIN" />
+108-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:87:17-69
+108-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:87:25-66
+109
+110                <category android:name="android.intent.category.LAUNCHER" />
+110-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:89:17-77
+110-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:89:27-74
+111            </intent-filter>
+112        </activity>
+113        <activity
+113-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:92:9-99:20
+114            android:name="com.borkozic.MapActivity"
+114-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:93:13-40
+115            android:label="@string/app_name"
+115-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:94:13-45
+116            android:launchMode="singleTop" >
+116-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:95:13-43
+117            <meta-data
+117-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:96:13-98:55
+118                android:name="android.app.default_searchable"
+118-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:97:17-62
+119                android:value=".SearchableActivity" />
+119-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:98:17-52
+120        </activity>
+121        <activity
+121-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:100:9-116:20
+122            android:name="com.borkozic.ExternalActions"
+122-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:101:13-44
+123            android:exported="true" >
+123-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:102:13-36
+124            <intent-filter>
+124-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:103:13-108:29
+125                <action android:name="com.borkozic.PLOT_ROUTE" />
+125-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:104:17-66
+125-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:104:25-63
+126                <action android:name="com.google.android.radar.SHOW_RADAR" />
+126-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:105:17-78
+126-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:105:25-75
+127
+128                <category android:name="android.intent.category.DEFAULT" />
+128-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+128-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+129            </intent-filter>
+130            <intent-filter>
+130-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:109:13-115:29
+131                <action android:name="android.intent.action.VIEW" />
+131-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:17-69
+131-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:25-66
+132
+133                <data android:scheme="geo" />
+133-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+133-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:23-43
+134
+135                <category android:name="android.intent.category.DEFAULT" />
+135-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+135-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+136            </intent-filter>
+137        </activity>
+138        <activity
+138-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:117:9-129:20
+139            android:name="com.borkozic.SearchableActivity"
+139-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:118:13-47
+140            android:exported="true"
+140-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:119:13-36
+141            android:label="@string/search_name"
+141-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:120:13-48
+142            android:launchMode="singleTop" >
+142-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:121:13-43
+143            <intent-filter>
+143-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:122:13-124:29
+144                <action android:name="android.intent.action.SEARCH" />
+144-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:123:17-71
+144-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:123:25-68
+145            </intent-filter>
+146
+147            <meta-data
+147-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:126:13-128:54
+148                android:name="android.app.searchable"
+148-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:127:17-54
+149                android:resource="@xml/searchable" />
+149-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:128:17-51
+150        </activity>
+151        <activity
+151-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:130:9-132:48
+152            android:name="com.borkozic.HSIActivity"
+152-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:131:13-40
+153            android:label="@string/hsi_name" />
+153-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:132:13-45
+154        <activity
+154-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:133:9-136:45
+155            android:name="com.borkozic.Information"
+155-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:134:13-40
+156            android:label="@string/information_name"
+156-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:135:13-53
+157            android:theme="@style/Dialog" />
+157-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:136:13-42
+158        <activity
+158-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:137:9-139:52
+159            android:name="com.borkozic.Credits"
+159-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:138:13-36
+160            android:label="@string/credits_name" />
+160-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:139:13-49
+161        <activity
+161-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:140:9-143:51
+162            android:name="com.borkozic.Preferences"
+162-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:141:13-40
+163            android:label="@string/pref_name"
+163-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:142:13-46
+164            android:screenOrientation="portrait" />
+164-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:143:13-49
+165        <activity android:name="com.borkozic.Preferences$PluginsPreferences" />
+165-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:145:9-68
+165-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:145:19-65
+166        <activity android:name="com.borkozic.Preferences$InnerPreferences" />
+166-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:146:9-66
+166-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:146:19-63
+167        <activity android:name="com.borkozic.Preferences$OnlineMapPreferences" />
+167-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:147:9-70
+167-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:147:19-67
+168        <activity android:name="com.borkozic.Preferences$ApplicationPreferences" />
+168-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:148:9-72
+168-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:148:19-69
+169        <activity
+169-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:149:9-152:51
+170            android:name="com.borkozic.PreferencesHC"
+170-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:150:13-42
+171            android:label="@string/pref_name"
+171-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:151:13-46
+172            android:screenOrientation="portrait" />
+172-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:152:13-49
+173        <activity
+173-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:153:9-156:45
+174            android:name="com.borkozic.MapList"
+174-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:154:13-36
+175            android:label="@string/maplist_name"
+175-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:155:13-49
+176            android:theme="@style/Dialog" />
+176-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:156:13-42
+177        <activity
+177-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:157:9-159:45
+178            android:name="com.borkozic.ErrorDialog"
+178-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:158:13-40
+179            android:theme="@style/Dialog" />
+179-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:159:13-42
+180        <activity
+180-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:160:9-162:59
+181            android:name="com.borkozic.map.MapInformation"
+181-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:161:13-47
+182            android:label="@string/mapinformation_name" />
+182-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:162:13-56
+183        <activity
+183-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:163:9-166:51
+184            android:name="com.borkozic.waypoint.WaypointListActivity"
+184-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:164:13-58
+185            android:label="@string/managewaypoints_name"
+185-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:165:13-57
+186            android:screenOrientation="portrait" />
+186-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:166:13-49
+187        <activity
+187-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:167:9-170:51
+188            android:name="com.borkozic.waypoint.WaypointProperties"
+188-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:168:13-56
+189            android:label="@string/waypointproperties_name"
+189-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:169:13-60
+190            android:screenOrientation="portrait" />
+190-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:170:13-49
+191        <activity
+191-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:171:9-181:20
+192            android:name="com.borkozic.ui.MarkerPickerActivity"
+192-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:172:13-52
+193            android:exported="true"
+193-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:173:13-36
+194            android:label="@string/markericon_name"
+194-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:174:13-52
+195            android:theme="@style/Dialog" >
+195-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:175:13-42
+196            <intent-filter>
+196-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:176:13-180:29
+197                <action android:name="com.borkozic.PICK_ICON" />
+197-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:177:17-65
+197-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:177:25-62
+198
+199                <category android:name="android.intent.category.DEFAULT" />
+199-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+199-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+200            </intent-filter>
+201        </activity>
+202        <activity
+202-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:182:9-185:51
+203            android:name="com.borkozic.waypoint.WaypointInfo"
+203-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:183:13-50
+204            android:screenOrientation="portrait"
+204-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:185:13-49
+205            android:theme="@style/Dialog" />
+205-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:184:13-42
+206        <activity
+206-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:186:9-189:45
+207            android:name="com.borkozic.waypoint.WaypointProject"
+207-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:187:13-53
+208            android:label="@string/waypointproject_name"
+208-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:188:13-57
+209            android:theme="@style/Dialog" />
+209-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:189:13-42
+210        <activity
+210-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:190:9-193:45
+211            android:name="com.borkozic.waypoint.WaypointFileList"
+211-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:191:13-54
+212            android:label="@string/loadwaypoints_name"
+212-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:192:13-55
+213            android:theme="@style/Dialog" />
+213-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:193:13-42
+214        <activity
+214-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:194:9-227:20
+215            android:name="com.borkozic.waypoint.WaypointFileLoad"
+215-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:195:13-54
+216            android:exported="true" >
+216-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:196:13-36
+217            <intent-filter>
+217-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:197:13-206:29
+218                <action android:name="android.intent.action.VIEW" />
+218-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:17-69
+218-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:25-66
+219
+220                <category android:name="android.intent.category.DEFAULT" />
+220-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+220-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+221
+222                <data android:scheme="file" />
+222-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+222-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:23-43
+223                <data android:host="*" />
+223-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+223-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:203:23-39
+224                <data android:mimeType="*/*" />
+224-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+224-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:204:23-45
+225                <data android:pathPattern=".*\\.wpt" />
+225-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+225-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:205:23-53
+226            </intent-filter>
+227            <intent-filter>
+227-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:207:13-216:29
+228                <action android:name="android.intent.action.VIEW" />
+228-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:17-69
+228-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:25-66
+229
+230                <category android:name="android.intent.category.DEFAULT" />
+230-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+230-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+231
+232                <data android:scheme="file" />
+232-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+232-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:23-43
+233                <data android:host="*" />
+233-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+233-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:203:23-39
+234                <data android:mimeType="*/*" />
+234-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+234-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:204:23-45
+235                <data android:pathPattern=".*\\.kml" />
+235-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+235-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:205:23-53
+236            </intent-filter>
+237            <intent-filter>
+237-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:217:13-226:29
+238                <action android:name="android.intent.action.VIEW" />
+238-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:17-69
+238-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:25-66
+239
+240                <category android:name="android.intent.category.DEFAULT" />
+240-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+240-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+241
+242                <data android:scheme="file" />
+242-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+242-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:23-43
+243                <data android:host="*" />
+243-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+243-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:203:23-39
+244                <data android:mimeType="*/*" />
+244-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+244-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:204:23-45
+245                <data android:pathPattern=".*\\.gpx" />
+245-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+245-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:205:23-53
+246            </intent-filter>
+247        </activity>
+248        <activity
+248-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:228:9-231:45
+249            android:name="com.borkozic.waypoint.CoordinatesReceived"
+249-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:229:13-57
+250            android:label="@string/coordinates_name"
+250-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:230:13-53
+251            android:theme="@style/Dialog" />
+251-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:231:13-42
+252        <activity
+252-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:232:9-234:57
+253            android:name="com.borkozic.track.TrackListActivity"
+253-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:233:13-52
+254            android:label="@string/managetracks_name" />
+254-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:234:13-54
+255        <activity
+255-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:235:9-237:60
+256            android:name="com.borkozic.track.TrackProperties"
+256-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:236:13-50
+257            android:label="@string/trackproperties_name" />
+257-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:237:13-57
+258        <activity
+258-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:238:9-241:45
+259            android:name="com.borkozic.track.TrackFileList"
+259-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:239:13-48
+260            android:label="@string/loadtrack_name"
+260-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:240:13-51
+261            android:theme="@style/Dialog" />
+261-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:241:13-42
+262        <activity
+262-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:242:9-244:56
+263            android:name="com.borkozic.track.TrackToRoute"
+263-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:243:13-47
+264            android:label="@string/track2route_name" />
+264-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:244:13-53
+265        <activity
+265-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:245:9-248:45
+266            android:name="com.borkozic.track.TrackSave"
+266-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:246:13-44
+267            android:label="@string/savetrack_name"
+267-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:247:13-51
+268            android:theme="@style/Dialog" />
+268-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:248:13-42
+269        <activity
+269-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:250:9-254:51
+270            android:name="com.borkozic.route.RouteFileList"
+270-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:251:13-48
+271            android:label="@string/loadroute_name"
+271-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:252:13-51
+272            android:screenOrientation="portrait"
+272-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:254:13-49
+273            android:theme="@style/Dialog" />
+273-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:253:13-42
+274        <activity
+274-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:255:9-257:45
+275            android:name="com.borkozic.route.RouteStart"
+275-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:256:13-45
+276            android:theme="@style/Dialog" />
+276-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:257:13-42
+277        <activity
+277-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:258:9-261:51
+278            android:name="com.borkozic.route.RouteListActivity"
+278-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:259:13-52
+279            android:label="@string/manageroutes_name"
+279-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:260:13-54
+280            android:screenOrientation="portrait" />
+280-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:261:13-49
+281        <activity
+281-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:262:9-265:51
+282            android:name="com.borkozic.route.RouteEdit"
+282-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:263:13-44
+283            android:screenOrientation="portrait"
+283-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:265:13-49
+284            android:theme="@style/Dialog" />
+284-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:264:13-42
+285        <activity
+285-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:266:9-269:45
+286            android:name="com.borkozic.route.RouteSave"
+286-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:267:13-44
+287            android:label="@string/saveroute_name"
+287-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:268:13-51
+288            android:theme="@style/Dialog" />
+288-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:269:13-42
+289        <activity
+289-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:270:9-273:51
+290            android:name="com.borkozic.route.RouteProperties"
+290-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:271:13-50
+291            android:label="@string/routeproperties_name"
+291-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:272:13-57
+292            android:screenOrientation="portrait" />
+292-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:273:13-49
+293        <activity
+293-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:274:9-277:51
+294            android:name="com.borkozic.route.RouteDetails"
+294-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:275:13-47
+295            android:label="@string/routedetails_name"
+295-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:276:13-54
+296            android:screenOrientation="portrait" />
+296-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:277:13-49
+297        <activity
+297-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:279:9-283:51
+298            android:name="com.borkozic.area.AreaFileList"
+298-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:280:13-46
+299            android:label="@string/loadarea_name"
+299-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:281:13-50
+300            android:screenOrientation="portrait"
+300-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:283:13-49
+301            android:theme="@style/Dialog" />
+301-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:282:13-42
+302        <activity
+302-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:284:9-286:45
+303            android:name="com.borkozic.area.AreaStart"
+303-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:285:13-43
+304            android:theme="@style/Dialog" />
+304-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:286:13-42
+305        <activity
+305-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:287:9-290:51
+306            android:name="com.borkozic.area.AreaListActivity"
+306-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:288:13-50
+307            android:label="@string/manageareas_name"
+307-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:289:13-53
+308            android:screenOrientation="portrait" />
+308-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:290:13-49
+309        <activity
+309-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:291:9-294:51
+310            android:name="com.borkozic.area.AreaEdit"
+310-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:292:13-42
+311            android:screenOrientation="portrait"
+311-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:294:13-49
+312            android:theme="@style/Dialog" />
+312-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:293:13-42
+313        <activity
+313-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:295:9-298:45
+314            android:name="com.borkozic.area.AreaSave"
+314-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:296:13-42
+315            android:label="@string/savearea_name"
+315-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:297:13-50
+316            android:theme="@style/Dialog" />
+316-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:298:13-42
+317        <activity
+317-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:299:9-302:51
+318            android:name="com.borkozic.area.AreaProperties"
+318-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:300:13-48
+319            android:label="@string/areaproperties_name"
+319-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:301:13-56
+320            android:screenOrientation="portrait" />
+320-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:302:13-49
+321        <activity
+321-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:303:9-306:51
+322            android:name="com.borkozic.area.AreaDetails"
+322-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:304:13-45
+323            android:label="@string/areadetails_name"
+323-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:305:13-53
+324            android:screenOrientation="portrait" />
+324-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:306:13-49
+325
+326        <!--
+327        <activity
+328            android:name="com.borkozic.plugin.locationshare.SituationList"
+329            android:label="@string/pref_sharing_title"
+330            android:screenOrientation="portrait">
+331
+332            <intent-filter>
+333                <action android:name="com.borkozic.plugins.view" />
+334            </intent-filter>
+335        </activity>
+336        <activity
+337            android:name="com.borkozic.plugin.locationshare.SharingPreferences"
+338            android:label="@string/pref_sharing_title"
+339            android:screenOrientation="portrait">
+340
+341            <intent-filter>
+342                <action android:name="com.borkozic.plugins.preferences" />
+343            </intent-filter>
+344        </activity>
+345        -->
+346
+347        <receiver
+347-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:329:9-338:20
+348            android:name="com.borkozic.ActionsReceiver"
+348-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:330:13-44
+349            android:exported="true" >
+349-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:331:13-36
+350            <intent-filter>
+350-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:332:13-334:29
+351                <action android:name="com.borkozic.COORDINATES_RECEIVED" />
+351-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:333:17-76
+351-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:333:25-73
+352            </intent-filter>
+353            <intent-filter>
+353-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:335:13-337:29
+354                <action android:name="com.borkozic.CENTER_ON_COORDINATES" />
+354-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:336:17-77
+354-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:336:25-74
+355            </intent-filter>
+356        </receiver>
+357        <receiver
+357-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:339:9-351:20
+358            android:name="com.borkozic.LocationWidget"
+358-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:340:13-43
+359            android:exported="true"
+359-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:343:13-36
+360            android:icon="@drawable/icon"
+360-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:341:13-42
+361            android:label="@string/widget_name" >
+361-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:342:13-48
+362            <intent-filter>
+362-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:344:13-346:29
+363                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+363-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:345:17-84
+363-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:345:25-81
+364            </intent-filter>
+365
+366            <meta-data
+366-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:348:13-350:59
+367                android:name="android.appwidget.provider"
+367-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:349:17-58
+368                android:resource="@xml/location_widget" />
+368-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:350:17-56
+369        </receiver>
+370
+371        <provider
+371-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:353:9-357:81
+372            android:name="com.borkozic.provider.PreferencesProvider"
+372-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:354:13-57
+373            android:authorities="com.borkozic.PreferencesProvider"
+373-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:355:13-67
+374            android:exported="true"
+374-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:356:13-36
+375            android:readPermission="com.borkozic.permission.READ_PREFERENCES" />
+375-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:357:13-78
+376        <provider
+376-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:358:9-363:80
+377            android:name="com.borkozic.provider.DataProvider"
+377-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:359:13-50
+378            android:authorities="com.borkozic.DataProvider"
+378-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:360:13-60
+379            android:exported="true"
+379-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:361:13-36
+380            android:readPermission="com.borkozic.permission.READ_MAP_DATA"
+380-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:362:13-75
+381            android:writePermission="com.borkozic.permission.WRITE_MAP_DATA" />
+381-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:363:13-77
+382        <provider
+382-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:364:9-367:40
+383            android:name="com.borkozic.provider.SuggestionProvider"
+383-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:365:13-56
+384            android:authorities="com.borkozic.SuggestionProvider"
+384-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:366:13-66
+385            android:exported="false" />
+385-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:367:13-37
+386
+387        <service
+387-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:369:9-378:19
+388            android:name="com.borkozic.track.TrackingService"
+388-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:370:13-50
+389            android:exported="true"
+389-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:371:13-36
+390            android:icon="@drawable/icon"
+390-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:372:13-42
+391            android:permission="com.borkozic.permission.RECEIVE_TRACK" >
+391-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:373:13-71
+392            <intent-filter>
+392-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:374:13-377:29
+393                <action android:name="com.borkozic.tracking" />
+393-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:375:17-64
+393-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:375:25-61
+394                <action android:name="com.borkozic.track.ITrackingRemoteService" />
+394-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:376:17-84
+394-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:376:25-81
+395            </intent-filter>
+396        </service>
+397        <service
+397-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:379:9-389:19
+398            android:name="com.borkozic.location.LocationService"
+398-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:380:13-53
+399            android:exported="true"
+399-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:381:13-36
+400            android:foregroundServiceType="location"
+400-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:384:13-53
+401            android:icon="@drawable/icon"
+401-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:382:13-42
+402            android:permission="com.borkozic.permission.RECEIVE_LOCATION" > <!-- този ред е нов -->
+402-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:383:13-74
+403            <intent-filter>
+403-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:385:13-388:29
+404                <action android:name="com.borkozic.location" />
+404-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:386:17-64
+404-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:386:25-61
+405                <action android:name="com.borkozic.location.ILocationRemoteService" />
+405-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:387:17-87
+405-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:387:25-84
+406            </intent-filter>
+407        </service>
+408        <service
+408-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:390:10-401:20
+409            android:name="com.borkozic.navigation.NavigationService"
+409-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:391:14-58
+410            android:exported="true"
+410-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:392:14-37
+411            android:foregroundServiceType="location"
+411-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:395:14-54
+412            android:icon="@drawable/icon"
+412-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:393:14-43
+413            android:permission="com.borkozic.permission.NAVIGATION" >
+413-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:394:14-69
+414            <intent-filter>
+414-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:396:14-400:30
+415                <action android:name="com.borkozic.navigateMapObjectWithId" />
+415-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:397:18-80
+415-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:397:26-77
+416                <action android:name="com.borkozic.navigateMapObject" />
+416-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:398:18-74
+416-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:398:26-71
+417                <action android:name="com.borkozic.navigateRoute" />
+417-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:399:18-70
+417-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:399:26-67
+418            </intent-filter>
+419        </service>
+420        <service
+420-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:402:9-405:41
+421            android:name="com.borkozic.WidgetService"
+421-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:403:13-42
+422            android:icon="@drawable/widget_icon"
+422-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:404:13-49
+423            android:process=":widget" />
+423-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:405:13-38
+424
+425        <meta-data
+425-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:407:9-409:82
+426            android:name="com.google.android.backup.api_key"
+426-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:408:13-61
+427            android:value="AEdPqrEAAAAIQMCPbh1CGZy5QovaZA_o6cJgv-SaYlYVxGQ5MQ" />
+427-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:409:13-79
+428
+429        <activity
+429-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:411:9-415:45
+430            android:name="com.borkozic.BtnsProceduresSet"
+430-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:412:13-46
+431            android:label="Emergency Procedures List"
+431-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:413:13-54
+432            android:parentActivityName="com.borkozic.MapActivity"
+432-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:414:13-54
+433            android:theme="@style/Dialog" />
+433-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:415:13-42
+434        <activity
+434-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:416:9-419:57
+435            android:name="com.borkozic.Procedures_Text"
+435-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:417:13-44
+436            android:label="Procedures List"
+436-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:418:13-44
+437            android:parentActivityName="com.borkozic.MapActivity" />
+437-->D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:419:13-54
+438
+439        <provider
+439-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+440            android:name="androidx.startup.InitializationProvider"
+440-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
+441            android:authorities="com.borkozic.androidx-startup"
+441-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
+442            android:exported="false" >
+442-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
+443            <meta-data
+443-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+444                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+444-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+445                android:value="androidx.startup" />
+445-->[androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+446            <meta-data
+446-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+447                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+447-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+448                android:value="androidx.startup" />
+448-->[androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+449            <meta-data
+449-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+450                android:name="androidx.profileinstaller.ProfileInstallerInitializer"
+450-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+451                android:value="androidx.startup" />
+451-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+452        </provider>
+453
+454        <receiver
+454-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+455            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+455-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+456            android:directBootAware="false"
+456-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+457            android:enabled="true"
+457-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+458            android:exported="true"
+458-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+459            android:permission="android.permission.DUMP" >
+459-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+460            <intent-filter>
+460-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+461                <action android:name="androidx.profileinstaller.action.INSTALL_PROFILE" />
+461-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+461-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+462            </intent-filter>
+463            <intent-filter>
+463-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+464                <action android:name="androidx.profileinstaller.action.SKIP_FILE" />
+464-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+464-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+465            </intent-filter>
+466            <intent-filter>
+466-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+467                <action android:name="androidx.profileinstaller.action.SAVE_PROFILE" />
+467-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+467-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+468            </intent-filter>
+469            <intent-filter>
+469-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+470                <action android:name="androidx.profileinstaller.action.BENCHMARK_OPERATION" />
+470-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+470-->[androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92
+471            </intent-filter>
+472        </receiver>
+473    </application>
+474
+475</manifest>

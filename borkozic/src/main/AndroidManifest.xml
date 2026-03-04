@@ -1,27 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?><!--
    Borkozic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
    Copyright (C) 2010-2013  Andrey Novikov <http://andreynovikov.info/>
-  
-   This file is part of Borkozic application.
-  
-   Borkozic is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Borkozic is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Borkozic.  If not, see <http://www.gnu.org/licenses/>.
--->
+    -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.borkozic"
-    android:installLocation="auto"
-    android:versionCode="98"
-    android:versionName="1.8.3">
+    android:installLocation="auto">
 
     <supports-screens
         android:anyDensity="true"
@@ -70,32 +52,37 @@
         android:name="com.borkozic.permission.WRITE_MAP_DATA"
         android:label="@string/perm_write_map_data_title"
         android:protectionLevel="dangerous" />
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.borkozic.permission.RECEIVE_LOCATION" />
-    <uses-permission android:name="com.borkozic.permission.RECEIVE_TRACK" />
-    <uses-permission android:name="com.borkozic.permission.NAVIGATION" />
+    <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+     -->
+     <uses-permission android:name="android.permission.INTERNET" />
+     <uses-permission android:name="com.borkozic.permission.RECEIVE_LOCATION" />
+     <uses-permission android:name="com.borkozic.permission.RECEIVE_TRACK" />
+     <uses-permission android:name="com.borkozic.permission.NAVIGATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
-    <application
-        android:name=".Borkozic"
-        android:allowBackup="true"
-        android:backupAgent=".Backup"
-        android:description="@string/homepage"
-        android:icon="@drawable/icon"
-        android:label="@string/app_name"
-        android:restoreAnyVersion="true"
-        android:theme="@style/Theme.AppCompat">
-        <!-- android:theme="@style/ApplicationTheme"> -->
+     <application
+         android:name=".Borkozic"
+         android:allowBackup="true"
+         android:backupAgent=".Backup"
+         android:description="@string/homepage"
+         android:icon="@drawable/icon"
+         android:label="@string/app_name"
+         android:restoreAnyVersion="true"
+         android:theme="@style/Theme.AppCompat"
+         android:usesCleartextTraffic="true">
+         <!-- android:theme="@style/ApplicationTheme"> -->
         <activity
             android:name=".Splash"
             android:configChanges="orientation"
             android:label="@string/app_name"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -259,6 +246,7 @@
             android:name=".track.TrackSave"
             android:label="@string/savetrack_name"
             android:theme="@style/Dialog" />
+
         <activity
             android:name=".route.RouteFileList"
             android:label="@string/loadroute_name"
@@ -288,6 +276,56 @@
             android:label="@string/routedetails_name"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name=".area.AreaFileList"
+            android:label="@string/loadarea_name"
+            android:theme="@style/Dialog"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".area.AreaStart"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name=".area.AreaListActivity"
+            android:label="@string/manageareas_name"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".area.AreaEdit"
+            android:theme="@style/Dialog"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".area.AreaSave"
+            android:label="@string/savearea_name"
+            android:theme="@style/Dialog" />
+        <activity
+            android:name=".area.AreaProperties"
+            android:label="@string/areaproperties_name"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".area.AreaDetails"
+            android:label="@string/areadetails_name"
+            android:screenOrientation="portrait"/>
+
+        <!--
+        <activity
+            android:name="com.borkozic.plugin.locationshare.SituationList"
+            android:label="@string/pref_sharing_title"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="com.borkozic.plugins.view" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="com.borkozic.plugin.locationshare.SharingPreferences"
+            android:label="@string/pref_sharing_title"
+            android:screenOrientation="portrait">
+
+            <intent-filter>
+                <action android:name="com.borkozic.plugins.preferences" />
+            </intent-filter>
+        </activity>
+        -->
+
         <receiver
             android:name=".ActionsReceiver"
             android:exported="true">
@@ -301,7 +339,8 @@
         <receiver
             android:name=".LocationWidget"
             android:icon="@drawable/icon"
-            android:label="@string/widget_name">
+            android:label="@string/widget_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -341,23 +380,25 @@
             android:name=".location.LocationService"
             android:exported="true"
             android:icon="@drawable/icon"
-            android:permission="com.borkozic.permission.RECEIVE_LOCATION">
+            android:permission="com.borkozic.permission.RECEIVE_LOCATION"
+            android:foregroundServiceType="location">   <!-- този ред е нов -->
             <intent-filter>
                 <action android:name="com.borkozic.location" />
                 <action android:name="com.borkozic.location.ILocationRemoteService" />
             </intent-filter>
         </service>
-        <service
-            android:name=".navigation.NavigationService"
-            android:exported="true"
-            android:icon="@drawable/icon"
-            android:permission="com.borkozic.permission.NAVIGATION">
-            <intent-filter>
-                <action android:name="com.borkozic.navigateMapObjectWithId" />
-                <action android:name="com.borkozic.navigateMapObject" />
-                <action android:name="com.borkozic.navigateRoute" />
-            </intent-filter>
-        </service>
+         <service
+             android:name=".navigation.NavigationService"
+             android:exported="true"
+             android:icon="@drawable/icon"
+             android:permission="com.borkozic.permission.NAVIGATION"
+             android:foregroundServiceType="location">
+             <intent-filter>
+                 <action android:name="com.borkozic.navigateMapObjectWithId" />
+                 <action android:name="com.borkozic.navigateMapObject" />
+                 <action android:name="com.borkozic.navigateRoute" />
+             </intent-filter>
+         </service>
         <service
             android:name=".WidgetService"
             android:icon="@drawable/widget_icon"

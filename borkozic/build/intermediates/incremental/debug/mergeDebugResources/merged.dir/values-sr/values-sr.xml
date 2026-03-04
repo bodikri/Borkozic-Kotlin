@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>tačan</item>
+    <item>magnetni</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>SS.SSSSSS</item>
+    <item>SSºMM.MMMM\'</item>
+    <item>SSºMM\'SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Podrška za Ozf2 i ozfx3 mape</item>
+    <item>Ikona aplikacije</item>
+    <item>Početni kod za birač boja</item>
+    <item>Početni kod za postavke polja traženja</item>
+    <item>Računanje izlaska/zalaska sunca</item>
+    <item>Prevuci i postavi spisak početnog koda</item>
+    <item>Kontrola višestrukih dodira</item>
+    <item>Biblioteka prikaza</item>
+    <item>Ikone interfejsa</item>
+    <item>Ikone orijentira</item>
+    <item>Lokalizacija na Češki</item>
+    <item>Lokalizacija na Francuski</item>
+    <item>Lokalizacija na Finski</item>
+    <item>Lokalizacija na Bugarski</item>
+    <item>Lokalizacija na Njemački</item>
+    <item>Lokalizacija na Turski</item>
+    <item>Lokalizacija na Italijanski</item>
+    <item>Lokalizacija na Španski</item>
+    <item>Lokalizacija na Švedski</item>
+    <item>Lokalizacija na Ukrainski</item>
+    <item>Lokalizacija na Portugalski</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Nijedan</item>
+    <item>Neposredna udaljenost</item>
+    <item>Vrijeme(minuti)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>mi</item>
+    <item>mi</item>
+    <item>nm</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>yd</item>
+    <item>ft</item>
+    <item>nmˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>metri</item>
+    <item>jardi</item>
+    <item>stope</item>
+    <item>(nautičke milje)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>kilometri/metri</item>
+    <item>milje/jardi</item>
+    <item>milje/stope</item>
+    <item>nautičke milje</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>ft</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>metri</item>
+    <item>stope</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Dupli dodir za nazad</item>
+    <item>Dijalog za potvrdu</item>
+    <item>Ništa</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Daj prednost mreži mape</item>
+    <item>Daj prednost korisničkoj mreži</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Nikad</item>
+    <item>Dnevno</item>
+    <item>Nedjeljno</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Podrazumjevano u uređaju</item>
+    <item>Vertikalno</item>
+    <item>Horizontalno</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Uvećaj</item>
+    <item>Umanji</item>
+    <item>Veća razmjera mape</item>
+    <item>Manja razmjera mape</item>
+    <item>Mape na kursoru</item>
+    <item>Uredi orijentire</item>
+    <item>Prikaži informacije</item>
+    <item>Prati/ne prati</item>
+    <item>Pribavi lokaciju</item>
+    <item>Upisuj stazu</item>
+    <item>Sakrij/prikaži statusno polje</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Ne</item>
+    <item>Ručno</item>
+    <item>Uvijek</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/h</item>
+    <item>mph</item>
+    <item>kts</item>
+    <item>m/s</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>kilometara na sat</item>
+    <item>milja na sat</item>
+    <item>čvorova</item>
+    <item>metara u sekundi</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Oficijelni</item>
+    <item>Civilna</item>
+    <item>Nautička</item>
+    <item>Astronomska</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Идите на почетну"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Идите нагоре"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Још опција"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Готово"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Прикажи све"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Изаберите апликацију"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"ИСКЉУЧЕНО"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"УКЉУЧЕНО"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"тастер за размак"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Претражите…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Обришите упит"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Претражите упит"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Претражите"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Пошаљите упит"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Гласовна претрага"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Делите помоћу"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Делите помоћу апликације <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Скупи"</string>
+    <string name="accuracy">Tačnost</string>
+    <string name="action_bar_sort_alpha">Po abecedi</string>
+    <string name="action_bar_sort_distance">Po razdaljini</string>
+    <string name="advanced">Napredni</string>
+    <string name="advanced_name">Napredni parametri</string>
+    <string name="alg_a">Krstarenje</string>
+    <string name="alg_b">Nagla skretanja</string>
+    <string name="algorithm">Algoritam</string>
+    <string name="altitude">Nadmorska visina</string>
+    <string name="app_eula">This program is distributed under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License./n/n
+    This application is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details./n/n
+    All rights granted under this License are granted for the term of copyright
+    on the Program, and are irrevocable provided the stated conditions are met.
+    This License explicitly affirms your unlimited permission to run the unmodified
+    Program./n/n
+    You are not required to accept this License in order to receive or run a copy of
+    the Program. Ancillary propagation of a covered work occurring solely as
+    a consequence of using peer-to-peer transmission to receive a copy likewise does
+    not require acceptance. However, nothing other than this License grants you
+    permission to propagate or modify any covered work. These actions infringe
+    copyright if you do not accept this License. Therefore, by modifying or propagating
+    a covered work, you indicate your acceptance of this License to do so./n/n
+    For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">Došli ste do odredišta na ruti</string>
+    <string name="backQuit">Ponovo stisnite nazad da izađete</string>
+    <string name="badmaps">Greška u indeksu mape</string>
+    <string name="bearing">Azimut</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Одговори"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Видео"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Одбиј"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Прекини везу"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Долазни позив"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Позив је у току"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Проверава се долазни позив"</string>
+    <string name="cancel">Odustani</string>
+    <string name="change">Promijeni</string>
+    <string name="coarse">grubo</string>
+    <string name="color">Boja</string>
+    <string name="coordformat">Format koordinata</string>
+    <string name="coordinates_name">Nove koordinate</string>
+    <string name="credits_name">Zasluge za aplikaciju</string>
+    <string name="currentloc">Trenutna lokacija</string>
+    <string name="declination">Odstupanje</string>
+    <string name="degmag">mag.</string>
+    <string name="degtrue">tačan</string>
+    <string name="description">Opis</string>
+    <string name="direction">Izaberite pravac</string>
+    <string name="distance">Razdaljina</string>
+    <string name="donation_required">Ovo svojstvo je dostupno samo donatorima</string>
+    <string name="done">Gotovo</string>
+    <string name="easting">Istočno</string>
+    <string name="err_no_network_provider">Nedostupna lokacija od mobilne mreže</string>
+    <string name="err_noconnection">Greška u konekciji mobilne mreže</string>
+    <string name="err_nofile">Nema takvog fajla</string>
+    <string name="err_nogps">GPS uređaj nije nađen</string>
+    <string name="err_nomemory">Uočen je nedostatak memorije. Molimo vas da prijavite programeru.</string>
+    <string name="err_nosdcard">SD kartica je nedostupna</string>
+    <string name="err_notconfigured">Nije konfigurisano</string>
+    <string name="err_read">Nemoguće učitati fajl</string>
+    <string name="err_shortroute">Ruta mora sadržati najmanje dva orijentira</string>
+    <string name="err_write">Nemoguće upisati fajl</string>
+    <string name="err_wrongformat">Pogrešan format fajla</string>
+    <string name="exporttrack_name">Eksportovati stazu</string>
+    <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
+    <string name="filename">Ime fajla</string>
+    <string name="fine">fino</string>
+    <string name="following_disabled">Praćenje isključeno</string>
+    <string name="following_enabled">Praćenje uključeno</string>
+    <string name="format">Format</string>
+    <string name="from">Od</string>
+    <string name="from_date">Polazeći od</string>
+    <string name="generate">Generiši</string>
+    <string name="gotit">Shvatio sam</string>
+    <string name="hdop">Horizontalno slabljenje preciznosti</string>
+    <string name="hemisphere">Hemisfera</string>
+    <string name="homepage">Početna stranica: http://androzic.com/</string>
+    <string name="hsi_name">Indikator horizontalne situacije</string>
+    <string name="icon">Ikona</string>
+    <string name="information_name">Informacije</string>
+    <string name="lastfix">Zadnja ispravka</string>
+    <string name="latitude">Geografska širina</string>
+    <string name="line_width">Širina linije</string>
+    <string name="loadroute_name">Učitaj rutu iz fajla</string>
+    <string name="loadtrack_name">Učitaj stazu iz fajla</string>
+    <string name="loadwaypoints_name">Otvori skup orijentira</string>
+    <string name="longitude">Geografska dužina</string>
+    <string name="manageroutes_name">Rute</string>
+    <string name="managetracks_name">Staze</string>
+    <string name="managewaypoints_name">Orijentiri</string>
+    <string name="mapinformation_name">Informacije o mapi</string>
+    <string name="maplist_name">Mape</string>
+    <string name="markercolor">Boja markera</string>
+    <string name="markericon_name">Izaberite ikonu markera</string>
+    <string name="menu_addtoroute">Dodaj u rutu</string>
+    <string name="menu_addwaypoint">Dodaj orijentir</string>
+    <string name="menu_all">Sve</string>
+    <string name="menu_anchor">Podesi sidro</string>
+    <string name="menu_atcursor">Na kursoru</string>
+    <string name="menu_change">Promijeni</string>
+    <string name="menu_clear">Očisti</string>
+    <string name="menu_clearcurrenttrack">Izbrisati trenutnu stazu</string>
+    <string name="menu_compass">Kompas</string>
+    <string name="menu_copy">Kopiraj u klipbord</string>
+    <string name="menu_delete">Izbriši</string>
+    <string name="menu_details">Detalji</string>
+    <string name="menu_dismiss">Odbij</string>
+    <string name="menu_edit">Izmijeni</string>
+    <string name="menu_expandcurrenttrack">Prikaži cijelu trenutnu stazu</string>
+    <string name="menu_exportcurrenttrack">Eksportovati trenutnu stazu</string>
+    <string name="menu_follow">Omogući praćenje</string>
+    <string name="menu_gps">GPS podešavanja</string>
+    <string name="menu_hsi">Indikator horizontalne situacije</string>
+    <string name="menu_information">Informacije</string>
+    <string name="menu_load">Učitaj iz fajla</string>
+    <string name="menu_location">Lokacija</string>
+    <string name="menu_manage">Uredi</string>
+    <string name="menu_maps">Mape</string>
+    <string name="menu_navigate">Orijentiši se</string>
+    <string name="menu_navigation">Orijentisanje</string>
+    <string name="menu_new">Novi</string>
+    <string name="menu_new_waypoint">Novi orijentir</string>
+    <string name="menu_newroute">Nova ruta</string>
+    <string name="menu_newwaypointset">Novi skup</string>
+    <string name="menu_nextnavpoint">Preskoči na sledeće</string>
+    <string name="menu_open">Otvori</string>
+    <string name="menu_paste">Zalijepi iz klipborda</string>
+    <string name="menu_preferences">Podešavanja</string>
+    <string name="menu_prevnavpoint">Idi na predhodno</string>
+    <string name="menu_project">Projektuj novi</string>
+    <string name="menu_properties">Parametri</string>
+    <string name="menu_remove">Ukloni</string>
+    <string name="menu_resetindex">Resetuj indeks</string>
+    <string name="menu_routes">Rute</string>
+    <string name="menu_save">Sačuvaj u fajl</string>
+    <string name="menu_search">Traži</string>
+    <string name="menu_share">Podijeli</string>
+    <string name="menu_sort">Sortiraj</string>
+    <string name="menu_sort_alphabetically">Sortiraj po abecedi</string>
+    <string name="menu_sort_distance">Sortiraj po razdaljini</string>
+    <string name="menu_startnavigation">Orijentiši se duž rute</string>
+    <string name="menu_stopnavigation">Zaustavi orijentisanje</string>
+    <string name="menu_thisnavpoint">Orijentiši se ovdje</string>
+    <string name="menu_track2route">Konvertuj u rutu</string>
+    <string name="menu_tracks">Staze</string>
+    <string name="menu_view">Prikaži</string>
+    <string name="menu_visible">Omogući vidljivost</string>
+    <string name="menu_waypoints">Orijentiri</string>
+    <string name="more">Više</string>
+    <string name="msg_badtrackimplementation">Primjetićete da su performanse lošije na dugim stazama, budite strpljivi.</string>
+    <string name="msg_cleaning">Čišćenje...</string>
+    <string name="msg_clearcurrenttrack">Ovo će itbrisatu svu istoriju praćenja, da li ste sigurni?</string>
+    <string name="msg_connectingtoserver">Povezivanje na server...</string>
+    <string name="msg_empty_route_list">Nema dostupnih ruta. Koristite meni da kreirate rutu ili je učitate iz fajla.</string>
+    <string name="msg_empty_track_list">Nema dostupnih staza. Koristite meni da učitate staze iz fajla.</string>
+    <string name="msg_emptytracksegment">Označite segment staze ako je prazan, nema ništa za čuvanje</string>
+    <string name="msg_expandcurrenttrack">Ako nijeste brisali trenutnu stazu za dugo vrijeme to može značajno da smanji performanse. Nastaviti?</string>
+    <string name="msg_initializingdata">Inicijalizovanje podataka...</string>
+    <string name="msg_initializingmaps">Inicijalizovanje mapa...</string>
+    <string name="msg_initializingplugins">Inicijalizovanje dodataka...</string>
+    <string name="msg_initializingview">Inicijalizovanje prikaza...</string>
+    <string name="msg_loadingimagefile">Učitavanje fajla sa slikom mape svijeta</string>
+    <string name="msg_loadingmapfile">Učitavanje fajla sa podacima mape svijeta</string>
+    <string name="msg_newdatafolder">Prema popularnom zahtjevu Androzic sada drugačije radi sa folderima. Sada slobodno možete izabrati bilo koji folder za mape i podatke. Folder za podatke je sada ujedinjen za sve tipove podataka: orijentire, staze i rute. Morate ručno da iskopirate postojeće podatke u automatski kreiran folder:‘%s’.</string>
+    <string name="msg_nothing_found">Ništa nije nađeno.Molimo uzmite u obzir da se podaci mogu tražiti samo ako su učitani u Androzic, imenovane lokacije mogu se tražiti samo ako je dostupna internet konekcija.</string>
+    <string name="msg_paid">Donirana verzija</string>
+    <string name="msg_scansdcard">Skeniranje SD kartice</string>
+    <string name="msg_wait">Molimo sačekajte ...</string>
+    <string name="n">S</string>
+    <string name="name">Ime</string>
+    <string name="navigate">Orijentiši se</string>
+    <string name="never">nikad</string>
+    <string name="new_coordinates">Nove koordinate su dobijene od %s</string>
+    <string name="no">Ne</string>
+    <string name="nomaps">Mape nijesu nađene</string>
+    <string name="nomaps_explained">Folder za mape ‘%s’ je prazan. Skinuti i instalirati mapu svijeta (250KB)?</string>
+    <string name="northing">Sjeverno</string>
+    <string name="notif_loc_short">Traženje lokacije</string>
+    <string name="notif_loc_started">Androzic pribavlja vašu lokaciju</string>
+    <string name="notif_loc_waiting">Androzic čeka lokaciju</string>
+    <string name="notif_nav_short">Orijentisanje</string>
+    <string name="notif_nav_started">Androzic vas orijentiše</string>
+    <string name="notif_nav_to">Androzic se orijentiše prema %s</string>
+    <string name="notif_trk_failure">Androzic ima problem sa praćenjem</string>
+    <string name="notif_trk_started">Androzic snima vaše kretanje</string>
+    <string name="ok">U redu</string>
+    <string name="perm_location_description">Pristupi lokaciji dobijenoj od Androzica</string>
+    <string name="perm_location_title">Pribavi lokaciju</string>
+    <string name="perm_navigation_description">Započni/izmijeni orijentisanje dobijeno od Androzica</string>
+    <string name="perm_navigation_title">Započni orijentisanje</string>
+    <string name="perm_read_map_data_title">Pribavi podatke od Androzic mape</string>
+    <string name="perm_read_preferences_title">Pročitajte podrazumjevana korisnička podešavanja Androzica</string>
+    <string name="perm_tracking_description">Primi stazu dobijenu od Androzica</string>
+    <string name="perm_tracking_title">Pribavi stazu</string>
+    <string name="perm_write_map_data_title">Dodaj podatke u Androzic mapu</string>
+    <string name="pref_about_title">O Androzicu</string>
+    <string name="pref_advanced_title">Napredni</string>
+    <string name="pref_application_title">O programu i povratne informacije</string>
+    <string name="pref_charset_summary">Skup karaktera za fajlove sa mapama i podacima. Oprez: ne možete da miješate fajlove u Androidovom prirodnom(UTF-8) i nacionalnom skupu karaktera, promijenite ovo podešavanje ako su vam svi fajlovi u nacionalnom kodiranju, u suprotnom ručno dekodirajte fajlove koji nijesu u UTF-8 kodiranju. Efektno je tek posle ponovnog pokretanja aplikacije.</string>
+    <string name="pref_charset_title">Šifrovanje teksta fajla</string>
+    <string name="pref_credits_title">Zasluge</string>
+    <string name="pref_cursor_title">Pomjerajući kursor</string>
+    <string name="pref_cursorcolor_title">Aktivna boja</string>
+    <string name="pref_cursorvector_summary">Izaberite osnovu za dužinu linije vektora</string>
+    <string name="pref_cursorvector_title">Vrsta linije vektora</string>
+    <string name="pref_cursorvectormlpr_summary">Izaberite koliko će osnova vektorskih linija biti korišćeno za podešavanje njihove dužine</string>
+    <string name="pref_cursorvectormlpr_title">Množilac linije vektora</string>
+    <string name="pref_donate_google_title">Donirajte preko Google Play prodavnice</string>
+    <string name="pref_donate_paypal_title">Donirajte preko PayPala</string>
+    <string name="pref_exit_title">Potvrda pri izlasku</string>
+    <string name="pref_facebook_title">Lajkuj na Facebooku</string>
+    <string name="pref_faq_title">Često postavljana pitanja.</string>
+    <string name="pref_feature_title">Povratne informacije i podrška</string>
+    <string name="pref_folder_data_title">Folder podataka</string>
+    <string name="pref_folder_icon_title">Folder za ikone</string>
+    <string name="pref_folder_map_title">Folder mapa</string>
+    <string name="pref_folder_prefix_caution">Ova opcija je samo za napredne korisnike. Koristite sa oprezom: ako nije pravilno postavljeno aplikacija može da se ne pokrene
+</string>
+    <string name="pref_folder_prefix_title">Folder aplikacije</string>
+    <string name="pref_folder_title">Folderi</string>
+    <string name="pref_googleplus_title">Pridruži se na Google+</string>
+    <string name="pref_grid_mapshow_title">Prikaži mreže na mapi</string>
+    <string name="pref_grid_preference_title">Pretpostavljena podešavanja za mrežu</string>
+    <string name="pref_grid_title">Mreže</string>
+    <string name="pref_grid_usermpp_summary">Maksimalna skala u metrima po pikselu pri kojim će podešena mreža biti vidljiva</string>
+    <string name="pref_grid_usermpp_title">Maksimum podešenih mreža</string>
+    <string name="pref_grid_userscale_title">Interval podešenih mreža</string>
+    <string name="pref_grid_usershow_title">Prikaži podešene mreže</string>
+    <string name="pref_grid_userunit_title">Jedinice podešenih mreža</string>
+    <string name="pref_hideactionbar_summary">Označite da sakrijete polje operacija kad je prikazana mapa. Ima efekta tek poslije ponovnog pokretanja aplikacije.</string>
+    <string name="pref_hideactionbar_title">Sakrij polje operacija</string>
+    <string name="pref_loc_gpstimeout_summary">Odredite vrijeme u sekundama koje protekne od poslednje GPS ispravke posle koje će se lokacija odrediti pomoću mobilnih mreža</string>
+    <string name="pref_loc_gpstimeout_title">Vrijeme posle kojeg prestaje traženje GPS lokacije</string>
+    <string name="pref_loc_store_summary">Označite da aplikacija počne na poslednjoj lokaciji</string>
+    <string name="pref_loc_store_title">Zapamti poslednju lokaciju</string>
+    <string name="pref_loc_title">Lokacija</string>
+    <string name="pref_loc_usenetwork_summary">Označite da koristite lokaciju od mobilne mreže ako GPS lokacija nije dostupna</string>
+    <string name="pref_loc_usenetwork_title">Koristi mobilne mreže</string>
+    <string name="pref_locale_title">Jezik</string>
+    <string name="pref_lookahead_summary">Dio ekrana koji gleda naprijed</string>
+    <string name="pref_lookahead_title">Gledaj naprijed</string>
+    <string name="pref_map_title">Mapa</string>
+    <string name="pref_mapadjacent_summary">Označite da prikažete granične i bolje mape (EKSPERIMENTALNO, može značajno  da smanji performanse!)</string>
+    <string name="pref_mapadjacent_title">Granične mape</string>
+    <string name="pref_mapbest_summary">Označite da dopuštite aplikaciji da pokuša da učita najbolju mapu za trenutnu lokaciju</string>
+    <string name="pref_mapbest_title">Učitaj najbolju mapu</string>
+    <string name="pref_mapbestinterval_summary">Vremenski period između traženja najboljih mapa</string>
+    <string name="pref_mapbestinterval_title">Interval između najboljih mapa</string>
+    <string name="pref_mapcropborder_summary">Označite da odsiječete mapu duž markera na ćoškovima</string>
+    <string name="pref_mapcropborder_title">Isijeci margine mape</string>
+    <string name="pref_mapdim_summary">Označite da se ekran automatski zatamni u noćnom periodu</string>
+    <string name="pref_mapdim_title">Automatsko zatamljivanje ekrana</string>
+    <string name="pref_mapdimvalue_title">Količina zatamljenja</string>
+    <string name="pref_mapdrawborder_summary">Označite da iscrtate granicu duž markera na ćoškovima</string>
+    <string name="pref_mapdrawborder_title">Iscrtaj granicu mape</string>
+    <string name="pref_mapfollowonloc_title">Prati na prvoj lokaciji</string>
+    <string name="pref_maphideondrag_summary">Označite da sakrijete objekte na mapi prilikom prevlačenja</string>
+    <string name="pref_maphideondrag_title">Sakrij objekte pri prevlačenju</string>
+    <string name="pref_maprenderinterval_summary">Najmanji vremenski interval između ažuriranja mapa</string>
+    <string name="pref_maprenderinterval_title">Interval ažuriranja</string>
+    <string name="pref_name">Androzic podešavanja</string>
+    <string name="pref_navigation_linewidth_summary">Širina linije azimuta prema trenutnom orijentiru prema kojem se orjentišete</string>
+    <string name="pref_navigation_linewidth_title">Širina linije azimuta</string>
+    <string name="pref_navigation_loadlast_summary">Označite da učitate nezavršenu rutu pri sledećem pokretanju aplikacije</string>
+    <string name="pref_navigation_loadlast_title">Učitaj poslednju rutu</string>
+    <string name="pref_navigation_proximity_summary">Neposredna udaljenost u metrima pri kojoj će orijentacija duž rute da pređe na sledeći orijentir</string>
+    <string name="pref_navigation_proximity_title">Neposredna udaljenost do orijentira</string>
+    <string name="pref_navigation_proximitycircle_summary">Označite da iscrtate krug neposredne udaljenosti oko orijentira na ruti prilikom orijentisanja</string>
+    <string name="pref_navigation_proximitycircle_title">Krug neposredne udaljenosti</string>
+    <string name="pref_navigation_title">Orijentisanje</string>
+    <string name="pref_navigation_traverse_summary">Označite da koristite logično traverziranje zajedno sa neposrednom udaljenošću za prebacivanje na sledeći orijentir na ruti</string>
+    <string name="pref_navigation_traverse_title">Koristi logično traverziranje</string>
+    <string name="pref_onlinemap_summary">Izvor onlajn mape</string>
+    <string name="pref_onlinemap_title">Pružaoc usluga za mapu</string>
+    <string name="pref_onlinemaps_title">Onlajn mapa</string>
+    <string name="pref_onlinemapscale_summary">Nivo uvećanja koji će biti protumačen kao 100%</string>
+    <string name="pref_onlinemapscale_title">Podrazumjevani nivo uvećanja</string>
+    <string name="pref_orientation_title">Orijentacija ekrana</string>
+    <string name="pref_panelactions_title">Operacije klizajućeg panela</string>
+    <string name="pref_plugins_title">Dodaci</string>
+    <string name="pref_route_linewidth_summary">Širina linije rute u pikselima</string>
+    <string name="pref_route_linewidth_title">Širina linije</string>
+    <string name="pref_route_pointwidth_summary">Veličina u pikselima markera orijentira na ruti</string>
+    <string name="pref_route_pointwidth_title">Veličina markera</string>
+    <string name="pref_route_preload_hidden_summary">Sakrij rute učitane iz staza dok se ne prikažu, izmijenje ili se ne orijentiše duž njih</string>
+    <string name="pref_route_preload_hidden_title">Sakrij rute učitane iz staza</string>
+    <string name="pref_route_preload_summary">Označite da se rute učitaju iz svih dostupnih staza pri pokretanju aplikacije</string>
+    <string name="pref_route_preload_title">Učitaj rute iz svih staza</string>
+    <string name="pref_route_showname_summary">Označite da prikažete ime orijentira na ruti pored markera</string>
+    <string name="pref_route_showname_title">Prikaži ime orijentira</string>
+    <string name="pref_route_title">Rute</string>
+    <string name="pref_scalebarcolor_title">Boja razdjelnika</string>
+    <string name="pref_show_title">Ekran</string>
+    <string name="pref_showaccuracy_summary">Označite da prikažete krug tačnosti oko kursora pozicije</string>
+    <string name="pref_showaccuracy_title">Prikaži krug tačnosti</string>
+    <string name="pref_showcurrenttrack_summary">Označite da trenutna staza bude vidljiva na mapi</string>
+    <string name="pref_showcurrenttrack_title">Prikaži trenutnu stazu</string>
+    <string name="pref_showdistance_title">Prikaži razdaljinu</string>
+    <string name="pref_showmapinfo_summary">Označite da prikažete ime i nivo zuma trenutne mape</string>
+    <string name="pref_showmapinfo_title">Prikaži panel mape</string>
+    <string name="pref_showsatinfo_summary">Označite da prikažete trenutne koordinate i panel GPS statusa</string>
+    <string name="pref_showsatinfo_title">Prikaži panel satelita</string>
+    <string name="pref_tracking_currentcolor_title">Boja trenutne staze</string>
+    <string name="pref_tracking_currentlength_summary">Maksimalni broj tačaka u trenutnom repu staze</string>
+    <string name="pref_tracking_currentlength_title">Dužina trenutne staze</string>
+    <string name="pref_tracking_currentload_summary">Označite da učitate rep trenutne staze pri sledećem pokretanju aplikacije</string>
+    <string name="pref_tracking_currentload_title">Učitaj trenutnu stazu</string>
+    <string name="pref_tracking_linewidth_summary">Širina u pikselima linije staze</string>
+    <string name="pref_tracking_linewidth_title">Širina linije</string>
+    <string name="pref_tracking_mindistance_summary">Minimalna razdaljina u metrima koja treba da se pređe prije nego se snimi nova tačka u stazu</string>
+    <string name="pref_tracking_mindistance_title">Minimalna razdaljina</string>
+    <string name="pref_tracking_mintime_summary">Minimalno vrijeme u milisekundama koje treba da prođe prije nego se snimi nova tačka u stazu</string>
+    <string name="pref_tracking_mintime_title">Minimalno vrijeme</string>
+    <string name="pref_tracking_title">Staze</string>
+    <string name="pref_twitter_title">Prati na Twitteru</string>
+    <string name="pref_unfollowontap_title">Zaustavi praćenje prilikom prevlačenja</string>
+    <string name="pref_unit_title">Jedinice</string>
+    <string name="pref_unitangle_title">Odstupanje</string>
+    <string name="pref_unitcoordinate_title">Koordinate</string>
+    <string name="pref_unitdistance_title">Razdaljina</string>
+    <string name="pref_unitelevation_title">Nadmorska visina</string>
+    <string name="pref_unitprecision_title">Extra precision</string>
+    <string name="pref_unitspeed_title">Brzina</string>
+    <string name="pref_unitsunrise_title">Izlazak/Zalazak Sunca</string>
+    <string name="pref_uri_summary">Pritisnite da pratite link prema web stranici</string>
+    <string name="pref_usemapindex_title">Koristi indeks mape</string>
+    <string name="pref_useonlinemap_title">Koristi onlajn mapu</string>
+    <string name="pref_wakelock_summary">Označite da uređaj drži ekran uključenim i svijetlim kad je prikazana mapa</string>
+    <string name="pref_wakelock_title">Drži ekran uključenim</string>
+    <string name="pref_waypoint_bgcolor_title">Boja pozadine imena</string>
+    <string name="pref_waypoint_color_title">Boja markera</string>
+    <string name="pref_waypoint_namecolor_title">Boja imena</string>
+    <string name="pref_waypoint_showname_summary">Označite da prikažete ime orijentira pored markera</string>
+    <string name="pref_waypoint_showname_title">Prikaži ime</string>
+    <string name="pref_waypoint_title">Orijentiri</string>
+    <string name="pref_waypoint_visible_summary">Označite da centrirate mapu na novokreirani orijentir</string>
+    <string name="pref_waypoint_visible_title">Omogući vidljivost pri kreiranju</string>
+    <string name="pref_waypoint_width_summary">Veličina u pikselima markera orijentira</string>
+    <string name="pref_waypoint_width_title">Veličina markera</string>
+    <string name="primary">Primarni</string>
+    <string name="provider">Pružaoc usluga</string>
+    <string name="proximity">Neposredna udaljenost</string>
+    <string name="quit">Prekinuti</string>
+    <string name="quitQuestion">Da li želite da prekinete?</string>
+    <string name="removeWaypointQuestion">Ukloniti orijentir?</string>
+    <string name="restart_needed">Potrebno je ponovo pokrenuti aplikaciju</string>
+    <string name="restart_needed_explained">Ovo svojstvo zahtjeva puno ponovno pokretanje aplikacije. To znači ne samo njeno napuštanje, već i prisilno zaustavljanje u Androidovom podešavanju za aplikacije.</string>
+    <string name="routedetails_name">Detalji rute</string>
+    <string name="routeproperties_name">Izmijeni rutu</string>
+    <string name="s">J</string>
+    <string name="sat_firstfix">GPS aktivan</string>
+    <string name="sat_start">GPS uključen</string>
+    <string name="sat_stop">GPS isključen</string>
+    <string name="satellites">Sateliti</string>
+    <string name="save">Sačuvaj</string>
+    <string name="saveroute_name">Sačuvaj rutu u fajl</string>
+    <string name="savetrack_name">Sačuvaj stazu u fajl</string>
+    <string name="search_hint">Unesite adresu ili ime</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Претражите"</string>
+    <string name="search_name">Rezultati pretrage</string>
+    <string name="selectroute_name">Izaberi rutu</string>
+    <string name="send_me_bugs">Ako dođe do greške koju želite da se ispravi ili imate neke predloge, ne ustručavajte se da potražite pomoć na početnoj stranici projekta.</string>
+    <string name="sensitivity">Osjetljivost</string>
+    <string name="show">Prikaži</string>
+    <string name="showcase_add_waypoint_description">Dodirnite ikonu operacije da brzo dodate novi orijentir na trenutnoj lokaciji.</string>
+    <string name="showcase_add_waypoint_title">Dodaj orijentir</string>
+    <string name="showcase_follow_description">Pritisnite ikonu za praćenje. U ovome modu mapa će biti fiksirana za vašu lokaciju.Ili možete sa duplim dodirom da uključite ili isključite mod za praćenje.</string>
+    <string name="showcase_follow_title">Praćenje lokacije</string>
+    <string name="showcase_load_waypoints_description">Dodirnite ikonu operacije da učitate fajl sa orijentirima. Učitani orijentiri su grupisani u skupove. Svaki put kada modifikujete skup odgovarajući fajl je automatski ažuriran.</string>
+    <string name="showcase_load_waypoints_title">Učitaj orijentire</string>
+    <string name="showcase_panel_description">Prevucite držač klizajućeg panela da pristupite brzim operacijama. Brze operacije se mogu konfigurisati u podešavanjima.</string>
+    <string name="showcase_panel_title">Brze operacije</string>
+    <string name="showcase_search_description">Možete da upišete određene koordinate u različitim formatima da ih nađete na mapi, tražite kroz učitane orijentire, imena ruta ili opise, tražite mjesta i adrese kroz Googleov servis geokodiranja(potrebna je internet konekcija da bi ovo radilo).</string>
+    <string name="showcase_search_title">Traži</string>
+    <string name="showcase_waypointset_actions_description">Duže dodirnite na naslov skupa orijentira da pristupite dodatnim operacijama.</string>
+    <string name="showcase_waypointset_actions_title">Operacije za skup orijentira</string>
+    <string name="skip_single_locations">Preskočiti jednu lokaciju</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Izlazak sunca</string>
+    <string name="sunset">Zalazak sunca</string>
+    <string name="t2r_explained"><b>Ovo svojstvo je eksperimentalno.</b> Staza treba da bude razumna. To znači da treba da opiše kretanje od tačke A do tačke B ali da ne bude previše složeno. Probajte oba algoritma i vidite koji vam bolje odgovara. Algoritam \'Krstarenje\' je linearan i vrijeme za generisanje rute je predvidljivo dok je algoritam \'Nagla skretanja\' potpuno nepredvidljiv. Lošija osjetljivost može dovesti do gubljenja nekih skretanja dok bolja može dodati nepotrebne orijentire.</string>
+    <string name="textcolor">Boja imena</string>
+    <string name="till_date">Završavajuću na</string>
+    <string name="track2route_name">Konvertuj stazu u rutu</string>
+    <string name="trackproperties_name">Izmijeni stazu</string>
+    <string name="update_almanac">Zahtjevaj godišnje ažuriranje</string>
+    <string name="upto">Do %.0f metara</string>
+    <string name="vdop">Vertikalno slabljenje preciznosti</string>
+    <string name="version">Verzija: %s</string>
+    <string name="warning">Upozorenje</string>
+    <string name="waypointproject_name">Projektuj novi orijentir</string>
+    <string name="waypointproperties_name">Izmijeni orijentir</string>
+    <string name="waypointset">Skup</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Da</string>
+    <string name="zone">Zona</string>
+</resources>

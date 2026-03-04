@@ -1,0 +1,20 @@
+{
+    "logs": [
+        {
+            "outputFile": "com.borkozic-mergeDebugResources-23:/values-v11/values-v11.xml",
+            "map": [
+                {
+                    "source": "D:\\Borkozic_Versions\\Borkozic-Java_Oki\\borkoziclib\\build\\intermediates\\packaged_res\\debug\\packageDebugResources\\values-v11\\values-v11.xml",
+                    "from": {
+                        "startLines": "2,5,9,10,11,16,19,23",
+                        "startColumns": "4,4,4,4,4,4,4,4",
+                        "startOffsets": "55,192,399,480,549,787,930,1143",
+                        "endLines": "4,8,9,10,15,18,22,25",
+                        "endColumns": "12,12,80,68,12,12,12,12",
+                        "endOffsets": "187,394,475,544,782,925,1138,1306"
+                    }
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>sant</item>
+    <item>magnetisk</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>DD.DDDDDD</item>
+    <item>DD° MM.MMMM\"</item>
+    <item>DD° MM\" SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Ozf2, ozfx3 kartstöd</item>
+    <item>Programikon</item>
+    <item>Inledande färgväljare</item>
+    <item>SeekBar inställningen inledande kod</item>
+    <item>Soluppgång/solnedgångs beräkning</item>
+    <item>Dra och släpp inledande kod listan</item>
+    <item>Multitouch-styrenhet</item>
+    <item>Showcase library</item>
+    <item>Interface icons</item>
+    <item>Waypoint icons</item>
+    <item>Czech localization</item>
+    <item>French localization</item>
+    <item>Finnish localization</item>
+    <item>Bulgarian localization</item>
+    <item>German localization</item>
+    <item>Turkish localization</item>
+    <item>Italian localization</item>
+    <item>Spanish localization</item>
+    <item>Swedish localization</item>
+    <item>Ukrainian localization</item>
+    <item>Portuguese localization</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Ingen</item>
+    <item>Närhetsavstånd</item>
+    <item>Tid (minuter)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>MI</item>
+    <item>MI</item>
+    <item>nm</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>YD</item>
+    <item>FT</item>
+    <item>nmˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>meter</item>
+    <item>yard</item>
+    <item>feet</item>
+    <item>(nautiska mil)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>kilometer/meter</item>
+    <item>mil/yard</item>
+    <item>mil/feet</item>
+    <item>nautiska mil</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>FT</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>meter</item>
+    <item>feet</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Double press Back</item>
+    <item>Confirmation dialog</item>
+    <item>Nothing</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Föredra karta rutnät</item>
+    <item>Föredra användarens rutnät</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Aldrig</item>
+    <item>Daglig</item>
+    <item>Veckovis</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Standardenhet</item>
+    <item>Porträtt</item>
+    <item>Landskap</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Zooma in</item>
+    <item>Zooma ut</item>
+    <item>Mer skalad karta</item>
+    <item>Mindre skalad karta</item>
+    <item>Kartor vid markören</item>
+    <item>Hantera waypoints</item>
+    <item>Visa information</item>
+    <item>Följ/Sluta följa</item>
+    <item>Erhålla plats</item>
+    <item>Skriv spår</item>
+    <item>Show/hide status bar</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Nej</item>
+    <item>Manuellt</item>
+    <item>Alltid</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/h</item>
+    <item>miles/tim</item>
+    <item>kts</item>
+    <item>m/s</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>kilometer per timme</item>
+    <item>miles per timme</item>
+    <item>knop</item>
+    <item>meter per sekund</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Officiella</item>
+    <item>Civil</item>
+    <item>Nautiska</item>
+    <item>Astronomiska</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Navigera hem"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Navigera uppåt"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Fler alternativ"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Klar"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Se alla"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Välj en app"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"AV"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"PÅ"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt + "</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl + "</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"retur"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Funktion + "</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta + "</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Skift + "</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"blanksteg"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Symbol + "</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Meny + "</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Sök …"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Ta bort frågan"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Sökfråga"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Sök"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Skicka fråga"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Röstsökning"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Dela med"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Dela med <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Komprimera"</string>
+    <string name="accuracy">Noggrannhet</string>
+    <string name="action_bar_sort_alpha">Alfabetisk ordning</string>
+    <string name="action_bar_sort_distance">Distans</string>
+    <string name="advanced">Avancerad</string>
+    <string name="advanced_name">Avancerade egenskaper</string>
+    <string name="alg_a">Kryssning</string>
+    <string name="alg_b">Volang</string>
+    <string name="algorithm">Algoritm</string>
+    <string name="altitude">Höjd</string>
+    <string name="app_eula">Detta program distribueras under villkoren i GNU General Public License as published by the Free Software Foundation, antingen version 3 av License./n/n detta program distribueras i hopp om att det kommer att vara användbar, men utan någon garanti; utan även den underförstådda garantin för säljbarhet eller lämplighet för en viss syfte. Se GNU General Public License för mer details./n/n alla rättigheter som beviljas enligt denna licens beviljas av skyddstiden för upphovsrätt på programmet, och är oåterkalleligt förutsatt att angivna villkor är uppfyllda.     Denna licens bekräftar uttryckligen din obegränsad behörighet att köra den oförändrad Program./n/n du inte är skyldig att acceptera licensvillkoren för att tar emot eller köra en kopia av programmet. Tillhörande förökningsmaterial av en täckt arbete sker enbart till följd av använda peer-to-peer-överföring för att få en kopia på samma sätt kräver inte godkännande. Dock inget annat än denna licens ger dig behörighet att sprida eller ändra omfattas arbete. Dessa åtgärder strider mot upphovsrätten om du inte accepterar licensvillkoren. Därför, genom att ändra eller förökningsmaterial en täckt arbete, anger du ditt godkännande av denna licens att göra meddelandet om invändningar. / n/n för fullständig kopia av GNU General Public License se http://www.gnu.org/licenses/gpl.html</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">Du har nått slutmålet</string>
+    <string name="backQuit">Press Back again to quit</string>
+    <string name="badmaps">Karta index fel</string>
+    <string name="bearing">Bäring</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Svara"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Avvisa"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Lägg på"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Inkommande samtal"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Pågående samtal"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Ett inkommande samtal filtreras"</string>
+    <string name="cancel">Avbryt</string>
+    <string name="change">Ändra</string>
+    <string name="coarse">grov</string>
+    <string name="color">Färg</string>
+    <string name="coordformat">Koordinatformat</string>
+    <string name="coordinates_name">Nya koordinater</string>
+    <string name="credits_name">Program krediter</string>
+    <string name="currentloc">Aktuell plats</string>
+    <string name="declination">Kompassens Missvisning</string>
+    <string name="degmag">mag.</string>
+    <string name="degtrue">sant</string>
+    <string name="description">Beskrivning</string>
+    <string name="direction">Välj riktning</string>
+    <string name="distance">Avstånd</string>
+    <string name="donation_required">Den här funktionen är endast tillgänglig för donatorer</string>
+    <string name="done">Klart</string>
+    <string name="easting">Östpunkt</string>
+    <string name="err_no_network_provider">Ingen nätverksplats tillgänglig</string>
+    <string name="err_noconnection">Nätverket anslutningsfel</string>
+    <string name="err_nofile">Ingen fil</string>
+    <string name="err_nogps">Ingen GPS enhet hittades</string>
+    <string name="err_nomemory">Minnesbrist upptäcks, rapportera detta till utvecklaren</string>
+    <string name="err_nosdcard">SD-kort ej tillgängligt</string>
+    <string name="err_notconfigured">Inte konfigurerad</string>
+    <string name="err_read">Kan inte läsa filen</string>
+    <string name="err_shortroute">Vägen måste innehålla minst två navigeringsmål</string>
+    <string name="err_write">Det gick inte att skriva filen</string>
+    <string name="err_wrongformat">Fel filformat</string>
+    <string name="exporttrack_name">Export track</string>
+    <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
+    <string name="filename">Filnamn</string>
+    <string name="fine">fin</string>
+    <string name="following_disabled">Följning inaktiverad</string>
+    <string name="following_enabled">Följning aktiverad</string>
+    <string name="format">Format</string>
+    <string name="from">Från</string>
+    <string name="from_date">Starting from</string>
+    <string name="generate">Generera</string>
+    <string name="gotit">Got it</string>
+    <string name="hdop">HDOP</string>
+    <string name="hemisphere">Halvklot</string>
+    <string name="homepage">Hemsida: http://androzic.com/</string>
+    <string name="hsi_name">HSI</string>
+    <string name="icon">Ikon</string>
+    <string name="information_name">Information</string>
+    <string name="lastfix">Sista fix</string>
+    <string name="latitude">Latitud</string>
+    <string name="line_width">Linjebredd</string>
+    <string name="loadroute_name">Ladda rutt från fil</string>
+    <string name="loadtrack_name">Ladda spår från fil</string>
+    <string name="loadwaypoints_name">Öppna navigationsändamålsinställning</string>
+    <string name="longitude">Longitud</string>
+    <string name="manageroutes_name">Vägar/färdvägar</string>
+    <string name="managetracks_name">Spår</string>
+    <string name="managewaypoints_name">Waypoint/navigationsmål</string>
+    <string name="mapinformation_name">Kart information</string>
+    <string name="maplist_name">Kartor</string>
+    <string name="markercolor">Färgmarkör</string>
+    <string name="markericon_name">Välja markeringsikon</string>
+    <string name="menu_addtoroute">Lägg till i rutt</string>
+    <string name="menu_addwaypoint">Lägga till navigationsmål</string>
+    <string name="menu_all">Alla</string>
+    <string name="menu_anchor">Ange ankarpunkt</string>
+    <string name="menu_atcursor">Vid markören</string>
+    <string name="menu_change">Ändra</string>
+    <string name="menu_clear">Rensa</string>
+    <string name="menu_clearcurrenttrack">Clear current track</string>
+    <string name="menu_compass">Kompass</string>
+    <string name="menu_copy">Kopiera till Urklipp</string>
+    <string name="menu_delete">Radera</string>
+    <string name="menu_details">Detaljer</string>
+    <string name="menu_dismiss">Avbryt</string>
+    <string name="menu_edit">Redigera</string>
+    <string name="menu_expandcurrenttrack">Show full current track</string>
+    <string name="menu_exportcurrenttrack">Export current track</string>
+    <string name="menu_follow">Aktivera Följ</string>
+    <string name="menu_gps">GPS-inställningar</string>
+    <string name="menu_hsi">HSI</string>
+    <string name="menu_information">Information</string>
+    <string name="menu_load">Läsa in från fil</string>
+    <string name="menu_location">Plats</string>
+    <string name="menu_manage">Hantera</string>
+    <string name="menu_maps">Kartor</string>
+    <string name="menu_navigate">Navigera</string>
+    <string name="menu_navigation">Navigering</string>
+    <string name="menu_new">Ny</string>
+    <string name="menu_new_waypoint">Nytt navigationsmål</string>
+    <string name="menu_newroute">Ny rutt</string>
+    <string name="menu_newwaypointset">Ny punkt</string>
+    <string name="menu_nextnavpoint">Hoppa till nästa</string>
+    <string name="menu_open">Öppna</string>
+    <string name="menu_paste">Klistra in från Urklipp</string>
+    <string name="menu_preferences">Inställningar</string>
+    <string name="menu_prevnavpoint">Gå till föregående</string>
+    <string name="menu_project">Nytt projekt</string>
+    <string name="menu_properties">Egenskaper</string>
+    <string name="menu_remove">Ta bort</string>
+    <string name="menu_resetindex">Återställ index</string>
+    <string name="menu_routes">Rutter</string>
+    <string name="menu_save">Spara till fil</string>
+    <string name="menu_search">Sök</string>
+    <string name="menu_share">Dela</string>
+    <string name="menu_sort">Sortera</string>
+    <string name="menu_sort_alphabetically">Sortera i alfabetisk ordning</string>
+    <string name="menu_sort_distance">Sortera efter avstånd</string>
+    <string name="menu_startnavigation">Navigera via rutt</string>
+    <string name="menu_stopnavigation">Stoppa navigering</string>
+    <string name="menu_thisnavpoint">Navigera hit</string>
+    <string name="menu_track2route">Konvertera till rutt</string>
+    <string name="menu_tracks">Spår</string>
+    <string name="menu_view">Visa</string>
+    <string name="menu_visible">Försäkra synlighet</string>
+    <string name="menu_waypoints">Navigationsmål</string>
+    <string name="more">Mer</string>
+    <string name="msg_badtrackimplementation">Observera att prestanda försämras på långa spår, ha tålamod.</string>
+    <string name="msg_cleaning">Tar bort...</string>
+    <string name="msg_clearcurrenttrack">This will clear all your moving history, are you sure?</string>
+    <string name="msg_connectingtoserver">Ansluter till server...</string>
+    <string name="msg_empty_route_list">Inga rutter finns. Använd menyn för att skapa rutt eller ladda det från fil.</string>
+    <string name="msg_empty_track_list">No tracks available. Use menu to load track from file.</string>
+    <string name="msg_emptytracksegment">Selected track segment is empty, nothing to save</string>
+    <string name="msg_expandcurrenttrack">If you have not cleared your current track for a long time this can significantly degrade performance. Proceed?</string>
+    <string name="msg_initializingdata">Initierar data...</string>
+    <string name="msg_initializingmaps">Initierar kartor...</string>
+    <string name="msg_initializingplugins">Initierar plugins...</string>
+    <string name="msg_initializingview">Initierar \"utsikt\"...</string>
+    <string name="msg_loadingimagefile">Laddar världskarta/image fil...</string>
+    <string name="msg_loadingmapfile">Laddar världskarta/data fil...</string>
+    <string name="msg_newdatafolder">On popular request Androzic now works with folders differently. You can freely select any folder for maps and data. Data folder is now unified for all data types: waypoints, tracks and routes. You have to copy your existing data files manually to the following autocreated folder: ‘%s’.</string>
+    <string name="msg_nothing_found">Nothing was found. Please take into account that data is searched only if it is loaded in Androzic, named locations are searched only if Internet connection is available.</string>
+    <string name="msg_paid">Donerad version</string>
+    <string name="msg_scansdcard">Läser av SD-kort</string>
+    <string name="msg_wait">Var god vänta...</string>
+    <string name="n">N</string>
+    <string name="name">Namn</string>
+    <string name="navigate">Navigera</string>
+    <string name="never">aldrig</string>
+    <string name="new_coordinates">Nya koordinater mottagna från %s</string>
+    <string name="no">Nej</string>
+    <string name="nomaps">Inga kartor funna</string>
+    <string name="nomaps_explained">Map folder ‘%s’ is empty. Download and install world map (250KB)?</string>
+    <string name="northing">Nordpunkt</string>
+    <string name="notif_loc_short">Söker</string>
+    <string name="notif_loc_started">Androzic söker efter din plats</string>
+    <string name="notif_loc_waiting">Androzic is waiting for location</string>
+    <string name="notif_nav_short">Navigerar</string>
+    <string name="notif_nav_started">Androzic navigerar dig</string>
+    <string name="notif_nav_to">Androzic navigerar till %s</string>
+    <string name="notif_trk_failure">Androzic has problem with tracking</string>
+    <string name="notif_trk_started">Androzic spårar din kurs</string>
+    <string name="ok">Okej</string>
+    <string name="perm_location_description">Plats tillhandahålls av Androzic</string>
+    <string name="perm_location_title">Hämta plats</string>
+    <string name="perm_navigation_description">Initiate/modify navigation provided by Androzic</string>
+    <string name="perm_navigation_title">Initiate navigation</string>
+    <string name="perm_read_map_data_title">Hämta data från Androzic karta</string>
+    <string name="perm_read_preferences_title">Läs Androzics användarinställningar</string>
+    <string name="perm_tracking_description">Hämta kurs tillhandahållen av Androzic</string>
+    <string name="perm_tracking_title">Hämta kurs</string>
+    <string name="perm_write_map_data_title">Lägg till data till Androzic karta</string>
+    <string name="pref_about_title">Om Androzic</string>
+    <string name="pref_advanced_title">Avancerad</string>
+    <string name="pref_application_title">Om och feedback</string>
+    <string name="pref_charset_summary">The character set for map and data text files. Caution: you can not mix files in Android native (UTF-8) and national character sets, change this setting only if all your files are in national encoding, otherwise manually recode the files which are not in UTF-8 encoding. Takes affect only after application restart.</string>
+    <string name="pref_charset_title">Text file encoding</string>
+    <string name="pref_credits_title">Cred</string>
+    <string name="pref_cursor_title">Följande markör</string>
+    <string name="pref_cursorcolor_title">Aktiv färg</string>
+    <string name="pref_cursorvector_summary">Välj bas för vektorns linjelängd</string>
+    <string name="pref_cursorvector_title">Vector linjetyp</string>
+    <string name="pref_cursorvectormlpr_summary">Välj hur många vector rad baser som kommer att användas för att ange dess längd</string>
+    <string name="pref_cursorvectormlpr_title">Vector linje multiplikator</string>
+    <string name="pref_donate_google_title">Donera via Google butiken</string>
+    <string name="pref_donate_paypal_title">Donera via PayPal</string>
+    <string name="pref_exit_title">Exit confirmation</string>
+    <string name="pref_facebook_title">Gilla på Facebook</string>
+    <string name="pref_faq_title">FRÅGOR OCH SVAR</string>
+    <string name="pref_feature_title">Feedback and support</string>
+    <string name="pref_folder_data_title">Data folder</string>
+    <string name="pref_folder_icon_title">Ikoner mapp</string>
+    <string name="pref_folder_map_title">Kart-mapp</string>
+    <string name="pref_folder_prefix_caution">Det här alternativet är endast för avancerade användare. Används med försiktighet: Om inställningen/arna inte är korrekt så kan programmet få problem att starta.</string>
+    <string name="pref_folder_prefix_title">Programmapp</string>
+    <string name="pref_folder_title">Mappar</string>
+    <string name="pref_googleplus_title">Följ på Google+</string>
+    <string name="pref_grid_mapshow_title">Visa karta stödraster</string>
+    <string name="pref_grid_preference_title">Rutnät inställning</string>
+    <string name="pref_grid_title">Stödraster</string>
+    <string name="pref_grid_usermpp_summary">Högsta meter per pixel skala vid vilka anpassat rutnät syns</string>
+    <string name="pref_grid_usermpp_title">Anpassat rutnät begränsning</string>
+    <string name="pref_grid_userscale_title">Anpassat rutnät intervall</string>
+    <string name="pref_grid_usershow_title">Visa anpassat rutnät</string>
+    <string name="pref_grid_userunit_title">Anpassad Rutnätsenhet</string>
+    <string name="pref_hideactionbar_summary">Mark to hide application action bar when map is displayed. Takes affect only after application restart.</string>
+    <string name="pref_hideactionbar_title">Hide action bar</string>
+    <string name="pref_loc_gpstimeout_summary">Ange timeout i sekunder för senaste GPS-fix beroende på vilken plats som bestäms av nätverk</string>
+    <string name="pref_loc_gpstimeout_title">GPS plats timeout</string>
+    <string name="pref_loc_store_summary">Markera för att starta programmet från senaste platsen</string>
+    <string name="pref_loc_store_title">Kom ihåg sista plats</string>
+    <string name="pref_loc_title">Plats</string>
+    <string name="pref_loc_usenetwork_summary">Markera för att använda platsen från nätverket om GPS-läge inte är tillgängligt</string>
+    <string name="pref_loc_usenetwork_title">Använd nätverk</string>
+    <string name="pref_locale_title">Språk</string>
+    <string name="pref_lookahead_summary">Skärmen värde framåt</string>
+    <string name="pref_lookahead_title">Se framåt</string>
+    <string name="pref_map_title">Karta/sjökort</string>
+    <string name="pref_mapadjacent_summary">Mark to display adjacent and better maps (EXPERIMENTAL, can significantly degrade performance!)</string>
+    <string name="pref_mapadjacent_title">Intilliggande kartor</string>
+    <string name="pref_mapbest_summary">Markera för att låta programmet läsa in bästa karta för aktuell plats</string>
+    <string name="pref_mapbest_title">Ladda bästa karta</string>
+    <string name="pref_mapbestinterval_summary">Tidsperiod mellan bästa kartuppföljning</string>
+    <string name="pref_mapbestinterval_title">Bästa kart intervall</string>
+    <string name="pref_mapcropborder_summary">Markera för att beskära kartan längs hörnmarkeringarna</string>
+    <string name="pref_mapcropborder_title">Beskär kartmarginaler</string>
+    <string name="pref_mapdim_summary">Mark för att göra skärmen automatiskt ljuskänslig nattetid</string>
+    <string name="pref_mapdim_title">Autoljus skärm</string>
+    <string name="pref_mapdimvalue_title">Ljusstyrka värde</string>
+    <string name="pref_mapdrawborder_summary">Markera för att rita kantlinje längs hörnmarkeringarna</string>
+    <string name="pref_mapdrawborder_title">Rita kantlinje</string>
+    <string name="pref_mapfollowonloc_title">Följ på första plats</string>
+    <string name="pref_maphideondrag_summary">Markera för att dölja kart objekt medan du drar</string>
+    <string name="pref_maphideondrag_title">Dölj objekt på dra</string>
+    <string name="pref_maprenderinterval_summary">Minsta tid mellan sjökortsuppdateringar</string>
+    <string name="pref_maprenderinterval_title">Uppdateringsintervall</string>
+    <string name="pref_name">Androzic inställningar</string>
+    <string name="pref_navigation_linewidth_summary">Bredden på en bäringslinje till nuvarande navigeringsmål</string>
+    <string name="pref_navigation_linewidth_title">Bäring linje bredd</string>
+    <string name="pref_navigation_loadlast_summary">Markera för att ladda ej färdig rutt vid nästa programstart</string>
+    <string name="pref_navigation_loadlast_title">Ladda sista rutten</string>
+    <string name="pref_navigation_proximity_summary">Närhet i meter vid vilken rutt navigering kommer att fortsätta till nästa tillgängliga navigationsmål</string>
+    <string name="pref_navigation_proximity_title">Navigationsmåls närhet</string>
+    <string name="pref_navigation_proximitycircle_summary">Markera för att fästa närhetscirkel runt rutt spåret vid navigering</string>
+    <string name="pref_navigation_proximitycircle_title">Närhet cirkel</string>
+    <string name="pref_navigation_title">Navigering</string>
+    <string name="pref_navigation_traverse_summary">Mark att använda korsningslogik tillsammans med närhet för att växla till nästa rutt navigationsmål</string>
+    <string name="pref_navigation_traverse_title">Använda korsnings logik</string>
+    <string name="pref_onlinemap_summary">Källa till online karta</string>
+    <string name="pref_onlinemap_title">Kart leverantör</string>
+    <string name="pref_onlinemaps_title">Online karta</string>
+    <string name="pref_onlinemapscale_summary">Zoom nivå som kommer att tolkas som 100 %</string>
+    <string name="pref_onlinemapscale_title">Standard zoomnivå</string>
+    <string name="pref_orientation_title">Skärmorientering</string>
+    <string name="pref_panelactions_title">åtgärder öppningsbara panelen</string>
+    <string name="pref_plugins_title">Plugins</string>
+    <string name="pref_route_linewidth_summary">Pixelbredd rutt väg</string>
+    <string name="pref_route_linewidth_title">Linjebredd</string>
+    <string name="pref_route_pointwidth_summary">Pixel storleken på väg navigationsmålets markör</string>
+    <string name="pref_route_pointwidth_title">Markör storlek</string>
+    <string name="pref_route_preload_hidden_summary">Hide preloaded routes until they are viewed, edited or navigated</string>
+    <string name="pref_route_preload_hidden_title">Hide preloaded routes</string>
+    <string name="pref_route_preload_summary">Markera för att förhandsladda rutter från filer vid programstart</string>
+    <string name="pref_route_preload_title">Förladda rutter</string>
+    <string name="pref_route_showname_summary">Markera för att visa ruttens navigeringsmåls namn vid en markör</string>
+    <string name="pref_route_showname_title">Visa navigationmålets namn</string>
+    <string name="pref_route_title">Rutter</string>
+    <string name="pref_scalebarcolor_title">Skala färg</string>
+    <string name="pref_show_title">Visa</string>
+    <string name="pref_showaccuracy_summary">Markera för att visa den korrekta cirkeln runt positions markören</string>
+    <string name="pref_showaccuracy_title">Visa noggrannhets cirkel</string>
+    <string name="pref_showcurrenttrack_summary">Markera för att göra aktuellt spår synligt på kartan/sjökortet</string>
+    <string name="pref_showcurrenttrack_title">Visa aktuellt spår</string>
+    <string name="pref_showdistance_title">Visa avstånd</string>
+    <string name="pref_showmapinfo_summary">Markera för att visa aktuell karta namn och zoom nivå</string>
+    <string name="pref_showmapinfo_title">Visa kart panel</string>
+    <string name="pref_showsatinfo_summary">Markera för att Visa aktuella koordinater och GPS-status panel</string>
+    <string name="pref_showsatinfo_title">Visa satellit panel</string>
+    <string name="pref_tracking_currentcolor_title">Aktuellt spår färg</string>
+    <string name="pref_tracking_currentlength_summary">Högsta antal points i nuvarande spårsvans</string>
+    <string name="pref_tracking_currentlength_title">Aktuell spårlängd</string>
+    <string name="pref_tracking_currentload_summary">Markera för att ladda nuvarande spårsvans vid nästa programstart</string>
+    <string name="pref_tracking_currentload_title">Ladda aktuellt spår</string>
+    <string name="pref_tracking_linewidth_summary">Pixel width of the track line</string>
+    <string name="pref_tracking_linewidth_title">Linjebredd</string>
+    <string name="pref_tracking_mindistance_summary">Minsta avstånd i meter som bör gå innan en annan spår punkt har fåtts</string>
+    <string name="pref_tracking_mindistance_title">Minsta avstånd</string>
+    <string name="pref_tracking_mintime_summary">Minsta tid i millisekunder som bör passera innan en annan spår punkt fås</string>
+    <string name="pref_tracking_mintime_title">Minsta tid</string>
+    <string name="pref_tracking_title">Spår</string>
+    <string name="pref_twitter_title">Följ på Twitter</string>
+    <string name="pref_unfollowontap_title">Sluta följa efter vid dra</string>
+    <string name="pref_unit_title">Enheter</string>
+    <string name="pref_unitangle_title">Deklination</string>
+    <string name="pref_unitcoordinate_title">Koordinater</string>
+    <string name="pref_unitdistance_title">Avstånd</string>
+    <string name="pref_unitelevation_title">Höjd</string>
+    <string name="pref_unitprecision_title">Extra precision</string>
+    <string name="pref_unitspeed_title">Hastighet</string>
+    <string name="pref_unitsunrise_title">Soluppgång/solnedgång</string>
+    <string name="pref_uri_summary">Tryck för att följa en länk till webbplats</string>
+    <string name="pref_usemapindex_title">Använd kart index</string>
+    <string name="pref_useonlinemap_title">Använd online karta</string>
+    <string name="pref_wakelock_summary">Mark to keep the device’s screen turned on and bright when map is displayed</string>
+    <string name="pref_wakelock_title">Keep screen on</string>
+    <string name="pref_waypoint_bgcolor_title">Namn bakgrundsfärg</string>
+    <string name="pref_waypoint_color_title">Markör färg</string>
+    <string name="pref_waypoint_namecolor_title">Namn färg</string>
+    <string name="pref_waypoint_showname_summary">Markera för att visa navigationsmålets namn bredvid en markör</string>
+    <string name="pref_waypoint_showname_title">Visa namn</string>
+    <string name="pref_waypoint_title">Navigationsmål</string>
+    <string name="pref_waypoint_visible_summary">Markera för att centrera kartan på nyskapade navigationsmål</string>
+    <string name="pref_waypoint_visible_title">Försäkra att det är tillgängligt efter redigering</string>
+    <string name="pref_waypoint_width_summary">Pixelstorlek för navigationsmålets markör</string>
+    <string name="pref_waypoint_width_title">Markör storlek</string>
+    <string name="primary">Primär</string>
+    <string name="provider">Leverantör</string>
+    <string name="proximity">Närhet</string>
+    <string name="quit">Avsluta</string>
+    <string name="quitQuestion">Vill du avsluta?</string>
+    <string name="removeWaypointQuestion">Remove waypoint?</string>
+    <string name="restart_needed">Omstart av applikationen behövs</string>
+    <string name="restart_needed_explained">Den här funktionen kräver fullständig omstart. Detta innebär inte bara att avsluta det men också stoppa det i Androidens programinställningar.</string>
+    <string name="routedetails_name">Rutt detaljer</string>
+    <string name="routeproperties_name">Redigera rutt</string>
+    <string name="s">S</string>
+    <string name="sat_firstfix">GPS aktiv</string>
+    <string name="sat_start">GPS aktiverat</string>
+    <string name="sat_stop">GPS inaktiverad</string>
+    <string name="satellites">Satelliter</string>
+    <string name="save">Spara</string>
+    <string name="saveroute_name">Spara rutt till fil</string>
+    <string name="savetrack_name">Spara spår till fil</string>
+    <string name="search_hint">Ange namn eller adress</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Sök"</string>
+    <string name="search_name">SÖKRESULTAT</string>
+    <string name="selectroute_name">Välj rutt</string>
+    <string name="send_me_bugs">Om du kör fast/hittar ett fel som du vill få ordnat/redigerat,eller har något förslag, tveka inte att använda \"tracker\" på projektets hemsida.</string>
+    <string name="sensitivity">Känslighet</string>
+    <string name="show">Visa</string>
+    <string name="showcase_add_waypoint_description">Tap action icon to quickly add new waypoint in current cursor position.</string>
+    <string name="showcase_add_waypoint_title">Lägga till navigationsmål</string>
+    <string name="showcase_follow_description">Press follow icon to enable following mode. In this mode map will be fixed to your current position. Alternatively you can double tap on map to switch following mode on and off.</string>
+    <string name="showcase_follow_title">Location following</string>
+    <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
+    <string name="showcase_load_waypoints_title">Load waypoints</string>
+    <string name="showcase_panel_description">Slide or drag sliding panel handler to access quick actions. Quick actions can be configured in Settings.</string>
+    <string name="showcase_panel_title">Quick actions</string>
+    <string name="showcase_search_description">You can type specific coordinates in various formats to find them on map, search through loaded waypoint or route names and descriptions, search for places and addresses through Google geocoding service (Internet connection is required for this to work).</string>
+    <string name="showcase_search_title">Sök</string>
+    <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
+    <string name="showcase_waypointset_actions_title">Waypoint set actions</string>
+    <string name="skip_single_locations">Skip single locations</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Soluppgång</string>
+    <string name="sunset">Solnedgång</string>
+    <string name="t2r_explained"><b>Den här funktionen är experimentell.</b> Spåret bör vara korrekt. Det innebär att det bör beskriva resa från punkt A till punkt B men inte söka en punkt däromkring. Prova båda algoritmerna och se vad som passar dig bäst. \"Kryssning´ algoritm är linjär och ruttens Genereringstid är helt förutsägbar medan\" Flounce´ algoritm är helt oförutsägbar. Rutt känsligheten kan resultera i att missa några avfarter medans fin känslighet kan lägga till onödiga spår</string>
+    <string name="textcolor">Färg på namn</string>
+    <string name="till_date">Ending at</string>
+    <string name="track2route_name">Konvertera spår till rutt</string>
+    <string name="trackproperties_name">Redigera spår</string>
+    <string name="update_almanac">Begära uppdatering av almanacka</string>
+    <string name="upto">Upp till %.0f meter</string>
+    <string name="vdop">VDOP</string>
+    <string name="version">Version: %s</string>
+    <string name="warning">Varning</string>
+    <string name="waypointproject_name">Nytt projekt navigationsmål</string>
+    <string name="waypointproperties_name">Redigera navigationsmål</string>
+    <string name="waypointset">Ange</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Ja</string>
+    <string name="zone">Zon</string>
+</resources>

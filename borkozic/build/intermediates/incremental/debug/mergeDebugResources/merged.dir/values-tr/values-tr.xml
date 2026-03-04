@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>gerçek</item>
+    <item>manyetik</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>DD.DDDDDD</item>
+    <item>DD°MM.MMMM\'</item>
+    <item>DD°MM\'SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Ozf2, ozfx3 harita desteği</item>
+    <item>Uygulama simgesi</item>
+    <item>Renk Seçici ilk kodu</item>
+    <item>Arama kutusu ilk tercihi</item>
+    <item>Gündoğumu/Günbatımı hesaplama</item>
+    <item>Sürükle bırak açılan liste ilk kodu</item>
+    <item>Dokunmatik ekran denetleyicisi</item>
+    <item>Showcase library</item>
+    <item>Arabirim simgeleri</item>
+    <item>Yer imi simgeleri</item>
+    <item>Çekçe yerelleştirme</item>
+    <item>Fransızca yerelleştirme</item>
+    <item>Fince yerelleştirme</item>
+    <item>Bulgarca yerelleştirme</item>
+    <item>Almanca yerelleştirme</item>
+    <item>Türkçe yerelleştirme</item>
+    <item>İtalyanca yerelleştirme</item>
+    <item>İspanyolca Yerelleştirme</item>
+    <item>İsveç yerelleştirme</item>
+    <item>Ukrayna yerelleştirme</item>
+    <item>Portekizce yerelleştirme</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Hiçbiri</item>
+    <item>Yakınlık mesafesi</item>
+    <item>Süre (dakika)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>mil</item>
+    <item>mil</item>
+    <item>nm</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>yd</item>
+    <item>ft</item>
+    <item>nmˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>metre</item>
+    <item>yarda</item>
+    <item>feet</item>
+    <item>(deniz mili)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>kilometre/metre</item>
+    <item>mil/yarda</item>
+    <item>mil/feet</item>
+    <item>deniz mili</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>ft</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>metre</item>
+    <item>fit</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Geri düğmesine çift basma</item>
+    <item>Onay iletişim kutusu</item>
+    <item>Hiçbir şey</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Harita grid tercihi</item>
+    <item>Kullanıcı grid tercihi</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Asla</item>
+    <item>Günlük</item>
+    <item>Haftalık</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Aygıt varsayılanı</item>
+    <item>Dikey</item>
+    <item>Yatay</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Yakınlaştır</item>
+    <item>Uzaklaştır</item>
+    <item>Yüksek ölçekli harita</item>
+    <item>Düşük ölçekli harita</item>
+    <item>İmleç konumundaki haritalar</item>
+    <item>Yer imlerini yönet</item>
+    <item>Bilgileri göster</item>
+    <item>Otomatik Takip Et/Otomatik Takibi Bırak</item>
+    <item>Konumu belirle</item>
+    <item>Yer izini kaydet</item>
+    <item>Durum çubuğunu göster/gizle</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Hiçbir zaman</item>
+    <item>İsteğe göre</item>
+    <item>Her zaman</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/saat</item>
+    <item>mil/saat</item>
+    <item>kts</item>
+    <item>m/sn</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>kilometre/saat</item>
+    <item>mil/saat</item>
+    <item>knot</item>
+    <item>metre/saniye</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Resmi</item>
+    <item>Sivil</item>
+    <item>Deniz astronomisi</item>
+    <item>Astronomik</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Eve gidiş yolunu göster"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Yukarı git"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Diğer seçenekler"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Bitti"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Tümünü göster"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Bir uygulama seçin"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"KAPAT"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"AÇ"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"sil"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Üst Karakter+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"boşluk"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menü+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Ara…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Sorguyu temizle"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Arama sorgusu"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Ara"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Sorguyu gönder"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Sesli arama"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Şununla paylaş:"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"<ns1:g id="APPLICATION_NAME">%s</ns1:g> ile paylaş"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Daralt"</string>
+    <string name="accuracy">Doğruluk</string>
+    <string name="action_bar_sort_alpha">Alfabetik olarak</string>
+    <string name="action_bar_sort_distance">Mesafeye göre</string>
+    <string name="advanced">Gelişmiş</string>
+    <string name="advanced_name">Gelişmiş Özellikler</string>
+    <string name="alg_a">Seyir</string>
+    <string name="alg_b">Fırfır</string>
+    <string name="algorithm">Algoritma</string>
+    <string name="altitude">İrtifa</string>
+    <string name="app_eula">This program is distributed under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License./n/n
+    This application is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details./n/n
+    All rights granted under this License are granted for the term of copyright
+    on the Program, and are irrevocable provided the stated conditions are met.
+    This License explicitly affirms your unlimited permission to run the unmodified
+    Program./n/n
+    You are not required to accept this License in order to receive or run a copy of
+    the Program. Ancillary propagation of a covered work occurring solely as
+    a consequence of using peer-to-peer transmission to receive a copy likewise does
+    not require acceptance. However, nothing other than this License grants you
+    permission to propagate or modify any covered work. These actions infringe
+    copyright if you do not accept this License. Therefore, by modifying or propagating
+    a covered work, you indicate your acceptance of this License to do so./n/n
+    For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">Rota hedefine ulaştınız</string>
+    <string name="backQuit">Çıkmak için geri tuşuna tekrar basınız</string>
+    <string name="badmaps">Harita dizin-indeks hatası</string>
+    <string name="bearing">İstikamet Açısı</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Yanıtla"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Reddet"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Kapat"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Gelen arama"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Devam eden arama"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Gelen arama süzülüyor"</string>
+    <string name="cancel">İptal</string>
+    <string name="change">Değiştir</string>
+    <string name="coarse">kaba</string>
+    <string name="color">Renk</string>
+    <string name="coordformat">Koordinatları biçimi</string>
+    <string name="coordinates_name">Yeni koordinatlar</string>
+    <string name="credits_name">Uygulamada Emeği Geçenler</string>
+    <string name="currentloc">Geçerli konum</string>
+    <string name="declination">İstikamet açısı</string>
+    <string name="degmag">manyetik</string>
+    <string name="degtrue">gerçek</string>
+    <string name="description">Açıklama</string>
+    <string name="direction">Yön seçin</string>
+    <string name="distance">Mesafe</string>
+    <string name="donation_required">Bu özelliği yalnızca bağışçılar kullanabilir</string>
+    <string name="done">Bitti</string>
+    <string name="easting">Doğu</string>
+    <string name="err_no_network_provider">Hiçbir ağ konumu sağlayıcısı yok</string>
+    <string name="err_noconnection">Ağ bağlantı hatası</string>
+    <string name="err_nofile">Böyle bir dosya yok</string>
+    <string name="err_nogps">GPS aygıtı bulunamadı</string>
+    <string name="err_nomemory">Bellek yetersizliği tespit edildi, lütfen bunu geliştiriciye rapor edin</string>
+    <string name="err_nosdcard">SD kart kullanılamaz</string>
+    <string name="err_notconfigured">Yapılandırılmadı</string>
+    <string name="err_read">Dosya okunamıyor</string>
+    <string name="err_shortroute">Rota en az iki yer imi noktası içermelidir</string>
+    <string name="err_write">Dosya yazılamıyor</string>
+    <string name="err_wrongformat">Yanlış dosya biçimi</string>
+    <string name="exporttrack_name">Yol izini dışa aktar</string>
+    <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
+    <string name="filename">Dosya adı</string>
+    <string name="fine">ince</string>
+    <string name="following_disabled">Otomatik takip devre dışı</string>
+    <string name="following_enabled">Otomatik takip etkinleştirildi</string>
+    <string name="format">Biçim</string>
+    <string name="from">Nereden</string>
+    <string name="from_date">Başlangıç noktası</string>
+    <string name="generate">Oluştur</string>
+    <string name="gotit">Anladım</string>
+    <string name="hdop">Yatay sapma</string>
+    <string name="hemisphere">Yarımküre</string>
+    <string name="homepage">Anasayfa: http://androzic.com/</string>
+    <string name="hsi_name">HSI</string>
+    <string name="icon">Simge</string>
+    <string name="information_name">Bilgi</string>
+    <string name="lastfix">Son konum</string>
+    <string name="latitude">Enlem</string>
+    <string name="line_width">Çizgi genişliği</string>
+    <string name="loadroute_name">Dosyadan rota yükle</string>
+    <string name="loadtrack_name">Dosyadan iz yükle</string>
+    <string name="loadwaypoints_name">Yer imi grubunu aç</string>
+    <string name="longitude">Boylam</string>
+    <string name="manageroutes_name">Rotalar</string>
+    <string name="managetracks_name">İzler</string>
+    <string name="managewaypoints_name">Yer imleri</string>
+    <string name="mapinformation_name">Harita bilgisi</string>
+    <string name="maplist_name">Haritalar</string>
+    <string name="markercolor">İşaretçi rengi</string>
+    <string name="markericon_name">İşaretçi simgesini seçin</string>
+    <string name="menu_addtoroute">Rotaya ekle</string>
+    <string name="menu_addwaypoint">Yer imi ekle</string>
+    <string name="menu_all">Tümü</string>
+    <string name="menu_anchor">Çapa bırak</string>
+    <string name="menu_atcursor">İmleçteki</string>
+    <string name="menu_change">Değiştir</string>
+    <string name="menu_clear">Temizle</string>
+    <string name="menu_clearcurrenttrack">Mevcut yol izini temizle</string>
+    <string name="menu_compass">Pusula</string>
+    <string name="menu_copy">Panoya kopyala</string>
+    <string name="menu_delete">Sil</string>
+    <string name="menu_details">Ayrıntılar</string>
+    <string name="menu_dismiss">Menüden çıkış</string>
+    <string name="menu_edit">Düzenle</string>
+    <string name="menu_expandcurrenttrack">Mevcut yol izinin tamamını göster</string>
+    <string name="menu_exportcurrenttrack">Mevcut yol izini dışa aktar</string>
+    <string name="menu_follow">İzlemeyi etkinleştir</string>
+    <string name="menu_gps">GPS ayarları</string>
+    <string name="menu_hsi">HSI</string>
+    <string name="menu_information">Bilgi</string>
+    <string name="menu_load">Dosyadan yükle</string>
+    <string name="menu_location">Konum</string>
+    <string name="menu_manage">Yönet</string>
+    <string name="menu_maps">Haritalar</string>
+    <string name="menu_navigate">Git</string>
+    <string name="menu_navigation">Rota Seyrüseferi</string>
+    <string name="menu_new">Yeni</string>
+    <string name="menu_new_waypoint">Yeni yer imi</string>
+    <string name="menu_newroute">Yeni rota</string>
+    <string name="menu_newwaypointset">Yeni grup oluştur</string>
+    <string name="menu_nextnavpoint">Sonraki</string>
+    <string name="menu_open">Aç</string>
+    <string name="menu_paste">Panodaki veriyi yapıştır</string>
+    <string name="menu_preferences">Ayarlar</string>
+    <string name="menu_prevnavpoint">Önceki</string>
+    <string name="menu_project">Yeni oluştur</string>
+    <string name="menu_properties">Özellikler</string>
+    <string name="menu_remove">Kaldır</string>
+    <string name="menu_resetindex">İndeksi Sıfırla</string>
+    <string name="menu_routes">Rotalar</string>
+    <string name="menu_save">Dosyaya kaydet</string>
+    <string name="menu_search">Ara</string>
+    <string name="menu_share">Paylaş</string>
+    <string name="menu_sort">Sırala</string>
+    <string name="menu_sort_alphabetically">Alfabetik sırala</string>
+    <string name="menu_sort_distance">Mesafeye göre sırala</string>
+    <string name="menu_startnavigation">Rota seyrüseferi yap</string>
+    <string name="menu_stopnavigation">Seyrüseferi durdur</string>
+    <string name="menu_thisnavpoint">Buraya git</string>
+    <string name="menu_track2route">Rotaya dönüştür</string>
+    <string name="menu_tracks">İzler</string>
+    <string name="menu_view">Göster</string>
+    <string name="menu_visible">Haritada göster</string>
+    <string name="menu_waypoints">Yer imleri</string>
+    <string name="more">Daha</string>
+    <string name="msg_badtrackimplementation">Boyutu büyük izlerde performans düşebilir, lütfen sabırlı olun.</string>
+    <string name="msg_cleaning">Temizliyor…</string>
+    <string name="msg_clearcurrenttrack">Bu işlem tüm hareket geçmişinizi temizleyecektir, emin misiniz?</string>
+    <string name="msg_connectingtoserver">Sunucuya bağlanıyor…</string>
+    <string name="msg_empty_route_list">Kullanılabilir rota bulunamadı. Rota oluşturmak veya dosya yüklemek için menüyü kullanın.</string>
+    <string name="msg_empty_track_list">Yüklenmiş yol izi bulunmamaktadır. Menü\'yü kullanarak dosyadan yol izi yükleyiniz.</string>
+    <string name="msg_emptytracksegment">Seçili yol izi parçası boş, kaydedilecek bir şey yok.</string>
+    <string name="msg_expandcurrenttrack">Eğer yol izinizi uzun süredir temizlemediyseniz bu durum performansınızı önemli ölçüde azaltabilir. Yine de devam etmek istiyor musunuz?</string>
+    <string name="msg_initializingdata">Veri başlatılıyor…</string>
+    <string name="msg_initializingmaps">Haritalar başlatılıyor…</string>
+    <string name="msg_initializingplugins">Eklentiler başlatılıyor…</string>
+    <string name="msg_initializingview">Görünüm başlatılıyor…</string>
+    <string name="msg_loadingimagefile">Dünya haritası resim dosyası yükleniyor…</string>
+    <string name="msg_loadingmapfile">Dünya haritası veri dosyası yükleniyor…</string>
+    <string name="msg_newdatafolder">On popular request Androzic now works with folders differently. You can freely select any folder for maps and data. Data folder is now unified for all data types: waypoints, tracks and routes. You have to copy your existing data files manually to the following autocreated folder: ‘%s’.</string>
+    <string name="msg_nothing_found">Hiçbir şey bulunamadı. Androzic\'in yer imleri verisi içerisinde arama yapması için yüklenmiş veri olması gerektiğini, google yer adlarını aramak için ise internet bağlantısı gerektiğini lütfen göz önünde bulundurunuz.
+</string>
+    <string name="msg_paid">Bağış yapılmış sürüm</string>
+    <string name="msg_scansdcard">SD kart taranıyor</string>
+    <string name="msg_wait">Lütfen bekleyin…</string>
+    <string name="n">K</string>
+    <string name="name">Adı</string>
+    <string name="navigate">Seyrüsefer</string>
+    <string name="never">asla</string>
+    <string name="new_coordinates">%s kişisinden yeni koordinatlar alındı</string>
+    <string name="no">Hayır</string>
+    <string name="nomaps">Hiç harita bulunamadı</string>
+    <string name="nomaps_explained">Harita klasörü %s boştur. Dünya Haritası (250 KB)karşıdan yüklensin mi ?</string>
+    <string name="northing">Kuzey</string>
+    <string name="notif_loc_short">Konum belirleniyor</string>
+    <string name="notif_loc_started">Androzic konumunuzu belirliyor</string>
+    <string name="notif_loc_waiting">Androzic konum bilgisini bekliyor</string>
+    <string name="notif_nav_short">Seyrüsefer başladı</string>
+    <string name="notif_nav_started">Androzic seyrüsefere başladı</string>
+    <string name="notif_nav_to">Androzic şu konuma gidiyor: %s</string>
+    <string name="notif_trk_failure">Androzic konumunuzu izlemede sorun yaşıyor
+</string>
+    <string name="notif_trk_started">Androzic hareketinizi takip etmeye başladı</string>
+    <string name="ok">Tamam</string>
+    <string name="perm_location_description">Androzic tarafından sağlanan konum erişimi</string>
+    <string name="perm_location_title">Konumu al</string>
+    <string name="perm_navigation_description">Androzic tarafından başlatılan seyrüseferi başlat/düzenle</string>
+    <string name="perm_navigation_title">Seyrüseferi başlat</string>
+    <string name="perm_read_map_data_title">Androzic harita verilerini al</string>
+    <string name="perm_read_preferences_title">Androzic kullanıcı tercihlerini oku</string>
+    <string name="perm_tracking_description">Androzic tarafından sağlanan yol izini al</string>
+    <string name="perm_tracking_title">Yol izini al</string>
+    <string name="perm_write_map_data_title">Androzic haritaya veri ekle</string>
+    <string name="pref_about_title">Androzic hakkında</string>
+    <string name="pref_advanced_title">Gelişmiş</string>
+    <string name="pref_application_title">Hakkında ve Geribildirim</string>
+    <string name="pref_charset_summary">The character set for map and data text files. Caution: you can not mix files in Android native (UTF-8) and national character sets, change this setting only if all your files are in national encoding, otherwise manually recode the files which are not in UTF-8 encoding. Takes affect only after application restart.</string>
+    <string name="pref_charset_title">Metin dosyası kodlaması</string>
+    <string name="pref_credits_title">Emeği Geçenler</string>
+    <string name="pref_cursor_title">Hareketli İmleç</string>
+    <string name="pref_cursorcolor_title">Etkin renk</string>
+    <string name="pref_cursorvector_summary">Vektör çizgi uzunluğu türünü seçin</string>
+    <string name="pref_cursorvector_title">Vektör çizgi türü</string>
+    <string name="pref_cursorvectormlpr_summary">Vektör çizgi uzunluğunu belirleyin</string>
+    <string name="pref_cursorvectormlpr_title">Vektör çizgi uzunluğu</string>
+    <string name="pref_donate_google_title">Google Play ile bağışta bulunun</string>
+    <string name="pref_donate_paypal_title">Paypal ile bağışta bulunun</string>
+    <string name="pref_exit_title">Çıkış onayı</string>
+    <string name="pref_facebook_title">Facebook\'ta Beğen</string>
+    <string name="pref_faq_title">Sıkça Sorulan Sorular</string>
+    <string name="pref_feature_title">Geri besleme ve destek</string>
+    <string name="pref_folder_data_title">Veri Klasörü</string>
+    <string name="pref_folder_icon_title">Simgeler klasörü</string>
+    <string name="pref_folder_map_title">Haritalar klasörü</string>
+    <string name="pref_folder_prefix_caution">Bu seçenek yalnızca gelişmiş kullanıcılar içindir. Dikkatli kullanın: Eğer doğru ayarlanmazsa uygulamayı başlatamayabilirsiniz.</string>
+    <string name="pref_folder_prefix_title">Uygulama klasörü</string>
+    <string name="pref_folder_title">Klasörler</string>
+    <string name="pref_googleplus_title">Google+ da katılın</string>
+    <string name="pref_grid_mapshow_title">Gridleri haritada göster</string>
+    <string name="pref_grid_preference_title">Grid tercihi</string>
+    <string name="pref_grid_title">Grid çizgileri</string>
+    <string name="pref_grid_usermpp_summary">Özel grid hangi ölçekte görünür olacak</string>
+    <string name="pref_grid_usermpp_title">Özel grid sınırı</string>
+    <string name="pref_grid_userscale_title">Özel grid aralığı</string>
+    <string name="pref_grid_usershow_title">Özel grid göster</string>
+    <string name="pref_grid_userunit_title">Özel grid birimi</string>
+    <string name="pref_hideactionbar_summary">Harita görüntülendiğinde kenar çubuğunu gizlemek için işaretleyin. Uygulama yeniden başlatıldıktan sonra etkili olur.</string>
+    <string name="pref_hideactionbar_title">Eylem Çubuğunu gizle</string>
+    <string name="pref_loc_gpstimeout_summary">GPS konum bilgisinin kaybolmasından sonra mobil ağları kullanım için zaman aşımı süresini sn cinsinden girin</string>
+    <string name="pref_loc_gpstimeout_title">GPS konumu zaman aşımı</string>
+    <string name="pref_loc_store_summary">Uygulamayı son konumda başlatmak için işaretleyiniz</string>
+    <string name="pref_loc_store_title">Son konumu hatırla</string>
+    <string name="pref_loc_title">Konum</string>
+    <string name="pref_loc_usenetwork_summary">GPS konumu yoksa mobil ağlardan konumunuzu belirlemek için işaretleyin</string>
+    <string name="pref_loc_usenetwork_title">Ağları kullan</string>
+    <string name="pref_locale_title">Lisan</string>
+    <string name="pref_lookahead_summary">İlerleme istikametinde imleçi kaydırarak haritanın ne kadarını önceden göreceğinizi ayarlayın</string>
+    <string name="pref_lookahead_title">İstikameti önceden gör</string>
+    <string name="pref_map_title">Harita</string>
+    <string name="pref_mapadjacent_summary">Birleşik ve daha iyi harita gösterimi için işaretleyiniz(DENEME AŞAMASINDA, performansı önemliölçüde azaltabilir!)</string>
+    <string name="pref_mapadjacent_title">Bitişik haritalar</string>
+    <string name="pref_mapbest_summary">Mevcut konum için uygulamanın en iyi ölçekteki haritayı yüklemesi için işaretleyin</string>
+    <string name="pref_mapbest_title">En iyi ölçekli haritayı göster</string>
+    <string name="pref_mapbestinterval_summary">En iyi ölçekli harita arama sıklığı</string>
+    <string name="pref_mapbestinterval_title">En iyi haritayı arama sıklığı</string>
+    <string name="pref_mapcropborder_summary">Haritayı köşe işaretleri boyunca kırpmak için işaretleyiniz</string>
+    <string name="pref_mapcropborder_title">Harita kenar boşluklarını kırp</string>
+    <string name="pref_mapdim_summary">Ekran parlaklığını gece olunca otomatik olarak azaltmak için işaretle</string>
+    <string name="pref_mapdim_title">Ekranı otomatik karart</string>
+    <string name="pref_mapdimvalue_title">Parlaklık azaltma miktarı</string>
+    <string name="pref_mapdrawborder_summary">Köşe işaretleri boyunca harita kenarlarını çizmek için işaretleyiniz</string>
+    <string name="pref_mapdrawborder_title">Harita Kenarlarını Çiz</string>
+    <string name="pref_mapfollowonloc_title">İlk konumda otomatik takip et</string>
+    <string name="pref_maphideondrag_summary">Sürükleme esnasında harita nesnelerini gizlemek için işaretleyin</string>
+    <string name="pref_maphideondrag_title">Sürüklemede nesneleri gizle</string>
+    <string name="pref_maprenderinterval_summary">Harita yenileme zaman aralığı</string>
+    <string name="pref_maprenderinterval_title">Yenileme sıklığı</string>
+    <string name="pref_name">Androzic ayarları</string>
+    <string name="pref_navigation_linewidth_summary">Gidilen yerin istikamet çizgisinin genişliği</string>
+    <string name="pref_navigation_linewidth_title">İz çizgisi genişliği</string>
+    <string name="pref_navigation_loadlast_summary">Sonraki program başlangıcında tamamlanmamış rotayı yüklemek için işaretleyin</string>
+    <string name="pref_navigation_loadlast_title">Son rotayı yükle</string>
+    <string name="pref_navigation_proximity_summary">Rota seyrüseferi esnasında bir sonraki yer imine devam etmek için gerekli yakınlık ayarı</string>
+    <string name="pref_navigation_proximity_title">Yer imi yakınlık ikazı</string>
+    <string name="pref_navigation_proximitycircle_summary">Seyrüsefer esnasında yer imleri etrafına yakınlık ikaz çemberi oluşturmak için işaretleyin</string>
+    <string name="pref_navigation_proximitycircle_title">Yakınlık mesafe ayarı</string>
+    <string name="pref_navigation_title">Seyrüsefer</string>
+    <string name="pref_navigation_traverse_summary">Sonraki rota yer imine otomatik geçişte yakınlık ikazı ile birlikte çapraz mantık kullanımı için işaretleyin</string>
+    <string name="pref_navigation_traverse_title">Çapraz mantık kullan</string>
+    <string name="pref_onlinemap_summary">Çevrimiçi harita kaynağı</string>
+    <string name="pref_onlinemap_title">Harita sağlayıcısı</string>
+    <string name="pref_onlinemaps_title">Çevirimiçi harita</string>
+    <string name="pref_onlinemapscale_summary">Yakınlaştırma düzeyi % 100 olarak yorumlanır</string>
+    <string name="pref_onlinemapscale_title">Varsayılan yakınlaştırma düzeyi</string>
+    <string name="pref_orientation_title">Ekran yönü</string>
+    <string name="pref_panelactions_title">Kayan panel eylemleri</string>
+    <string name="pref_plugins_title">Eklentiler</string>
+    <string name="pref_route_linewidth_summary">Rota çizgisinin pixel cinsinden genişliği</string>
+    <string name="pref_route_linewidth_title">Çizgi genişliği</string>
+    <string name="pref_route_pointwidth_summary">Rota yer imi işaretçisi piksel boyutu</string>
+    <string name="pref_route_pointwidth_title">Rota yer imi boyut ayarı</string>
+    <string name="pref_route_preload_hidden_summary">Yüklenen rotaları görüntülenene kadar, düzenlene kadar veya seyrüsefer yapılana kadar gizle</string>
+    <string name="pref_route_preload_hidden_title">Önceden yüklenmiş rotaları gizle</string>
+    <string name="pref_route_preload_summary">Uygulama başlatılırken dosyadan rotaları yüklemek için işaretleyiniz</string>
+    <string name="pref_route_preload_title">Açılışta rotaları yükle</string>
+    <string name="pref_route_showname_summary">Rota yer imi adını işaretçi yanında göstermek için işaretleyin</string>
+    <string name="pref_route_showname_title">Yer imi adını göster</string>
+    <string name="pref_route_title">Rotalar</string>
+    <string name="pref_scalebarcolor_title">Ölçek çubuğu rengi</string>
+    <string name="pref_show_title">Görünüm</string>
+    <string name="pref_showaccuracy_summary">Konum imleci etrafında hassasiyet çemberini göstermek için işaretleyin</string>
+    <string name="pref_showaccuracy_title">Hassasiyet çemberini göster</string>
+    <string name="pref_showcurrenttrack_summary">Geçerli izi haritada görünür yapmak için işaretleyin</string>
+    <string name="pref_showcurrenttrack_title">Mevcut izi göster</string>
+    <string name="pref_showdistance_title">Mesafeyi göster</string>
+    <string name="pref_showmapinfo_summary">Mevcut harita adını ve yakınlaştıma miktarını göstermek için işaretleyin</string>
+    <string name="pref_showmapinfo_title">Harita panelini göster</string>
+    <string name="pref_showsatinfo_summary">Geçerli kordinat ve GPS durum panelini göstermek için işaretle</string>
+    <string name="pref_showsatinfo_title">Uydu panelini göster</string>
+    <string name="pref_tracking_currentcolor_title">Geçerli iz çizgisi rengi</string>
+    <string name="pref_tracking_currentlength_summary">Geçerli iz çizgisinde bulunacak maksimum nokta sayısı</string>
+    <string name="pref_tracking_currentlength_title">Geçerli iz uzunluğu</string>
+    <string name="pref_tracking_currentload_summary">Geçerli iz çizgisini sonraki uygulama başlangıcında yüklemek için işaretleyin</string>
+    <string name="pref_tracking_currentload_title">Geçerli izi yükle</string>
+    <string name="pref_tracking_linewidth_summary">Yol izinin piksel cinsinden çizgi kalınlığı</string>
+    <string name="pref_tracking_linewidth_title">Çizgi genişliği</string>
+    <string name="pref_tracking_mindistance_summary">Yeni bir iz noktası kaydı yapılana kadar geçilecek metre cinsinden minimum mesafe</string>
+    <string name="pref_tracking_mindistance_title">Minimum mesafe</string>
+    <string name="pref_tracking_mintime_summary">Başka bir iz noktası kaydetmeden önce milisaniye cinsinden geçmesi gereken minimum süre</string>
+    <string name="pref_tracking_mintime_title">Minimum süre</string>
+    <string name="pref_tracking_title">İzler</string>
+    <string name="pref_twitter_title">Twitter\'da izleyin</string>
+    <string name="pref_unfollowontap_title">Sürüklemede otomatik takibi bırak</string>
+    <string name="pref_unit_title">Birimler</string>
+    <string name="pref_unitangle_title">İstikamet açısı</string>
+    <string name="pref_unitcoordinate_title">Koordinat Biçimi</string>
+    <string name="pref_unitdistance_title">Mesafe</string>
+    <string name="pref_unitelevation_title">İrtifa</string>
+    <string name="pref_unitprecision_title">Extra precision</string>
+    <string name="pref_unitspeed_title">Hız</string>
+    <string name="pref_unitsunrise_title">Gündoğumu ve günbatımı</string>
+    <string name="pref_uri_summary">Web sitesine gitmek için tıklayın</string>
+    <string name="pref_usemapindex_title">Harita indeksleme kullan</string>
+    <string name="pref_useonlinemap_title">Çevirimiçi harita kullan</string>
+    <string name="pref_wakelock_summary">Harita görüntülendiğinde cihazın ekranını sürekli açık ve parlak tutmak için işaretleyiniz</string>
+    <string name="pref_wakelock_title">Ekran sürekli açık</string>
+    <string name="pref_waypoint_bgcolor_title">Yer imi arka plan rengi</string>
+    <string name="pref_waypoint_color_title">İşaretçi rengi</string>
+    <string name="pref_waypoint_namecolor_title">Yer imi rengi</string>
+    <string name="pref_waypoint_showname_summary">Yer imi işaretçisinin yanında yer imi adını göstermek için işaretleyin</string>
+    <string name="pref_waypoint_showname_title">Yer imi adını göster</string>
+    <string name="pref_waypoint_title">Yer imleri</string>
+    <string name="pref_waypoint_visible_summary">Yeni oluşturulan yer imini haritada ortalamak için işaretleyin</string>
+    <string name="pref_waypoint_visible_title">Yeni oluşturunca haritada göster</string>
+    <string name="pref_waypoint_width_summary">Yer imlerinin pixel cinsinden boyut ayarı</string>
+    <string name="pref_waypoint_width_title">Yer imi boyut ayarı</string>
+    <string name="primary">Birincil</string>
+    <string name="provider">Sağlayıcı</string>
+    <string name="proximity">Yakınlık</string>
+    <string name="quit">Çıkış</string>
+    <string name="quitQuestion">Programdan çıkmak istiyor musunuz?</string>
+    <string name="removeWaypointQuestion">Yer imi kaldırılsın mı?</string>
+    <string name="restart_needed">Uygulamanın yeniden başlatılması gerekli</string>
+    <string name="restart_needed_explained">Bu özellik uygulamanın tamamıyla yeniden başlatılmasını gerektirir. Bununla kasıt android uygulama ayarlarından da ayrıca programın kapatılmaya zorlanmasıdır.</string>
+    <string name="routedetails_name">Rota Detayı</string>
+    <string name="routeproperties_name">Rotayı düzenle</string>
+    <string name="s">G</string>
+    <string name="sat_firstfix">GPS etkin</string>
+    <string name="sat_start">GPS etkinleştirildi</string>
+    <string name="sat_stop">GPS devre dışı</string>
+    <string name="satellites">Uydular</string>
+    <string name="save">Kaydet</string>
+    <string name="saveroute_name">Rotayı dosyaya kaydet</string>
+    <string name="savetrack_name">İzi dosyaya kaydet</string>
+    <string name="search_hint">Adres veya yer imi adı girin</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Ara"</string>
+    <string name="search_name">Arama sonuçları</string>
+    <string name="selectroute_name">Rota seç</string>
+    <string name="send_me_bugs">Program ile ilgili herhangi bir öneriniz varsa veya düzeltilmesini istediğiniz bir hata ile karşılaşıyorsanız, tereddüt etmeden proje ana sayfasında yer alan \"issue tracker\" bölümüne yazınız.</string>
+    <string name="sensitivity">Hassasiyet</string>
+    <string name="show">Göster</string>
+    <string name="showcase_add_waypoint_description">Tap action icon to quickly add new waypoint in current cursor position.</string>
+    <string name="showcase_add_waypoint_title">Yer imi ekle</string>
+    <string name="showcase_follow_description">Press follow icon to enable following mode. In this mode map will be fixed to your current position. Alternatively you can double tap on map to switch following mode on and off.</string>
+    <string name="showcase_follow_title">Konum takip ediliyor</string>
+    <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
+    <string name="showcase_load_waypoints_title">Yer imlerini yükle</string>
+    <string name="showcase_panel_description">Slide or drag sliding panel handler to access quick actions. Quick actions can be configured in Settings.</string>
+    <string name="showcase_panel_title">Hızlı işlemler</string>
+    <string name="showcase_search_description">You can type specific coordinates in various formats to find them on map, search through loaded waypoint or route names and descriptions, search for places and addresses through Google geocoding service (Internet connection is required for this to work).</string>
+    <string name="showcase_search_title">Ara</string>
+    <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
+    <string name="showcase_waypointset_actions_title">Yer imi grup ayarları</string>
+    <string name="skip_single_locations">Tek konumları atla</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Gündoğumu</string>
+    <string name="sunset">Günbatımı</string>
+    <string name="t2r_explained"><b>Bu özellik deneyseldir.</b> İz mantıklı olmalıdır. Bundan kasıt A noktasından B noktasına gidişi tanımlamalıdır fakat tek noktayı her yerde aramamalıdır. Her iki algoritmayı da deneyin ve hangisinin daha iyi olduğunu görün. `Cruise´ algoritması doğrusaldır ve rota oluşturması zaman bağlı olarak tahmin edilebilir oysa `Fırfır´ algoritması tamamen tahmin edilemezdir. \"Kaba\" hassasiyeti bazı dönüşlerin kaçırılmasına neden olabilirken aynı zamanda \"ince\" hassasiyet gereksiz noktaların eklenmesine neden olabilir.</string>
+    <string name="textcolor">Yer imi rengi</string>
+    <string name="till_date">Bitiş noktası</string>
+    <string name="track2route_name">İzi rotaya dönüştür</string>
+    <string name="trackproperties_name">İzi düzenle</string>
+    <string name="update_almanac">Almanak güncelleştirmesi yap</string>
+    <string name="upto">%0.f metreye kadar</string>
+    <string name="vdop">Dikey sapma</string>
+    <string name="version">Sürüm: %s</string>
+    <string name="warning">Uyarı</string>
+    <string name="waypointproject_name">Yeni yer imi oluştur</string>
+    <string name="waypointproperties_name">Yer imini düzenle</string>
+    <string name="waypointset">Yer imi Grubu</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Evet</string>
+    <string name="zone">Bölge</string>
+</resources>

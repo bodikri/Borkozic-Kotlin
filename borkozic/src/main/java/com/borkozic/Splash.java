@@ -19,8 +19,8 @@
  */
 
 package com.borkozic;
-
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,9 +29,11 @@ import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -62,6 +64,7 @@ import com.borkozic.util.OziExplorerFiles;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Splash extends Activity implements OnClickListener
@@ -88,7 +91,25 @@ public class Splash extends Activity implements OnClickListener
 	private Button no;
 	private Button quit;
 	protected Borkozic application;
+	//Permission atributes
+	private final static int ALL_PERMISSIONS_RESULT = 101;
+	ArrayList<String> permissions = new ArrayList<>();
+	ArrayList<String> permissionsToRequest;
+	ArrayList<String> permissionsRejected = new ArrayList<>();
 
+	private File getAppBaseDir() {
+		File externalDir = getExternalFilesDir(null);
+		if (externalDir != null) {
+			return externalDir;
+		}
+		File internalDir = getFilesDir();
+		if (internalDir != null) {
+			Log.w("Splash", "Using internal files dir as fallback");
+			return internalDir;
+		}
+		// Краен случай - не би трябвало да се случи
+		throw new RuntimeException("Cannot get app base directory");
+	}
 	@SuppressLint("NewApi")
 	@Override
 	public void onCreate(Bundle savedInstanceState)
@@ -96,9 +117,27 @@ public class Splash extends Activity implements OnClickListener
 		super.onCreate(savedInstanceState);
 
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
+		/*
+		permissions.add(Manifest.permission.NAVIGATION);
+		permissions.add(Manifest.permission.READ_MAP_DATA);
+		permissions.add(Manifest.permission.READ_PREFERENCES);
+		permissions.add(Manifest.permission.RECEIVE_LOCATION);
+		permissions.add(Manifest.permission.RECEIVE_TRACK);
+		permissions.add(Manifest.permission.WRITE_MAP_DATA);
+		*/
+		permissions.add(android.Manifest.permission.ACCESS_FINE_LOCATION);
+		//permissions.add(android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+		//permissions.add(android.Manifest.permission.READ_EXTERNAL_STORAGE);
+		permissions.add(android.Manifest.permission.INTERNET);
+		permissions.add(android.Manifest.permission.ACCESS_COARSE_LOCATION);
+		permissions.add(android.Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+			permissions.add(android.Manifest.permission.POST_NOTIFICATIONS);
+		}
 
+		permissionsToRequest = findUnAskedPermissions(permissions);
 		application = (Borkozic) getApplication();
-
+		/**/
 		PreferenceManager.setDefaultValues(this, R.xml.pref_behavior, true);
 		PreferenceManager.setDefaultValues(this, R.xml.pref_folder, true);
 		PreferenceManager.setDefaultValues(this, R.xml.pref_location, true);
@@ -111,25 +150,25 @@ public class Splash extends Activity implements OnClickListener
 		PreferenceManager.setDefaultValues(this, R.xml.pref_general, true);
 
 		setContentView(R.layout.act_splash);
-
+		/*
 		if (application.isPaid)
 		{
 			findViewById(R.id.paid).setVisibility(View.VISIBLE);
 		}
-
-		progress = (ProgressBar) findViewById(R.id.progress);
-		message = (TextView) findViewById(R.id.message);
+		*/
+		progress = findViewById(R.id.progress);//PROGRESBAR
+		message = findViewById(R.id.message);//TEXTvIEW
 
 		message.setText(getString(R.string.msg_wait));
 		progress.setMax(PROGRESS_STEP * 4);
 
-		yes = (Button) findViewById(R.id.yes);
+		yes = findViewById(R.id.yes);//Button Yes
 		yes.setOnClickListener(this);
-		no = (Button) findViewById(R.id.no);
+		no = findViewById(R.id.no);//Button No
 		no.setOnClickListener(this);
-		gotit = (Button) findViewById(R.id.gotit);
+		gotit = findViewById(R.id.gotit);
 		gotit.setOnClickListener(this);
-		quit = (Button) findViewById(R.id.quit);
+		quit = findViewById(R.id.quit);
 		quit.setOnClickListener(this);
 
 		wait = true;
@@ -145,13 +184,14 @@ public class Splash extends Activity implements OnClickListener
 			progressHandler.sendEmptyMessage(MSG_FINISH);
 		}
 	}
-
+	//@RequiresApi(api = Build.VERSION_CODES.M)
 	private void showEula()
 	{
 		final SpannableString message;
 		final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		boolean hasBeenShown = prefs.getBoolean(getString(R.string.app_eulaaccepted), false);
-		if (hasBeenShown == false)
+
+		if (!hasBeenShown)
 		{
 			if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N)
 			{// Do things the Android M way
@@ -190,6 +230,13 @@ public class Splash extends Activity implements OnClickListener
 		else
 		{
 			wait = false;
+		}
+		//Ето тук преди да е зазпочнало всичко е необходимо permissions за всичко
+
+		if (permissionsToRequest.size() > 0 && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+			requestPermissions(permissionsToRequest.toArray(new String[permissionsToRequest.size()]), ALL_PERMISSIONS_RESULT);
+		} else {
+			//Toast.makeText(context,"Permissions already granted.", Toast.LENGTH_LONG).show();
 		}
 	}
 
@@ -243,6 +290,7 @@ public class Splash extends Activity implements OnClickListener
 			mHandler = h;
 		}
 
+
 		public void run()
 		{
 			while (wait)
@@ -268,117 +316,124 @@ public class Splash extends Activity implements OnClickListener
 			Resources resources = getResources();
 			SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(Splash.this);
 
+
+			Log.d("Splash", "Step 1: start location service");
 			// start location service
 			application.enableLocating(settings.getBoolean(getString(R.string.lc_locate), true));
 
-			// set root folder and check if it has to be created
-			String rootPath = settings.getString(getString(R.string.pref_folder_root), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_prefix));
+// ⚠️ Игнорираме старата настройка и винаги използваме app-specific storage
+			String rootPath = getAppBaseDir().getAbsolutePath() + File.separator + resources.getString(R.string.def_folder_prefix);
+
+// Записваме новия път в настройките, за да се помни за в бъдеще
+			Editor editor = settings.edit();
+			editor.putString(getString(R.string.pref_folder_root), rootPath);
+			editor.apply();
+
+			Log.d("Splash", "Step 2: root path = " + rootPath);
 			File root = new File(rootPath);
-			if (!root.exists())
-			{
-				try
-				{
-					root.mkdirs();
-					File nomedia = new File(root, ".nomedia");
-					nomedia.createNewFile();
+			if (!root.exists()) {
+				boolean created = false;
+				try {
+					created = root.mkdirs();
+				} catch (Exception e) {
+					Log.e("Splash", "mkdirs exception", e);
 				}
-				catch (IOException e)
-				{
+				if (!created) {
+					Log.e("Splash", "Failed to create root directory: " + rootPath);
+					// Допълнителна информация за parent директорията
+					File parent = root.getParentFile();
+					if (parent != null) {
+						Log.e("Splash", "Parent exists: " + parent.exists() + " canWrite: " + parent.canWrite());
+					} else {
+						Log.e("Splash", "Parent is null");
+					}
 					msg = mHandler.obtainMessage(MSG_ERROR);
-					b = new Bundle();
-					b.putString("message", getString(R.string.err_nosdcard));
-					msg.setData(b);
+					Bundle errorBundle = new Bundle();         // ✅ ново име
+					errorBundle.putString("message", "Cannot create root directory");
+					msg.setData(errorBundle);
 					mHandler.sendMessage(msg);
 					return;
 				}
+				try {
+					new File(root, ".nomedia").createNewFile();
+				} catch (IOException e) {
+					Log.w("Splash", "Failed to create .nomedia", e);
+				}
+			} else {
+				Log.d("Splash", "Root directory already exists");
 			}
 
 			// check maps folder existence
-			File mapdir = new File(settings.getString(getString(R.string.pref_folder_map), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_map)));
+			String mapPath = getAppBaseDir().getAbsolutePath() + File.separator + resources.getString(R.string.def_folder_map);
+			File mapdir = new File(mapPath);
+			editor.putString(getString(R.string.pref_folder_map), mapPath);
+
+// ⚠️ Игнорираме старата настройка pref_folder_map_old
 			String oldmap = settings.getString(getString(R.string.pref_folder_map_old), null);
-			if (oldmap != null)
-			{
-				File oldmapdir = new File(root, oldmap);
-				if (!oldmapdir.equals(mapdir))
-				{
-					mapdir = oldmapdir;
-					Editor editor = settings.edit();
-					editor.putString(getString(R.string.pref_folder_map), mapdir.getAbsolutePath());
-					editor.putString(getString(R.string.pref_folder_map_old), null);
-					editor.apply();
+			Log.d("Splash", "Step 3: oldmap (ignored) = " + oldmap);
+
+// Уверяваме се, че mapdir съществува
+			if (!mapdir.exists()) {
+				boolean created = mapdir.mkdirs();
+				if (!created) {
+					Log.e("Splash", "Failed to create map directory: " + mapdir.getAbsolutePath());
 				}
-			}
-			if (!mapdir.exists())
-			{
-				mapdir.mkdirs();
 			}
 
 			// check data folder existence
-			File datadir = new File(settings.getString(getString(R.string.pref_folder_data), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_data)));
-			//Toast.makeText(Splash.this,datadir.toString(),Toast.LENGTH_LONG).show();
-			android.util.Log.i("Splash",datadir.toString());
-			if (!datadir.exists())
-			{
-				// check if there was an old data structure
-				String wptdir = settings.getString(getString(R.string.pref_folder_waypoint), null);
-				System.err.println("wpt: " + wptdir);
-				if (wptdir != null)
-				{
-					wait = true;
-					msg = mHandler.obtainMessage(MSG_SAY);
-					b = new Bundle();
-					b.putString("message", getString(R.string.msg_newdatafolder, datadir.getAbsolutePath()));
-					msg.setData(b);
-					mHandler.sendMessage(msg);
+// data folder
+			File datadir = new File(getAppBaseDir(), resources.getString(R.string.def_folder_data));
+			Log.d("Splash", "data directory: " + datadir.getAbsolutePath());
 
-					while (wait)
-					{
-						try
-						{
-							sleep(100);
-						}
-						catch (InterruptedException e)
-						{
-							e.printStackTrace();
-						}
-					}
+			if (!datadir.exists()) {
+				boolean created = datadir.mkdirs();
+				if (!created) {
+					Log.e("Splash", "Failed to create data directory: " + datadir.getAbsolutePath());
 				}
-				datadir.mkdirs();
+			}
+
+// Копиране на zoni (ако искаш да се изпълнява всеки път – както в оригинала)
+			try {
 				application.copyAssets("zoni", datadir);
-			}else{
-				try{android.util.Log.e("Spalsh", "Copy zoni");
-					application.copyAssets("zoni", datadir);
-				}
-				catch (Exception e){
-					android.util.Log.e("Spalsh", "Error_Copy zoni", e);
-				}
+				Log.d("Splash", "zoni copied successfully");
+			} catch (Exception e) {
+				Log.e("Splash", "Error copying zoni", e);
 			}
 
 			// check icons folder existence
-			File iconsdir = new File(settings.getString(getString(R.string.pref_folder_icon), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_icon)));
-			if (!iconsdir.exists())
-			{
-				try
-				{
-					iconsdir.mkdirs();
-					File nomedia = new File(iconsdir, ".nomedia");
-					nomedia.createNewFile();
-					application.copyAssets("icons", iconsdir);
-				}
-				catch (IOException e)
-				{
-					e.printStackTrace();
+			File iconsdir = new File(getAppBaseDir(), resources.getString(R.string.def_folder_icon));
+
+			if (!iconsdir.exists()) {
+				boolean created = iconsdir.mkdirs();
+				if (created) {
+					try {
+						new File(iconsdir, ".nomedia").createNewFile();
+					} catch (IOException e) {
+						Log.e("Splash", "Failed to create .nomedia file", e);
+					}
+				} else {
+					Log.e("Splash", "Failed to create icons directory");
 				}
 			}
+			try {
+				application.copyAssets("icons", iconsdir);
+			} catch (Exception e) {
+				Log.e("Splash", "Error copying icons", e);
+			}
 
-			File sasdir = new File(settings.getString(getString(R.string.pref_folder_sas), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_sas)));
+			//File sasdir = new File(settings.getString(getString(R.string.pref_folder_sas), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_sas)));
+			File sasdir = new File(settings.getString(getString(R.string.pref_folder_sas), getAppBaseDir().getAbsolutePath() + File.separator + resources.getString(R.string.def_folder_sas)));
 			// check planes folder existence//resources.getString(R.string.def_folder_plane)
 			//android.util.Log.i("Splash",sasdir.toString());
-			File planesdir = new File(settings.getString(getString(R.string.pref_folder_plane), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_plane)));
+			//File planesdir = new File(settings.getString(getString(R.string.pref_folder_plane), Environment.getExternalStorageDirectory() + File.separator + resources.getString(R.string.def_folder_plane)));
+			File planesdir = new File(settings.getString(getString(R.string.pref_folder_plane), getAppBaseDir().getAbsolutePath() + File.separator + resources.getString(R.string.def_folder_plane)));
 			//android.util.Log.i("Splash",planesdir.toString());
-			File dirL = new File(Environment.getExternalStorageDirectory() + File.separator + "Borkozic/planes/L39");
-			File dirPC = new File(Environment.getExternalStorageDirectory() + File.separator + "Borkozic/planes/PC9");
-			File dirMiG = new File(Environment.getExternalStorageDirectory() + File.separator + "Borkozic/planes/MiG29");
+
+			//File dirL = new File(Environment.getExternalStorageDirectory() + File.separator + "Borkozic/planes/L39");
+			File dirL = new File(getAppBaseDir(), "planes/L39");
+			//File dirPC = new File(Environment.getExternalStorageDirectory() + File.separator + "Borkozic/planes/PC9");
+			File dirPC = new File(getAppBaseDir(), "planes/PC9" );
+			File dirMiG = new File(getAppBaseDir(), "planes/MiG29");
 
 			//android.util.Log.i("Splash",dirMiG.toString());
 //resources.getString(R.string.def_folder_plane)
@@ -594,6 +649,80 @@ public class Splash extends Activity implements OnClickListener
 			mHandler.sendEmptyMessage(MSG_FINISH);
 		}
 	}
+	private ArrayList findUnAskedPermissions(ArrayList<String> wanted) {
+		ArrayList result = new ArrayList();
+
+		for (String perm : wanted) {
+			if (!hasPermission(perm)) {
+				result.add(perm);
+			}
+		}
+
+		return result;
+	}
+
+	private boolean hasPermission(String permission) {
+		if (canAskPermission()) {
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+				return (checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED);
+			}
+		}
+		return true;
+	}
+
+	private boolean canAskPermission() {
+		return (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1);
+	}
+	@TargetApi(Build.VERSION_CODES.M)
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		switch (requestCode) {
+			case ALL_PERMISSIONS_RESULT:
+				//Log.d(TAG, "onRequestPermissionsResult");
+				for (String perms : permissionsToRequest) {
+					if (!hasPermission(perms)) {
+						permissionsRejected.add(perms);
+					}
+				}
+
+				if (permissionsRejected.size() > 0) {
+					if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+						if (shouldShowRequestPermissionRationale(permissionsRejected.get(0))) {
+							String msg = "These permissions are mandatory for the application. Please allow access.";
+							showMessageOKCancel(msg,
+									new DialogInterface.OnClickListener() {
+										@Override
+										public void onClick(DialogInterface dialog, int which) {
+											if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+												requestPermissions(permissionsRejected.toArray(
+														new String[permissionsRejected.size()]), ALL_PERMISSIONS_RESULT);
+											}
+										}
+									});
+							return;
+						}
+					}
+				} else {
+					//Toast.makeText(context, "Permissions garanted.", Toast.LENGTH_LONG).show();
+				}
+				break;
+		}
+	}
+
+	private void showMessageOKCancel(String message, DialogInterface.OnClickListener okListener) {
+		new AlertDialog.Builder(this)
+				.setMessage(message)
+				.setPositiveButton("OK", okListener)
+				.setNegativeButton("Cancel", null)
+				.create()
+				.show();
+	}
+
+
+
+
+
+
 
 	@Override
 	public void onClick(View v)

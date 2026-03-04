@@ -1,0 +1,557 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>tosi</item>
+    <item>magn.</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>DD.DDDDDD</item>
+    <item>DD° MM.MMMM\'</item>
+    <item>DD° MM\' SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Ozf2, ozfx3 karttatuki</item>
+    <item>Ohjelmaikoni</item>
+    <item>Värivalinnan alkukoodi</item>
+    <item>Hakupalkin asetusten alkukoodi</item>
+    <item>Auringon nousu/laskulaskenta</item>
+    <item>Drag\'n\'drop listan alkukoodi</item>
+    <item>Monikosketus ohjain</item>
+    <item>Showcase library</item>
+    <item>Interface icons</item>
+    <item>Reittipisteiden kuvakkeet</item>
+    <item>Czech localization</item>
+    <item>French localization</item>
+    <item>Finnish localization</item>
+    <item>Bulgarian localization</item>
+    <item>German localization</item>
+    <item>Turkish localization</item>
+    <item>Italian localization</item>
+    <item>Spanish localization</item>
+    <item>Swedish localization</item>
+    <item>Ukrainian localization</item>
+    <item>Portuguese localization</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Ei mitään</item>
+    <item>Lähi etäisyys</item>
+    <item>Aika (minuuttia)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>ml</item>
+    <item>ml</item>
+    <item>nm</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>yd</item>
+    <item>ft</item>
+    <item>nmˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>metri</item>
+    <item>yardi</item>
+    <item>jalka</item>
+    <item>(merimaili)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>kilometri/metri</item>
+    <item>maili/yardi</item>
+    <item>maili/jalka</item>
+    <item>merimaili</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>ft</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>metriä</item>
+    <item>jalkaa</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Kaksoisnapauta palaa painiketta</item>
+    <item>Vahvistuksen valintaikkuna</item>
+    <item>Ei mitään</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Käytä kartan ruudustoa</item>
+    <item>Käytä omaa ruudustoa</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Ei koskaan</item>
+    <item>Päivittäin</item>
+    <item>Viikottain</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Oletus</item>
+    <item>Pysty</item>
+    <item>Vaaka</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Lähennä</item>
+    <item>Loitonna</item>
+    <item>Enemmän skaalattu kartta</item>
+    <item>Vähemmän skaalattu kartta</item>
+    <item>Kartat kursorin kohdalla</item>
+    <item>Reittipisteiden hallinta</item>
+    <item>Näytä tiedot</item>
+    <item>Seuraa / lopeta seuranta</item>
+    <item>Hae sijainti</item>
+    <item>kirjoita polku</item>
+    <item>Näytä / piilota tilarivi</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Ei</item>
+    <item>Manuaalisesti</item>
+    <item>Aina</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/h</item>
+    <item>ml/h</item>
+    <item>kn</item>
+    <item>m/s</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>kilometeriä tunnissa</item>
+    <item>mailia tunnissa</item>
+    <item>solmua</item>
+    <item>metriä sekunnissa</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Virallinen</item>
+    <item>Siviili</item>
+    <item>Nautical</item>
+    <item>Astronominen</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Siirry etusivulle"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Siirry ylös"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Lisäasetukset"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Valmis"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Näytä kaikki"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Valitse sovellus"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"POIS PÄÄLTÄ"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"PÄÄLLÄ"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Fn+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Vaihto+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"välilyönti"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Valikko+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Haku…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Tyhjennä kysely"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Hakukysely"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Haku"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Lähetä kysely"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Puhehaku"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Jaa…"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Jaa: <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Tiivistä"</string>
+    <string name="accuracy">Tarkkuus</string>
+    <string name="action_bar_sort_alpha">Aakkosjärjestys</string>
+    <string name="action_bar_sort_distance">Etäisyyden mukaan</string>
+    <string name="advanced">Lisäasetukset</string>
+    <string name="advanced_name">Lisäominaisuudet</string>
+    <string name="alg_a">Risteile</string>
+    <string name="alg_b">Säie</string>
+    <string name="algorithm">Algoritmi</string>
+    <string name="altitude">Korkeus</string>
+    <string name="app_eula">This program is distributed under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License./n/n
+    This application is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details./n/n
+    All rights granted under this License are granted for the term of copyright
+    on the Program, and are irrevocable provided the stated conditions are met.
+    This License explicitly affirms your unlimited permission to run the unmodified
+    Program./n/n
+    You are not required to accept this License in order to receive or run a copy of
+    the Program. Ancillary propagation of a covered work occurring solely as
+    a consequence of using peer-to-peer transmission to receive a copy likewise does
+    not require acceptance. However, nothing other than this License grants you
+    permission to propagate or modify any covered work. These actions infringe
+    copyright if you do not accept this License. Therefore, by modifying or propagating
+    a covered work, you indicate your acceptance of this License to do so./n/n
+    For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">Reitin päätepiste saavutettu</string>
+    <string name="backQuit">Paina takaisin uudestaan, niin ohjelma lopetetaan</string>
+    <string name="badmaps">Kartan indeksointivirhe</string>
+    <string name="bearing">Suunta</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Vastaa"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Hylkää"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Lopeta puhelu"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Saapuva puhelu"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Käynnissä oleva puhelu"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Seulotaan saapuvaa puhelua"</string>
+    <string name="cancel">Hylkää</string>
+    <string name="change">Muuta</string>
+    <string name="coarse">karkea</string>
+    <string name="color">Väri</string>
+    <string name="coordformat">Koordinaattien muoto</string>
+    <string name="coordinates_name">Uudet koordinaatit</string>
+    <string name="credits_name">Application credits</string>
+    <string name="currentloc">Nykyinen paikka</string>
+    <string name="declination">Poikkeama</string>
+    <string name="degmag">Mag.</string>
+    <string name="degtrue">tosi</string>
+    <string name="description">Selostus</string>
+    <string name="direction">Valitse suunta</string>
+    <string name="distance">Etäisyys</string>
+    <string name="donation_required">Tämä ominaisuus on käytettävissä vain lahjoittajille</string>
+    <string name="done">Valmis</string>
+    <string name="easting">Easting</string>
+    <string name="err_no_network_provider">Ei verkkosijainnin tarjoajaa </string>
+    <string name="err_noconnection">Verkon yhteysvirhe</string>
+    <string name="err_nofile">Ei tiedostoa</string>
+    <string name="err_nogps">GPS:ää ei löydy</string>
+    <string name="err_nomemory">Muisti loppu, raportoi ohj. kehittäjälle</string>
+    <string name="err_nosdcard">SD korttia ei ole</string>
+    <string name="err_notconfigured">Ei määritetty</string>
+    <string name="err_read">Tiedostoa ei voi lukea</string>
+    <string name="err_shortroute">Reitissä pitää olla vähintään kaksi reittipistettä</string>
+    <string name="err_write">Ei voi kirjoittaa tiedostoon</string>
+    <string name="err_wrongformat">Väärä tiedostomuoto</string>
+    <string name="exporttrack_name">Vie jälki</string>
+    <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
+    <string name="filename">Tiedostonimi</string>
+    <string name="fine">hieno</string>
+    <string name="following_disabled">Seuranta pois</string>
+    <string name="following_enabled">Seuranta päällä</string>
+    <string name="format">Muoto</string>
+    <string name="from">Mistä</string>
+    <string name="from_date">Alkaen</string>
+    <string name="generate">Generoi</string>
+    <string name="gotit">Asia ymmärretty</string>
+    <string name="hdop">HDOP</string>
+    <string name="hemisphere">Pallonpuolisko</string>
+    <string name="homepage">Kotisivu: http://androzic.com/</string>
+    <string name="hsi_name">HSI</string>
+    <string name="icon">Kuvake</string>
+    <string name="information_name">Informaatio</string>
+    <string name="lastfix">Viime fix</string>
+    <string name="latitude">Latitudi</string>
+    <string name="line_width">Viivan leveys</string>
+    <string name="loadroute_name">Lataa reitti tiedostosta</string>
+    <string name="loadtrack_name">Lataa jälki tiedostosta</string>
+    <string name="loadwaypoints_name">Avaa reittipistesarja</string>
+    <string name="longitude">Longitudi</string>
+    <string name="manageroutes_name">Reitit</string>
+    <string name="managetracks_name">Jäljet</string>
+    <string name="managewaypoints_name">Reittipisteet</string>
+    <string name="mapinformation_name">Kartan tiedot</string>
+    <string name="maplist_name">Kartat</string>
+    <string name="markercolor">Merkin väri</string>
+    <string name="markericon_name">Valitse merkki kuvake</string>
+    <string name="menu_addtoroute">Lisää reittiin</string>
+    <string name="menu_addwaypoint">Lisää reittipiste</string>
+    <string name="menu_all">Kaikki</string>
+    <string name="menu_anchor">Aseta ankkuri</string>
+    <string name="menu_atcursor">Kursorin kohdalla</string>
+    <string name="menu_change">Muuta</string>
+    <string name="menu_clear">Poista</string>
+    <string name="menu_clearcurrenttrack">Tyhjennä nykyinen jälki</string>
+    <string name="menu_compass">Kompassi</string>
+    <string name="menu_copy">Kopioi</string>
+    <string name="menu_delete">Poista</string>
+    <string name="menu_details">Tiedot</string>
+    <string name="menu_dismiss">Poistu</string>
+    <string name="menu_edit">Editoi</string>
+    <string name="menu_expandcurrenttrack">Näytä kokonaan nykyinen jälki</string>
+    <string name="menu_exportcurrenttrack">Vie nykyinen jälki</string>
+    <string name="menu_follow">Salli seuranta</string>
+    <string name="menu_gps">GPS asetukset</string>
+    <string name="menu_hsi">HSI</string>
+    <string name="menu_information">Informaatio</string>
+    <string name="menu_load">Lataa tiedostosta</string>
+    <string name="menu_location">Sijainti</string>
+    <string name="menu_manage">Hallitse</string>
+    <string name="menu_maps">Kartat</string>
+    <string name="menu_navigate">Navigoi</string>
+    <string name="menu_navigation">Navigointi</string>
+    <string name="menu_new">Uusi</string>
+    <string name="menu_new_waypoint">Uusi reittipiste</string>
+    <string name="menu_newroute">Uusi reitti</string>
+    <string name="menu_newwaypointset">Uusi ryhmä</string>
+    <string name="menu_nextnavpoint">Siirry seuraavaan</string>
+    <string name="menu_open">Avaa</string>
+    <string name="menu_paste">Liitä</string>
+    <string name="menu_preferences">Asetukset</string>
+    <string name="menu_prevnavpoint">Mene edelliseen</string>
+    <string name="menu_project">Projisoi uusi</string>
+    <string name="menu_properties">Ominaisuudet</string>
+    <string name="menu_remove">Poista</string>
+    <string name="menu_resetindex">Nollaa indeksi</string>
+    <string name="menu_routes">Reitit</string>
+    <string name="menu_save">Talleta tiedostoon</string>
+    <string name="menu_search">Haku</string>
+    <string name="menu_share">Jaa</string>
+    <string name="menu_sort">Lajittelu</string>
+    <string name="menu_sort_alphabetically">Lajittele aakkosjärjestykseen</string>
+    <string name="menu_sort_distance">Lajittelu etäisyyden mukaan</string>
+    <string name="menu_startnavigation">Navigoi reitillä</string>
+    <string name="menu_stopnavigation">Pysäytä navigointi</string>
+    <string name="menu_thisnavpoint">Navigoi tästä</string>
+    <string name="menu_track2route">Muunna reitiksi</string>
+    <string name="menu_tracks">Jäljet</string>
+    <string name="menu_view">Näytä</string>
+    <string name="menu_visible">Näytä</string>
+    <string name="menu_waypoints">Reittipisteet</string>
+    <string name="more">Lisää</string>
+    <string name="msg_badtrackimplementation">Huomioi, että teho pienenee jos jälki on pitkä.</string>
+    <string name="msg_cleaning">Pyyhkii…</string>
+    <string name="msg_clearcurrenttrack">Tämä tyhjentää kaikki liiketietosi. Oletko varma, että haluat jatkaa poistoa?</string>
+    <string name="msg_connectingtoserver">Yhdistetään palvelimeen…</string>
+    <string name="msg_empty_route_list">Reittejä ei ole käytettävissä. Valikon avulla voit luoda reitin tai ladata tiedoston.</string>
+    <string name="msg_empty_track_list">Ei jälkiä valittavissa. Käytä valikkoa ladataksesi jälki tiedostosta.</string>
+    <string name="msg_emptytracksegment">Valittu jälkitiedosto on tyhjä. Ei tallennettavaa</string>
+    <string name="msg_expandcurrenttrack">Pitkäaikainen jälkien poistamattomuus voi heikentää suorituskykyä. Haluatko jatkaa?</string>
+    <string name="msg_initializingdata">Alustaa dataa…</string>
+    <string name="msg_initializingmaps">Alustaa kartat…</string>
+    <string name="msg_initializingplugins">Valmistellaan lisäosia…</string>
+    <string name="msg_initializingview">Alustaa näytön…</string>
+    <string name="msg_loadingimagefile">Lataa maailmankartan kuvan…</string>
+    <string name="msg_loadingmapfile">Lataa maailmankartan datan…</string>
+    <string name="msg_newdatafolder">Yleisön toivomuksesta Androzic toimii nyt kansioiden osalta eri tavalla. Voit vapaasti valita minkä tahansa kansion kartoille ja tiedostoille. Data-kansio on nyt yhtenäinen kaikille tietotyypeille: reittipisteet, jäljet ja reitit. Sinun täytyy kopioida olemassa olevat tiedostot manuaalisesti seuraavaan kansioon: ‘%s’.</string>
+    <string name="msg_nothing_found">Mitään ei löytynyt. Ota huomioon, että tiedot haetaan vain jos ne on ladattu Androzic:in, nimettyjä vain, jos Internet-yhteys on käytettävissä.</string>
+    <string name="msg_paid">Lahjaversio</string>
+    <string name="msg_scansdcard">Skannaa SD korttia</string>
+    <string name="msg_wait">Odota…</string>
+    <string name="n">P</string>
+    <string name="name">Nimi</string>
+    <string name="navigate">Navigoi</string>
+    <string name="never">ei koskaan</string>
+    <string name="new_coordinates">Uudet koordinaatit vastaanotettu %s</string>
+    <string name="no">Ei</string>
+    <string name="nomaps">Karttoja ei löydy</string>
+    <string name="nomaps_explained">Karttakansio \'%s\' on tyhjä. lataa ja asenna maailmankartta (207KB)?</string>
+    <string name="northing">Northing</string>
+    <string name="notif_loc_short">Paikallistaa</string>
+    <string name="notif_loc_started">Androzic hakee sijaintiasi</string>
+    <string name="notif_loc_waiting">Androzic odottaa sijaintia</string>
+    <string name="notif_nav_short">Navigointi</string>
+    <string name="notif_nav_started">Androzic navigoi sinua</string>
+    <string name="notif_nav_to">Androzic navigoi %s</string>
+    <string name="notif_trk_failure">Androzicin jäljen luominen ei onnistu</string>
+    <string name="notif_trk_started">Androzic seuraa likettäsi</string>
+    <string name="ok">OK</string>
+    <string name="perm_location_description">Androzicin antama sijainti</string>
+    <string name="perm_location_title">Hae sijainti</string>
+    <string name="perm_navigation_description">Aloittaa/Muokkaa Androzic:n tuottamaa navigointia</string>
+    <string name="perm_navigation_title">Käynnistää navigoinnin</string>
+    <string name="perm_read_map_data_title">Nouda tieto Androzic kartasta</string>
+    <string name="perm_read_preferences_title">Lue Androzic Käyttäjäasetukset</string>
+    <string name="perm_tracking_description">Androzicin antama jälki</string>
+    <string name="perm_tracking_title">Hae jälki</string>
+    <string name="perm_write_map_data_title">Lisää tietoja Androzic karttaan</string>
+    <string name="pref_about_title">Tietoja Androzic\'istä</string>
+    <string name="pref_advanced_title">Lisäasetukset</string>
+    <string name="pref_application_title">Tietoja ja takaisinkytkentää</string>
+    <string name="pref_charset_summary">Merkistö kartta-ja tekstitiedostoille. Varoitus: et voi sekoittaa Android natiiveja (UTF-8) ja kansallisia merkistöjä, muuta tätä asetusta vain, jos kaikki tiedostot ovat kansallista koodausta, muuten joudut manuaalisesti muuttamaan tiedostoja, jotka eivät ole UTF-8-koodausta. Vaikuttaa vasta, kun sovellus uudelleen käynnistetään.</string>
+    <string name="pref_charset_title">Tekstitiedoston enkoodaus</string>
+    <string name="pref_credits_title">Credits</string>
+    <string name="pref_cursor_title">Kursorin siirto</string>
+    <string name="pref_cursorcolor_title">Aktiivinen väri</string>
+    <string name="pref_cursorvector_summary">Valitse perusvektorin pituus</string>
+    <string name="pref_cursorvector_title">Vektorin tyyppi</string>
+    <string name="pref_cursorvectormlpr_summary">valitse vektorien lukumäärä</string>
+    <string name="pref_cursorvectormlpr_title">Vektori kerroin</string>
+    <string name="pref_donate_google_title">Lahjoita Google Play Store:ssa</string>
+    <string name="pref_donate_paypal_title">Lahjoita PayPalin kautta</string>
+    <string name="pref_exit_title">Poistumis vahvistus</string>
+    <string name="pref_facebook_title">Tykkää Facebookissa</string>
+    <string name="pref_faq_title">U.K.K.</string>
+    <string name="pref_feature_title">Palaute ja tuki</string>
+    <string name="pref_folder_data_title">Data-kansio</string>
+    <string name="pref_folder_icon_title">Ikonikansio</string>
+    <string name="pref_folder_map_title">Kartat kansio</string>
+    <string name="pref_folder_prefix_caution">Tämä optio on vain tottuneille käyttäjille, jos se on väärin aseteltu ohjelma ei käynnisty.</string>
+    <string name="pref_folder_prefix_title">Ohjelmakansio</string>
+    <string name="pref_folder_title">Kansiot</string>
+    <string name="pref_googleplus_title">Liity Google+ ryhmään</string>
+    <string name="pref_grid_mapshow_title">Näytä karttaruudusto</string>
+    <string name="pref_grid_preference_title">Ruudustoasetukset</string>
+    <string name="pref_grid_title">Ruudustot, Grids</string>
+    <string name="pref_grid_usermpp_summary">Maksimi metriä per pixel arvo, jolla oma ruudusto näkyy</string>
+    <string name="pref_grid_usermpp_title">Oman ruuduston rajoitus</string>
+    <string name="pref_grid_userscale_title">Oman ruuduston tiheys</string>
+    <string name="pref_grid_usershow_title">Näytä omavalintainen ruudusto</string>
+    <string name="pref_grid_userunit_title">Oma ruudustoyksikkö</string>
+    <string name="pref_hideactionbar_summary">piilottaa toimintopalkin karttanäytössä. Vaatii toimiakseen ohjelman uudelleen käynnistämisen.</string>
+    <string name="pref_hideactionbar_title">Piilota toimintopalkki</string>
+    <string name="pref_loc_gpstimeout_summary">Aikaviive sekunneissa viimeisestä GPS-fixistä, jonka jälkeen sijainti määritellään matkapuhelinverkon avulla</string>
+    <string name="pref_loc_gpstimeout_title">GPS sijainnin aikaviive</string>
+    <string name="pref_loc_store_summary">Kääske ohjelman käynnistyä viimeisimmästä sijainnista</string>
+    <string name="pref_loc_store_title">Muista viimeinen sijainti</string>
+    <string name="pref_loc_title">Sijainti</string>
+    <string name="pref_loc_usenetwork_summary">Merkkaa, käytetään matkapuhelinverkkoa, jos GPS sijaintia ei saatavissa</string>
+    <string name="pref_loc_usenetwork_title">Käytä verkkoa</string>
+    <string name="pref_locale_title">Kieli</string>
+    <string name="pref_lookahead_summary">Näytön ennakointimäärä</string>
+    <string name="pref_lookahead_title">Näytön ennakointi</string>
+    <string name="pref_map_title">Kartta</string>
+    <string name="pref_mapadjacent_summary">Näyttää viereisiä ja parempia karttoja (KOKEELLINEN, merkittävästi heikentää suorituskykyä!)</string>
+    <string name="pref_mapadjacent_title">Viereiset kartat</string>
+    <string name="pref_mapbest_summary">Merkkaa, ohjelma yrittää löytää parhaan sijaintia vastaavan kartan</string>
+    <string name="pref_mapbest_title">Lataa paras kartta</string>
+    <string name="pref_mapbestinterval_summary">Aika, miten usein parasta karttaa haetaan</string>
+    <string name="pref_mapbestinterval_title">Parhaan kartan valintaväli</string>
+    <string name="pref_mapcropborder_summary">Rajaa kartta kulmapisteiden mukaan</string>
+    <string name="pref_mapcropborder_title">Rajaa kartta</string>
+    <string name="pref_mapdim_summary">Merkkaa, näyttö himmenee automaattisesti yöaikaan</string>
+    <string name="pref_mapdim_title">Näytön autom. himmennys</string>
+    <string name="pref_mapdimvalue_title">Himmennyksen määrä</string>
+    <string name="pref_mapdrawborder_summary">Piirrä rajaus kulmapisteiden mukaisesti</string>
+    <string name="pref_mapdrawborder_title">Piirrä kartan rajat</string>
+    <string name="pref_mapfollowonloc_title">Seuraa ensimmäisessä paikassa</string>
+    <string name="pref_maphideondrag_summary">Merkkaa, karttakohteet peitetään siirron aikana</string>
+    <string name="pref_maphideondrag_title">Karttakohteiden peitto karttaa siirrettäessä </string>
+    <string name="pref_maprenderinterval_summary">Minimi kartan päivitysväli</string>
+    <string name="pref_maprenderinterval_title">Päivitysväli</string>
+    <string name="pref_name">Androzic asetukset</string>
+    <string name="pref_navigation_linewidth_summary">Seuraavaan navigointipisteeseen näyttävän suuntaviivan leveys</string>
+    <string name="pref_navigation_linewidth_title">Suuntaviivan leveys</string>
+    <string name="pref_navigation_loadlast_summary">Merkkaa, viimeinen päättämätön reitti latautuu ohjelman seuraavassa käynnistyksessä.</string>
+    <string name="pref_navigation_loadlast_title">Lataa viimeinen reitti</string>
+    <string name="pref_navigation_proximity_summary">Läheisyys metreissä reittipisteeseen, josta navigointi jatkuu seuraavaan pisteeseen.</string>
+    <string name="pref_navigation_proximity_title">Reittipisteen läheisyys</string>
+    <string name="pref_navigation_proximitycircle_summary">Merkkaa, läheisyysympyrä piirretään navigoitaessa reittipisteille.</string>
+    <string name="pref_navigation_proximitycircle_title">Läheisyysympyrä</string>
+    <string name="pref_navigation_title">Navigointi</string>
+    <string name="pref_navigation_traverse_summary">Merkkaa, läpikulku ja läheisyys käytössä seuraavan pisteen valinnassa.</string>
+    <string name="pref_navigation_traverse_title">Käytä läpikulkulogiikkaa</string>
+    <string name="pref_onlinemap_summary">Lähde verkkokartalla</string>
+    <string name="pref_onlinemap_title">Kartan tarjoaja</string>
+    <string name="pref_onlinemaps_title">Online kartta</string>
+    <string name="pref_onlinemapscale_summary">100% vastaava zoomi</string>
+    <string name="pref_onlinemapscale_title">Oletus zoomaustaso</string>
+    <string name="pref_orientation_title">Näytön suunta</string>
+    <string name="pref_panelactions_title">Liukupaneelin toiminnot</string>
+    <string name="pref_plugins_title">Lisäosat</string>
+    <string name="pref_route_linewidth_summary">Reittiviivan pikselileveys</string>
+    <string name="pref_route_linewidth_title">Viivan leveys</string>
+    <string name="pref_route_pointwidth_summary">Reitin pisteen pikselikoko</string>
+    <string name="pref_route_pointwidth_title">Markkerin koko</string>
+    <string name="pref_route_preload_hidden_summary">Piilota tallennetut reitit, kunnes niitä on tarkasteltu, muokattu tai käytetty</string>
+    <string name="pref_route_preload_hidden_title">Piilota esiladatut reitit</string>
+    <string name="pref_route_preload_summary">Merkitse esiladatut reitit tiedostosta</string>
+    <string name="pref_route_preload_title">Lataa reitit valmiiksi</string>
+    <string name="pref_route_showname_summary">Merkkaa, nimi näkyy pisteen markkerin vieressä</string>
+    <string name="pref_route_showname_title">Näytä reitin pisteen nimi</string>
+    <string name="pref_route_title">Reitit</string>
+    <string name="pref_scalebarcolor_title">Mittakaavan väri</string>
+    <string name="pref_show_title">Näyttö</string>
+    <string name="pref_showaccuracy_summary">Merkkaa, tarkkuusympyrä näkyy kursorin kohdalla</string>
+    <string name="pref_showaccuracy_title">Näytä tarkkuusympyrä</string>
+    <string name="pref_showcurrenttrack_summary">Merkkaa, nyt kuljettu jälki näkyy kartalla</string>
+    <string name="pref_showcurrenttrack_title">Näytä jälki</string>
+    <string name="pref_showdistance_title">Näytä etäisyys</string>
+    <string name="pref_showmapinfo_summary">Merkkaa, käytetyn kartan nimi ja zoomitaso näkyy</string>
+    <string name="pref_showmapinfo_title">Näytä karttapaneli</string>
+    <string name="pref_showsatinfo_summary">Merkkaa, koordinaatit ja GPS:n tila näkyy</string>
+    <string name="pref_showsatinfo_title">Näytä satelliittipaneli</string>
+    <string name="pref_tracking_currentcolor_title">Jäljen väri</string>
+    <string name="pref_tracking_currentlength_summary">Jäljen pisteiden maksimilukumäärä</string>
+    <string name="pref_tracking_currentlength_title">Jäljen pituus</string>
+    <string name="pref_tracking_currentload_summary">Merkkaa, nykyinen jälki latautuu ohjelman seuraavassa käynnistyksessä</string>
+    <string name="pref_tracking_currentload_title">Lataa nykyinen jälki</string>
+    <string name="pref_tracking_linewidth_summary">Jäljen leveys pikseleinä</string>
+    <string name="pref_tracking_linewidth_title">Viivan leveys</string>
+    <string name="pref_tracking_mindistance_summary">Jälkipisteiden keräilyvälin minimietäisyys metreissä</string>
+    <string name="pref_tracking_mindistance_title">Minimietäisyys</string>
+    <string name="pref_tracking_mintime_summary">Jälkipisteiden keräilyvälin minimiaika millisekunneissa</string>
+    <string name="pref_tracking_mintime_title">Minimiaika</string>
+    <string name="pref_tracking_title">Jäljet</string>
+    <string name="pref_twitter_title">Seuraa Twitterillä</string>
+    <string name="pref_unfollowontap_title">Lopeta seuranta karttaa siirrettäessä</string>
+    <string name="pref_unit_title">Yksiköt</string>
+    <string name="pref_unitangle_title">Poikkeama</string>
+    <string name="pref_unitcoordinate_title">Koordinaatit</string>
+    <string name="pref_unitdistance_title">Etäisyys</string>
+    <string name="pref_unitelevation_title">Korkeus</string>
+    <string name="pref_unitprecision_title">Desimaalin tarkkuudella</string>
+    <string name="pref_unitspeed_title">Nopeus</string>
+    <string name="pref_unitsunrise_title">Auringon nousu/lasku</string>
+    <string name="pref_uri_summary">Paina seurataksesi linkkiä nettisivulle</string>
+    <string name="pref_usemapindex_title">Käytä karttaindeksiä</string>
+    <string name="pref_useonlinemap_title">Käytä online karttoja</string>
+    <string name="pref_wakelock_summary">pitää laitteen näytön päällä ja kirkkaana kun kartta näytössä</string>
+    <string name="pref_wakelock_title">Pidä  näyttö päällä</string>
+    <string name="pref_waypoint_bgcolor_title">Nimen taustan väri</string>
+    <string name="pref_waypoint_color_title">Merkin väri</string>
+    <string name="pref_waypoint_namecolor_title">Nimen väri</string>
+    <string name="pref_waypoint_showname_summary">Merkkaa, nimi näkyy markkerin vieressä</string>
+    <string name="pref_waypoint_showname_title">Näytä nimi</string>
+    <string name="pref_waypoint_title">Reittipisteet</string>
+    <string name="pref_waypoint_visible_summary">Merkkaa, kartta keskittyy juuri luotuun reittipisteeseen</string>
+    <string name="pref_waypoint_visible_title">Varmista näkyvyys luodessa</string>
+    <string name="pref_waypoint_width_summary">Reittipisteen pikselikoko</string>
+    <string name="pref_waypoint_width_title">Markkerin koko</string>
+    <string name="primary">Ensisijainen</string>
+    <string name="provider">Tuottaja</string>
+    <string name="proximity">Läheisyys</string>
+    <string name="quit">Lopetus</string>
+    <string name="quitQuestion">Haluatko lopettaa?</string>
+    <string name="removeWaypointQuestion">Poista reittipiste?</string>
+    <string name="restart_needed">Ohjelma pitää uudelleenkäynnistää</string>
+    <string name="restart_needed_explained">Tämä ominaisuus vaatii täyden uudelleenkäynnistyksen. Suorita pakkopysäytys ohjelma-asetuksista.</string>
+    <string name="routedetails_name">Reitin yksityiskohdat</string>
+    <string name="routeproperties_name">Editoi reittiä</string>
+    <string name="s">E</string>
+    <string name="sat_firstfix">GPS aktivoitunut</string>
+    <string name="sat_start">GPS käytössä</string>
+    <string name="sat_stop">GPS ei käytössä</string>
+    <string name="satellites">Satelliitteja</string>
+    <string name="save">Talleta</string>
+    <string name="saveroute_name">Talleta reitti tiedostoon</string>
+    <string name="savetrack_name">Talleta jälki tiedostoon</string>
+    <string name="search_hint">Anna osoite tai nimi</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Haku"</string>
+    <string name="search_name">Hakutulokset</string>
+    <string name="selectroute_name">Valitse reitti</string>
+    <string name="send_me_bugs">Jos havaitset ohjelmavirheen tai haluat ehdottaa jotakin parannusta, älä epäröi käyttää ilmoitusmenettelyä kotisivulla</string>
+    <string name="sensitivity">Herkkyys</string>
+    <string name="show">Näytä</string>
+    <string name="showcase_add_waypoint_description">Napauta toiminta-ikonia nopeasti lisätäksesi uuden reittipisteen nykyiseen sijaintiisi.</string>
+    <string name="showcase_add_waypoint_title">Lisää reittipiste</string>
+    <string name="showcase_follow_description">Paina seuraa ikonia salliaksesi seuranta tilan. Tässä tilassa kartta on keskitetty nykyiseen sijaintiisi. Vaihtoehtoisesti voit kaksois napauttaa näyttöä saurannan päälle ja pois kytkemiseksi.</string>
+    <string name="showcase_follow_title">Sijainnin seuranta</string>
+    <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
+    <string name="showcase_load_waypoints_title">Lataa reittipisteet</string>
+    <string name="showcase_panel_description">Työnnä tai vedä liukuvaa paneelia päästäksesi pika toimintoihin. Pika toimintoja voidaan määrittää asetuksista.</string>
+    <string name="showcase_panel_title">Pika toiminnot</string>
+    <string name="showcase_search_description">You can type specific coordinates in various formats to find them on map, search through loaded waypoint or route names and descriptions, search for places and addresses through Google geocoding service (Internet connection is required for this to work).</string>
+    <string name="showcase_search_title">Haku</string>
+    <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
+    <string name="showcase_waypointset_actions_title">Reittipisteen asetus toiminta</string>
+    <string name="skip_single_locations">Ohita yhdet sijainnit</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Auringonnousu</string>
+    <string name="sunset">Auringonlasku</string>
+    <string name="t2r_explained"><b>Tämä on kokeellinen ominaisuus.</b> Jäljen pitää esittää kulkua pisteestä A pisteeseen B. Kokeile kumpaakin algoritmiä
+	ja katso, kumpi on sopivampi. `Cruise´ algoritmi on lineaarinen ja reitin generointiaika määritelty.
+	`Flounce´ algoritmillä se on täysin määrittelemätön. Karkea herkkyys voi johtaa joidenkin käännöksien puutteeseen, kun taas hieno voi lisätä tarpeettomia reittipisteitä.</string>
+    <string name="textcolor">Nimen väri</string>
+    <string name="till_date">Päättyy</string>
+    <string name="track2route_name">Muunna jälki reitiksi</string>
+    <string name="trackproperties_name">Editoi jälkeä</string>
+    <string name="update_almanac">Kalenterin päivityspyyntö</string>
+    <string name="upto"> %.0f metriin asti</string>
+    <string name="vdop">VDOP</string>
+    <string name="version">Versio: %s</string>
+    <string name="warning">Varoitus</string>
+    <string name="waypointproject_name">Projektoi uusi reittipiste</string>
+    <string name="waypointproperties_name">Editoi reittipistettä</string>
+    <string name="waypointset">Aseta</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Kyllä</string>
+    <string name="zone">Vyöhyke</string>
+</resources>

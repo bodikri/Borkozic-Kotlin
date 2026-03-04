@@ -1,0 +1,20 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:1:1-7:12
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:1:1-7:12
+	package
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml
+	android:versionName
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:3:5-30
+	xmlns:android
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:1:11-69
+	android:versionCode
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:2:5-28
+uses-sdk
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:5:5-16
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:5:5-16
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml:5:5-16
+	android:targetSdkVersion
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\src\main\AndroidManifest.xml

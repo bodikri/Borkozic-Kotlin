@@ -1,0 +1,962 @@
+-- Merging decision tree log ---
+manifest
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:5:1-422:12
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:5:1-422:12
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:5:1-422:12
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:5:1-422:12
+MERGED from [:borkoziclib] D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:2:1-9:12
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\50d9a01a1340f0277287a9f998458848\transformed\legacy-support-v4-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7a55ba8cbf82401bfb3e9846c76adb14\transformed\jetified-appcompat-resources-1.7.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\6e6da53ca4565decfa0e29aaabf86d5b\transformed\appcompat-1.7.1\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.media:media:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\976ea7522e9249679e7b161302663a11\transformed\media-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a2a63ae0e9f8c070eb21d0c6e0986917\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\69bd9dbf2060a654e139822dc766d3c0\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\c3480ecbe1acaf82a7697e5656d06943\transformed\fragment-1.5.4\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.activity:activity:1.8.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\58023cf437f9fabc78c2ba6d1c18f441\transformed\jetified-activity-1.8.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\eb3cdbb7e2d9caa4b4890b5eeb1f6472\transformed\jetified-savedstate-1.2.1\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\52adc5b33f83a332c3d422d51103fc77\transformed\loader-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\78621ee2d6ed633099f18357f728b7a3\transformed\jetified-emoji2-views-helper-1.3.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\4dcec0ad7a110662a4c694ca77ea3328\transformed\lifecycle-viewmodel-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:17:1-35:12
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2503646259423a0e67bcb792168c79db\transformed\lifecycle-livedata-core-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\00bbf1ba6a9e4b67cd9525fc2469d5c2\transformed\lifecycle-livedata-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\931af5c34dae98f0fdce63bf61a40338\transformed\lifecycle-runtime-2.6.2\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\c417094ed4a25be65e42e5a33fd6e4a4\transformed\jetified-lifecycle-viewmodel-savedstate-2.6.2\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.core:core-ktx:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\5a63cecb8e9141f27f7551ef72369872\transformed\jetified-core-ktx-1.13.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\82d48fb6516025d83c87e4cd3147298d\transformed\drawerlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2a8839d60f46e4793ac3a883f96bd576\transformed\viewpager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\fc7c878508e70e7a36ea8fea56e2e885\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\f3f0d656e744b65ba861c571679ee308\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\20ba5eb88029c62942b658571ccef107\transformed\customview-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\56b0b6283fd3fb5f8b8ab313ab319a00\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\755949bcb321e93cd5b70b1c2efdc3e0\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\b825be120ab8c60f59f6e8be2dc4bc2b\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\aafe458681fa85cbe6aae1eb4067d346\transformed\vectordrawable-1.1.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:17:1-30:12
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\9baf233cb912a42bf26096991cb6504a\transformed\jetified-annotation-experimental-1.4.0\AndroidManifest.xml:2:1-7:12
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\bc6cedc065155db122650a0a3ad39964\transformed\cursoradapter-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:17:1-55:12
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2033005df0bb8981a3ed95ba2b0026b8\transformed\documentfile-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\b746d9b539a95d33e388f1dfeb03e46c\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.print:print:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\e52f184e4085e10c070ffb22d7ece1f1\transformed\print-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\cc4872fabc66a7c35588106d38ade432\transformed\interpolator-1.0.0\AndroidManifest.xml:17:1-22:12
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7d1d6c3980e1bfe3d33472aa1e764997\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:17:1-27:12
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:17:1-33:12
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2234fc4e12d23f699f4442fe73bf6a4c\transformed\jetified-tracing-1.0.0\AndroidManifest.xml:17:1-24:12
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\de5decf8163d531456c1383c9c47aa0e\transformed\core-runtime-2.2.0\AndroidManifest.xml:17:1-22:12
+	package
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+	android:versionName
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+	android:versionCode
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+	xmlns:android
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:5:11-69
+	android:installLocation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:6:5-35
+supports-screens
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:8:5-13:40
+	android:largeScreens
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:10:9-36
+	android:smallScreens
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:12:9-36
+	android:normalScreens
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:11:9-37
+	android:xlargeScreens
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:13:9-37
+	android:anyDensity
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:9:9-34
+uses-feature#android.hardware.location
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:15:5-17:36
+	android:required
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:17:9-33
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:16:9-49
+uses-feature#android.hardware.location.gps
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:18:5-20:36
+	android:required
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:20:9-33
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:19:9-53
+uses-feature#android.hardware.location.network
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:21:5-23:36
+	android:required
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:23:9-33
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:22:9-57
+permission#com.borkozic.permission.RECEIVE_LOCATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:25:5-30:47
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:29:9-52
+	android:protectionLevel
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:30:9-44
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:28:9-38
+	android:description
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:27:9-64
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:26:9-64
+permission#com.borkozic.permission.RECEIVE_TRACK
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:31:5-36:47
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:35:9-52
+	android:protectionLevel
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:36:9-44
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:34:9-38
+	android:description
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:33:9-64
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:32:9-61
+permission#com.borkozic.permission.NAVIGATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:37:5-42:47
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:41:9-54
+	android:protectionLevel
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:42:9-44
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:40:9-38
+	android:description
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:39:9-66
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:38:9-58
+permission#com.borkozic.permission.READ_PREFERENCES
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:43:5-46:47
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:45:9-60
+	android:protectionLevel
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:46:9-44
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:44:9-64
+permission#com.borkozic.permission.READ_MAP_DATA
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:47:5-50:47
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:49:9-57
+	android:protectionLevel
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:50:9-44
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:48:9-61
+permission#com.borkozic.permission.WRITE_MAP_DATA
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:51:5-54:47
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:53:9-58
+	android:protectionLevel
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:54:9-44
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:52:9-62
+uses-permission#android.permission.FOREGROUND_SERVICE
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:55:5-77
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:55:22-74
+uses-permission#android.permission.FOREGROUND_SERVICE_LOCATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:56:5-86
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:56:22-83
+uses-permission#android.permission.ACCESS_COARSE_LOCATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:57:5-81
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:57:22-78
+uses-permission#android.permission.ACCESS_FINE_LOCATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:58:5-79
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:58:22-76
+uses-permission#android.permission.ACCESS_LOCATION_EXTRA_COMMANDS
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:59:5-89
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:59:22-86
+uses-permission#android.permission.INTERNET
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:63:6-68
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:63:23-65
+uses-permission#com.borkozic.permission.RECEIVE_LOCATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:64:6-81
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:64:23-78
+uses-permission#com.borkozic.permission.RECEIVE_TRACK
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:65:6-78
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:65:23-75
+uses-permission#com.borkozic.permission.NAVIGATION
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:66:6-75
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:66:23-72
+uses-permission#android.permission.POST_NOTIFICATIONS
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:67:5-77
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:67:22-74
+application
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:69:6-420:19
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:69:6-420:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:23:5-33:19
+MERGED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:28:5-89
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:23:5-53:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7d1d6c3980e1bfe3d33472aa1e764997\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7d1d6c3980e1bfe3d33472aa1e764997\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:24:5-25:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:25:5-31:19
+	android:extractNativeLibs
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+	android:backupAgent
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:72:10-39
+	android:appComponentFactory
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:28:18-86
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:75:10-42
+	android:restoreAnyVersion
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:76:10-42
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:74:10-39
+	android:allowBackup
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:71:10-36
+	android:description
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:73:10-48
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:77:10-48
+	android:usesCleartextTraffic
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:78:10-45
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:70:10-34
+activity#com.borkozic.Splash
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:80:9-91:20
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:83:13-45
+	android:launchMode
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:84:13-43
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:85:13-36
+	android:configChanges
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:82:13-48
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:81:13-35
+intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:86:13-90:29
+action#android.intent.action.MAIN
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:87:17-69
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:87:25-66
+category#android.intent.category.LAUNCHER
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:89:17-77
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:89:27-74
+activity#com.borkozic.MapActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:92:9-99:20
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:94:13-45
+	android:launchMode
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:95:13-43
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:93:13-40
+meta-data#android.app.default_searchable
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:96:13-98:55
+	android:value
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:98:17-52
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:97:17-62
+activity#com.borkozic.ExternalActions
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:100:9-116:20
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:102:13-36
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:101:13-44
+intent-filter#action:name:com.borkozic.PLOT_ROUTE+action:name:com.google.android.radar.SHOW_RADAR+category:name:android.intent.category.DEFAULT
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:103:13-108:29
+action#com.borkozic.PLOT_ROUTE
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:104:17-66
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:104:25-63
+action#com.google.android.radar.SHOW_RADAR
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:105:17-78
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:105:25-75
+category#android.intent.category.DEFAULT
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:17-76
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:107:27-73
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.DEFAULT+data:scheme:geo
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:109:13-115:29
+action#android.intent.action.VIEW
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:17-69
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:110:25-66
+data
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:17-46
+	android:host
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:203:23-39
+	android:scheme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:112:23-43
+	android:pathPattern
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:205:23-53
+	android:mimeType
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:204:23-45
+activity#com.borkozic.SearchableActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:117:9-129:20
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:120:13-48
+	android:launchMode
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:121:13-43
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:119:13-36
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:118:13-47
+intent-filter#action:name:android.intent.action.SEARCH
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:122:13-124:29
+action#android.intent.action.SEARCH
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:123:17-71
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:123:25-68
+meta-data#android.app.searchable
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:126:13-128:54
+	android:resource
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:128:17-51
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:127:17-54
+activity#com.borkozic.HSIActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:130:9-132:48
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:132:13-45
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:131:13-40
+activity#com.borkozic.Information
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:133:9-136:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:135:13-53
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:136:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:134:13-40
+activity#com.borkozic.Credits
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:137:9-139:52
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:139:13-49
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:138:13-36
+activity#com.borkozic.Preferences
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:140:9-143:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:143:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:142:13-46
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:141:13-40
+activity#com.borkozic.Preferences$PluginsPreferences
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:145:9-68
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:145:19-65
+activity#com.borkozic.Preferences$InnerPreferences
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:146:9-66
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:146:19-63
+activity#com.borkozic.Preferences$OnlineMapPreferences
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:147:9-70
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:147:19-67
+activity#com.borkozic.Preferences$ApplicationPreferences
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:148:9-72
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:148:19-69
+activity#com.borkozic.PreferencesHC
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:149:9-152:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:152:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:151:13-46
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:150:13-42
+activity#com.borkozic.MapList
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:153:9-156:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:155:13-49
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:156:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:154:13-36
+activity#com.borkozic.ErrorDialog
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:157:9-159:45
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:159:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:158:13-40
+activity#com.borkozic.map.MapInformation
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:160:9-162:59
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:162:13-56
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:161:13-47
+activity#com.borkozic.waypoint.WaypointListActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:163:9-166:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:166:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:165:13-57
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:164:13-58
+activity#com.borkozic.waypoint.WaypointProperties
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:167:9-170:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:170:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:169:13-60
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:168:13-56
+activity#com.borkozic.ui.MarkerPickerActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:171:9-181:20
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:174:13-52
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:173:13-36
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:175:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:172:13-52
+intent-filter#action:name:com.borkozic.PICK_ICON+category:name:android.intent.category.DEFAULT
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:176:13-180:29
+action#com.borkozic.PICK_ICON
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:177:17-65
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:177:25-62
+activity#com.borkozic.waypoint.WaypointInfo
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:182:9-185:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:185:13-49
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:184:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:183:13-50
+activity#com.borkozic.waypoint.WaypointProject
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:186:9-189:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:188:13-57
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:189:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:187:13-53
+activity#com.borkozic.waypoint.WaypointFileList
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:190:9-193:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:192:13-55
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:193:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:191:13-54
+activity#com.borkozic.waypoint.WaypointFileLoad
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:194:9-227:20
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:196:13-36
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:195:13-54
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.DEFAULT+data:host:*+data:mimeType:*/*+data:pathPattern:.*\\.wpt+data:scheme:file
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:197:13-206:29
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.DEFAULT+data:host:*+data:mimeType:*/*+data:pathPattern:.*\\.kml+data:scheme:file
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:207:13-216:29
+intent-filter#action:name:android.intent.action.VIEW+category:name:android.intent.category.DEFAULT+data:host:*+data:mimeType:*/*+data:pathPattern:.*\\.gpx+data:scheme:file
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:217:13-226:29
+activity#com.borkozic.waypoint.CoordinatesReceived
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:228:9-231:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:230:13-53
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:231:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:229:13-57
+activity#com.borkozic.track.TrackListActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:232:9-234:57
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:234:13-54
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:233:13-52
+activity#com.borkozic.track.TrackProperties
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:235:9-237:60
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:237:13-57
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:236:13-50
+activity#com.borkozic.track.TrackFileList
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:238:9-241:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:240:13-51
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:241:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:239:13-48
+activity#com.borkozic.track.TrackToRoute
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:242:9-244:56
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:244:13-53
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:243:13-47
+activity#com.borkozic.track.TrackSave
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:245:9-248:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:247:13-51
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:248:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:246:13-44
+activity#com.borkozic.route.RouteFileList
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:250:9-254:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:254:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:252:13-51
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:253:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:251:13-48
+activity#com.borkozic.route.RouteStart
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:255:9-257:45
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:257:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:256:13-45
+activity#com.borkozic.route.RouteListActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:258:9-261:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:261:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:260:13-54
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:259:13-52
+activity#com.borkozic.route.RouteEdit
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:262:9-265:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:265:13-49
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:264:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:263:13-44
+activity#com.borkozic.route.RouteSave
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:266:9-269:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:268:13-51
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:269:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:267:13-44
+activity#com.borkozic.route.RouteProperties
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:270:9-273:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:273:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:272:13-57
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:271:13-50
+activity#com.borkozic.route.RouteDetails
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:274:9-277:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:277:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:276:13-54
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:275:13-47
+activity#com.borkozic.area.AreaFileList
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:279:9-283:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:283:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:281:13-50
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:282:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:280:13-46
+activity#com.borkozic.area.AreaStart
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:284:9-286:45
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:286:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:285:13-43
+activity#com.borkozic.area.AreaListActivity
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:287:9-290:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:290:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:289:13-53
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:288:13-50
+activity#com.borkozic.area.AreaEdit
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:291:9-294:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:294:13-49
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:293:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:292:13-42
+activity#com.borkozic.area.AreaSave
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:295:9-298:45
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:297:13-50
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:298:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:296:13-42
+activity#com.borkozic.area.AreaProperties
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:299:9-302:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:302:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:301:13-56
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:300:13-48
+activity#com.borkozic.area.AreaDetails
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:303:9-306:51
+	android:screenOrientation
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:306:13-49
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:305:13-53
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:304:13-45
+receiver#com.borkozic.ActionsReceiver
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:329:9-338:20
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:331:13-36
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:330:13-44
+intent-filter#action:name:com.borkozic.COORDINATES_RECEIVED
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:332:13-334:29
+action#com.borkozic.COORDINATES_RECEIVED
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:333:17-76
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:333:25-73
+intent-filter#action:name:com.borkozic.CENTER_ON_COORDINATES
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:335:13-337:29
+action#com.borkozic.CENTER_ON_COORDINATES
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:336:17-77
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:336:25-74
+receiver#com.borkozic.LocationWidget
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:339:9-351:20
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:342:13-48
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:343:13-36
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:341:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:340:13-43
+intent-filter#action:name:android.appwidget.action.APPWIDGET_UPDATE
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:344:13-346:29
+action#android.appwidget.action.APPWIDGET_UPDATE
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:345:17-84
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:345:25-81
+meta-data#android.appwidget.provider
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:348:13-350:59
+	android:resource
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:350:17-56
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:349:17-58
+provider#com.borkozic.provider.PreferencesProvider
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:353:9-357:81
+	android:readPermission
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:357:13-78
+	android:authorities
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:355:13-67
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:356:13-36
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:354:13-57
+provider#com.borkozic.provider.DataProvider
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:358:9-363:80
+	android:readPermission
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:362:13-75
+	android:authorities
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:360:13-60
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:361:13-36
+	android:writePermission
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:363:13-77
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:359:13-50
+provider#com.borkozic.provider.SuggestionProvider
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:364:9-367:40
+	android:authorities
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:366:13-66
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:367:13-37
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:365:13-56
+service#com.borkozic.track.TrackingService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:369:9-378:19
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:371:13-36
+	android:permission
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:373:13-71
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:372:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:370:13-50
+intent-filter#action:name:com.borkozic.track.ITrackingRemoteService+action:name:com.borkozic.tracking
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:374:13-377:29
+action#com.borkozic.tracking
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:375:17-64
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:375:25-61
+action#com.borkozic.track.ITrackingRemoteService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:376:17-84
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:376:25-81
+service#com.borkozic.location.LocationService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:379:9-389:19
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:381:13-36
+	android:permission
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:383:13-74
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:382:13-42
+	android:foregroundServiceType
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:384:13-53
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:380:13-53
+intent-filter#action:name:com.borkozic.location+action:name:com.borkozic.location.ILocationRemoteService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:385:13-388:29
+action#com.borkozic.location
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:386:17-64
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:386:25-61
+action#com.borkozic.location.ILocationRemoteService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:387:17-87
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:387:25-84
+service#com.borkozic.navigation.NavigationService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:390:10-401:20
+	android:exported
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:392:14-37
+	android:permission
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:394:14-69
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:393:14-43
+	android:foregroundServiceType
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:395:14-54
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:391:14-58
+intent-filter#action:name:com.borkozic.navigateMapObject+action:name:com.borkozic.navigateMapObjectWithId+action:name:com.borkozic.navigateRoute
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:396:14-400:30
+action#com.borkozic.navigateMapObjectWithId
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:397:18-80
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:397:26-77
+action#com.borkozic.navigateMapObject
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:398:18-74
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:398:26-71
+action#com.borkozic.navigateRoute
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:399:18-70
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:399:26-67
+service#com.borkozic.WidgetService
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:402:9-405:41
+	android:process
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:405:13-38
+	android:icon
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:404:13-49
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:403:13-42
+meta-data#com.google.android.backup.api_key
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:407:9-409:82
+	android:value
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:409:13-79
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:408:13-61
+activity#com.borkozic.BtnsProceduresSet
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:411:9-415:45
+	android:parentActivityName
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:414:13-54
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:413:13-54
+	android:theme
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:415:13-42
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:412:13-46
+activity#com.borkozic.Procedures_Text
+ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:416:9-419:57
+	android:parentActivityName
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:419:13-54
+	android:label
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:418:13-44
+	android:name
+		ADDED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml:417:13-44
+uses-sdk
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+MERGED from [:borkoziclib] D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-44
+MERGED from [:borkoziclib] D:\Borkozic_Versions\Borkozic-Java_Oki\borkoziclib\build\intermediates\merged_manifest\debug\processDebugManifest\AndroidManifest.xml:7:5-44
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\50d9a01a1340f0277287a9f998458848\transformed\legacy-support-v4-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-v4:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\50d9a01a1340f0277287a9f998458848\transformed\legacy-support-v4-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7a55ba8cbf82401bfb3e9846c76adb14\transformed\jetified-appcompat-resources-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat-resources:1.7.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7a55ba8cbf82401bfb3e9846c76adb14\transformed\jetified-appcompat-resources-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\6e6da53ca4565decfa0e29aaabf86d5b\transformed\appcompat-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.appcompat:appcompat:1.7.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\6e6da53ca4565decfa0e29aaabf86d5b\transformed\appcompat-1.7.1\AndroidManifest.xml:5:5-44
+MERGED from [androidx.media:media:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\976ea7522e9249679e7b161302663a11\transformed\media-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.media:media:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\976ea7522e9249679e7b161302663a11\transformed\media-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a2a63ae0e9f8c070eb21d0c6e0986917\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-ui:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a2a63ae0e9f8c070eb21d0c6e0986917\transformed\legacy-support-core-ui-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\69bd9dbf2060a654e139822dc766d3c0\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.legacy:legacy-support-core-utils:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\69bd9dbf2060a654e139822dc766d3c0\transformed\legacy-support-core-utils-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\c3480ecbe1acaf82a7697e5656d06943\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.fragment:fragment:1.5.4] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\c3480ecbe1acaf82a7697e5656d06943\transformed\fragment-1.5.4\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.activity:activity:1.8.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\58023cf437f9fabc78c2ba6d1c18f441\transformed\jetified-activity-1.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.activity:activity:1.8.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\58023cf437f9fabc78c2ba6d1c18f441\transformed\jetified-activity-1.8.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\eb3cdbb7e2d9caa4b4890b5eeb1f6472\transformed\jetified-savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.savedstate:savedstate:1.2.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\eb3cdbb7e2d9caa4b4890b5eeb1f6472\transformed\jetified-savedstate-1.2.1\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\52adc5b33f83a332c3d422d51103fc77\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.loader:loader:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\52adc5b33f83a332c3d422d51103fc77\transformed\loader-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\78621ee2d6ed633099f18357f728b7a3\transformed\jetified-emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2-views-helper:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\78621ee2d6ed633099f18357f728b7a3\transformed\jetified-emoji2-views-helper-1.3.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\4dcec0ad7a110662a4c694ca77ea3328\transformed\lifecycle-viewmodel-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\4dcec0ad7a110662a4c694ca77ea3328\transformed\lifecycle-viewmodel-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:21:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2503646259423a0e67bcb792168c79db\transformed\lifecycle-livedata-core-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata-core:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2503646259423a0e67bcb792168c79db\transformed\lifecycle-livedata-core-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\00bbf1ba6a9e4b67cd9525fc2469d5c2\transformed\lifecycle-livedata-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-livedata:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\00bbf1ba6a9e4b67cd9525fc2469d5c2\transformed\lifecycle-livedata-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\931af5c34dae98f0fdce63bf61a40338\transformed\lifecycle-runtime-2.6.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-runtime:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\931af5c34dae98f0fdce63bf61a40338\transformed\lifecycle-runtime-2.6.2\AndroidManifest.xml:5:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\c417094ed4a25be65e42e5a33fd6e4a4\transformed\jetified-lifecycle-viewmodel-savedstate-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.lifecycle:lifecycle-viewmodel-savedstate:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\c417094ed4a25be65e42e5a33fd6e4a4\transformed\jetified-lifecycle-viewmodel-savedstate-2.6.2\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core-ktx:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\5a63cecb8e9141f27f7551ef72369872\transformed\jetified-core-ktx-1.13.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.core:core-ktx:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\5a63cecb8e9141f27f7551ef72369872\transformed\jetified-core-ktx-1.13.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\82d48fb6516025d83c87e4cd3147298d\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.drawerlayout:drawerlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\82d48fb6516025d83c87e4cd3147298d\transformed\drawerlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2a8839d60f46e4793ac3a883f96bd576\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.viewpager:viewpager:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2a8839d60f46e4793ac3a883f96bd576\transformed\viewpager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\fc7c878508e70e7a36ea8fea56e2e885\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.coordinatorlayout:coordinatorlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\fc7c878508e70e7a36ea8fea56e2e885\transformed\coordinatorlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\f3f0d656e744b65ba861c571679ee308\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.slidingpanelayout:slidingpanelayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\f3f0d656e744b65ba861c571679ee308\transformed\slidingpanelayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\20ba5eb88029c62942b658571ccef107\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.customview:customview:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\20ba5eb88029c62942b658571ccef107\transformed\customview-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\56b0b6283fd3fb5f8b8ab313ab319a00\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.swiperefreshlayout:swiperefreshlayout:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\56b0b6283fd3fb5f8b8ab313ab319a00\transformed\swiperefreshlayout-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\755949bcb321e93cd5b70b1c2efdc3e0\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.asynclayoutinflater:asynclayoutinflater:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\755949bcb321e93cd5b70b1c2efdc3e0\transformed\asynclayoutinflater-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\b825be120ab8c60f59f6e8be2dc4bc2b\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable-animated:1.1.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\b825be120ab8c60f59f6e8be2dc4bc2b\transformed\vectordrawable-animated-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\aafe458681fa85cbe6aae1eb4067d346\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.vectordrawable:vectordrawable:1.1.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\aafe458681fa85cbe6aae1eb4067d346\transformed\vectordrawable-1.1.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\9baf233cb912a42bf26096991cb6504a\transformed\jetified-annotation-experimental-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.annotation:annotation-experimental:1.4.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\9baf233cb912a42bf26096991cb6504a\transformed\jetified-annotation-experimental-1.4.0\AndroidManifest.xml:5:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\bc6cedc065155db122650a0a3ad39964\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.cursoradapter:cursoradapter:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\bc6cedc065155db122650a0a3ad39964\transformed\cursoradapter-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:21:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2033005df0bb8981a3ed95ba2b0026b8\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.documentfile:documentfile:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2033005df0bb8981a3ed95ba2b0026b8\transformed\documentfile-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\b746d9b539a95d33e388f1dfeb03e46c\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.localbroadcastmanager:localbroadcastmanager:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\b746d9b539a95d33e388f1dfeb03e46c\transformed\localbroadcastmanager-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\e52f184e4085e10c070ffb22d7ece1f1\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.print:print:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\e52f184e4085e10c070ffb22d7ece1f1\transformed\print-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\cc4872fabc66a7c35588106d38ade432\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.interpolator:interpolator:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\cc4872fabc66a7c35588106d38ade432\transformed\interpolator-1.0.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7d1d6c3980e1bfe3d33472aa1e764997\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.versionedparcelable:versionedparcelable:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\7d1d6c3980e1bfe3d33472aa1e764997\transformed\versionedparcelable-1.1.1\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:21:5-23:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2234fc4e12d23f699f4442fe73bf6a4c\transformed\jetified-tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.tracing:tracing:1.0.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\2234fc4e12d23f699f4442fe73bf6a4c\transformed\jetified-tracing-1.0.0\AndroidManifest.xml:20:5-22:41
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\de5decf8163d531456c1383c9c47aa0e\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+MERGED from [androidx.arch.core:core-runtime:2.2.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\de5decf8163d531456c1383c9c47aa0e\transformed\core-runtime-2.2.0\AndroidManifest.xml:20:5-44
+	android:targetSdkVersion
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from D:\Borkozic_Versions\Borkozic-Java_Oki\borkozic\src\main\AndroidManifest.xml
+provider#androidx.startup.InitializationProvider
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:24:9-32:20
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+MERGED from [androidx.startup:startup-runtime:1.1.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\265c0aced75251225a994ac137eb73a5\transformed\jetified-startup-runtime-1.1.1\AndroidManifest.xml:26:9-30:34
+	tools:node
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:28:13-31
+	android:authorities
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:26:13-68
+	android:exported
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:27:13-37
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:25:13-67
+meta-data#androidx.emoji2.text.EmojiCompatInitializer
+ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.emoji2:emoji2:1.3.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\624f36f49d25a536b3ec1ccaf622203b\transformed\jetified-emoji2-1.3.0\AndroidManifest.xml:30:17-75
+meta-data#androidx.lifecycle.ProcessLifecycleInitializer
+ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.lifecycle:lifecycle-process:2.6.2] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\a97c1f302df74ed30c82caa5954cc4c8\transformed\jetified-lifecycle-process-2.6.2\AndroidManifest.xml:30:17-78
+permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+permission#com.borkozic.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:22:5-24:47
+	android:protectionLevel
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:24:9-44
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:23:9-81
+uses-permission#${applicationId}.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+uses-permission#com.borkozic.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:26:5-97
+	android:name
+		ADDED from [androidx.core:core:1.13.0] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\3aae78d308ba7c00c9711ea2a3215d67\transformed\core-1.13.0\AndroidManifest.xml:26:22-94
+meta-data#androidx.profileinstaller.ProfileInstallerInitializer
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:29:13-31:52
+	android:value
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:31:17-49
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:30:17-85
+receiver#androidx.profileinstaller.ProfileInstallReceiver
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:34:9-52:20
+	android:enabled
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:37:13-35
+	android:exported
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:38:13-36
+	android:permission
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:39:13-57
+	android:directBootAware
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:36:13-44
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:35:13-76
+intent-filter#action:name:androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:40:13-42:29
+action#androidx.profileinstaller.action.INSTALL_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:17-91
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:41:25-88
+intent-filter#action:name:androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:43:13-45:29
+action#androidx.profileinstaller.action.SKIP_FILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:17-85
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:44:25-82
+intent-filter#action:name:androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:46:13-48:29
+action#androidx.profileinstaller.action.SAVE_PROFILE
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:17-88
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:47:25-85
+intent-filter#action:name:androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:49:13-51:29
+action#androidx.profileinstaller.action.BENCHMARK_OPERATION
+ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:17-95
+	android:name
+		ADDED from [androidx.profileinstaller:profileinstaller:1.3.1] C:\Users\BoDiKrisHome\.gradle\caches\transforms-4\afca042a557691b97b53f310778f72cc\transformed\jetified-profileinstaller-1.3.1\AndroidManifest.xml:50:25-92

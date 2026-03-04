@@ -1,0 +1,537 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>verdadeiro</item>
+    <item>magnético</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>DD.DDDDDD</item>
+    <item>DD° MM.MMMM\'</item>
+    <item>DD° MM\' SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Suporte de mapas ozf2, ozfx3 </item>
+    <item>Ícone do aplicativo</item>
+    <item>Código inicial de selecionador de cor</item>
+    <item>Preferência de código inicial da barra de procura</item>
+    <item>Cálculo do Nascer/Pôr do sol</item>
+    <item>Código inicial da lista arrastar\largar</item>
+    <item>Controlador multitoque</item>
+    <item>Biblioteca de amostra</item>
+    <item>Ícones da interface</item>
+    <item>Ícones de waypoints</item>
+    <item>Localização checa</item>
+    <item>Localização francesa</item>
+    <item>Localização finlandesa</item>
+    <item>Localização búlgara</item>
+    <item>Localização alemã</item>
+    <item>Localização turca</item>
+    <item>Localização italiana</item>
+    <item>Localização espanhola</item>
+    <item>Localização sueca</item>
+    <item>Localização ucraniana</item>
+    <item>Localização portuguesa</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Nenhum</item>
+    <item>Distância de proximidade</item>
+    <item>Tempo (minutos)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>MI</item>
+    <item>MI</item>
+    <item>NM</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>yd</item>
+    <item>pé</item>
+    <item>Mnˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>metros</item>
+    <item>jardas</item>
+    <item>pés</item>
+    <item>(milhas náuticas)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>quilômetros/metros</item>
+    <item>miles/jardas</item>
+    <item>milhas/pés</item>
+    <item>milhas náuticas</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>pé</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>metros</item>
+    <item>pés</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Carregue duas vezes para trás</item>
+    <item>Caixa de diálogo de confirmação</item>
+    <item>Nada</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Prefiro a grade do mapa</item>
+    <item>Prefiro grelha do utilizador</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Nunca</item>
+    <item>Diariamente</item>
+    <item>Semanalmente</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Dispositivo padrão</item>
+    <item>Retrato</item>
+    <item>Paisagem</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Aumentar o zoom</item>
+    <item>Diminuir zoom</item>
+    <item>Mapa mais dimensionado</item>
+    <item>Mapa menus dimensionado</item>
+    <item>Mapas no cursor</item>
+    <item>Gerir pontos de percurso</item>
+    <item>Mostrar informações</item>
+    <item>Seguir/não seguir</item>
+    <item>Obter localização</item>
+    <item>Escrever pista</item>
+    <item>Mostrar/ocultar barra de status</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Não</item>
+    <item>Manualmente</item>
+    <item>Sempre</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/h</item>
+    <item>mph</item>
+    <item>kts</item>
+    <item>m/s</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>quilómetros por hora</item>
+    <item>milhas por hora</item>
+    <item>knots</item>
+    <item>metros por segundo</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Oficial</item>
+    <item>Civil</item>
+    <item>Náutico</item>
+    <item>Astronômico</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Navegar para a página inicial"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Navegar para cima"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Mais opções"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Concluído"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Ver tudo"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Selecionar um app"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"DESATIVADO"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"ATIVADO"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Function+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"espaço"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Pesquisar…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Limpar consulta"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Consulta de pesquisa"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Pesquisar"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Enviar consulta"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Pesquisa por voz"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Compartilhar com"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Compartilhar com <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Recolher"</string>
+    <string name="accuracy">Precisão</string>
+    <string name="action_bar_sort_alpha">Por ordem alfabética</string>
+    <string name="action_bar_sort_distance">Por distância</string>
+    <string name="advanced">Avançado</string>
+    <string name="advanced_name">Propriedades avançadas</string>
+    <string name="alg_a">Cruzeiro</string>
+    <string name="alg_b">Agitar</string>
+    <string name="algorithm">Algoritmo</string>
+    <string name="altitude">Altitude</string>
+    <string name="app_eula">Este programa é distribuído sob os termos da GNU General Public License conforme publicada pela Free Software Foundation, tanto a versão 3 do License./n/n esta aplicação é distribuído na esperança que será útil, mas sem qualquer garantia; sem mesmo a garantia implícita de comerciabilidade ou adequação para uma finalidade específica. Veja a GNU General Public License para mais details./n/n todos os direitos concedidos sob esta licença são concedidos para o termo de direitos autorais sobre o programa e são irrevogáveis desde que as condições declarado.     Esta licença afirma explicitamente sua permissão ilimitada para executar o Program./n/n sem modificações você não é obrigado a aceitar esta licença para receber ou executar uma cópia do programa. Propagação de auxiliar de uma obra coberta que ocorre exclusivamente em consequência usando transmissão peer-to-peer para receber uma cópia da mesma forma não requer aceitação. No entanto, nada que não seja esta licença concede-lhe permissão para propagar ou modificar qualquer objecto de trabalho. Essas ações infringem o copyright se você não aceitar esta licença. Portanto, ao modificar ou propagar uma obra coberta, você indica sua aceitação desta licença para fazer assim. / n/n para a cópia completa do http://www.gnu.org/licenses/gpl.html de Veja a GNU General Public License</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">Chegou ao destino da rota</string>
+    <string name="backQuit">Press Back again to quit</string>
+    <string name="badmaps">Erro de índice de mapa</string>
+    <string name="bearing">Rolamento</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Atender"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Vídeo"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Recusar"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Desligar"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Chamada recebida"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Chamada em andamento"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Filtrando uma ligação recebida"</string>
+    <string name="cancel">Cancelar</string>
+    <string name="change">Mudar</string>
+    <string name="coarse">grosseiro</string>
+    <string name="color">Cor</string>
+    <string name="coordformat">Formato de coordenadas</string>
+    <string name="coordinates_name">Novas coordenadas</string>
+    <string name="credits_name">Créditos da aplicação</string>
+    <string name="currentloc">Localização atual</string>
+    <string name="declination">Declinação</string>
+    <string name="degmag">mag.</string>
+    <string name="degtrue">verdadeiro</string>
+    <string name="description">Descrição</string>
+    <string name="direction">Selecione a direção</string>
+    <string name="distance">Distância</string>
+    <string name="donation_required">Esta funcionalidade está disponível apenas para doadores</string>
+    <string name="done">Feito</string>
+    <string name="easting">Para Este</string>
+    <string name="err_no_network_provider">Nenhum provedor de localização de rede disponível</string>
+    <string name="err_noconnection">Erro de ligação de rede</string>
+    <string name="err_nofile">Esse ficheiro não existe</string>
+    <string name="err_nogps">Nenhum dispositivo GPS encontrado</string>
+    <string name="err_nomemory">Falta de memória detectada, relate isso ao programador</string>
+    <string name="err_nosdcard">O cartão SD não está disponível</string>
+    <string name="err_notconfigured">Não configurado</string>
+    <string name="err_read">Não é possível ler ficheiro</string>
+    <string name="err_shortroute">Rota deve conter pelo menos dois pontos de percurso</string>
+    <string name="err_write">Não é possível gravar ficheiro</string>
+    <string name="err_wrongformat">Formato de ficheiro incorreto</string>
+    <string name="exporttrack_name">Export track</string>
+    <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
+    <string name="filename">Nome do arquivo</string>
+    <string name="fine">boa</string>
+    <string name="following_disabled">Seguimento desligado</string>
+    <string name="following_enabled">Seguimento ligado</string>
+    <string name="format">Format</string>
+    <string name="from">De</string>
+    <string name="from_date">Starting from</string>
+    <string name="generate">Gerar</string>
+    <string name="gotit">Entendi</string>
+    <string name="hdop">HDOP</string>
+    <string name="hemisphere">Hemisfério</string>
+    <string name="homepage">Página web: http://androzic.com/</string>
+    <string name="hsi_name">HSI</string>
+    <string name="icon">Ícone</string>
+    <string name="information_name">Informações</string>
+    <string name="lastfix">Última correção</string>
+    <string name="latitude">Latitude</string>
+    <string name="line_width">Largura da linha</string>
+    <string name="loadroute_name">Carregar rota de ficheiro</string>
+    <string name="loadtrack_name">Carregar pista a partir de ficheiro</string>
+    <string name="loadwaypoints_name">Abrir conjunto de ponto de percurso</string>
+    <string name="longitude">Longitude</string>
+    <string name="manageroutes_name">Rotas</string>
+    <string name="managetracks_name">Pistas</string>
+    <string name="managewaypoints_name">Pontos de percurso</string>
+    <string name="mapinformation_name">Informações do mapa</string>
+    <string name="maplist_name">Mapas</string>
+    <string name="markercolor">Cor do marcador</string>
+    <string name="markericon_name">Selecione o ícone do marcador</string>
+    <string name="menu_addtoroute">Adicionar a rota</string>
+    <string name="menu_addwaypoint">Adicionar ponto de percurso</string>
+    <string name="menu_all">Todos</string>
+    <string name="menu_anchor">definir ancoragem</string>
+    <string name="menu_atcursor">No cursor</string>
+    <string name="menu_change">Mudar</string>
+    <string name="menu_clear">Limpar</string>
+    <string name="menu_clearcurrenttrack">Clear current track</string>
+    <string name="menu_compass">Bússola</string>
+    <string name="menu_copy">Copiar para área de transferência</string>
+    <string name="menu_delete">Apagar</string>
+    <string name="menu_details">Detalhes</string>
+    <string name="menu_dismiss">Demitir</string>
+    <string name="menu_edit">Editar</string>
+    <string name="menu_expandcurrenttrack">Show full current track</string>
+    <string name="menu_exportcurrenttrack">Export current track</string>
+    <string name="menu_follow">Habilitar seguir</string>
+    <string name="menu_gps">Configurações de GPS</string>
+    <string name="menu_hsi">HSI</string>
+    <string name="menu_information">Informação</string>
+    <string name="menu_load">Carregar de ficheiro</string>
+    <string name="menu_location">Localização</string>
+    <string name="menu_manage">Gerir</string>
+    <string name="menu_maps">Mapas</string>
+    <string name="menu_navigate">Navegar</string>
+    <string name="menu_navigation">Navegação</string>
+    <string name="menu_new">Novo</string>
+    <string name="menu_new_waypoint">Novo ponto de percurso</string>
+    <string name="menu_newroute">Nova rota</string>
+    <string name="menu_newwaypointset">Novo conjunto</string>
+    <string name="menu_nextnavpoint">Saltar para a próxima</string>
+    <string name="menu_open">Abrir</string>
+    <string name="menu_paste">Colar da área de transferência</string>
+    <string name="menu_preferences">Configurações</string>
+    <string name="menu_prevnavpoint">Ir para anterior</string>
+    <string name="menu_project">Projeto novo</string>
+    <string name="menu_properties">Propriedades</string>
+    <string name="menu_remove">Remover</string>
+    <string name="menu_resetindex">Redefinir índice</string>
+    <string name="menu_routes">Rotas</string>
+    <string name="menu_save">Salvar para ficheiro</string>
+    <string name="menu_search">Pesquisar</string>
+    <string name="menu_share">Partilhar</string>
+    <string name="menu_sort">Ordenar</string>
+    <string name="menu_sort_alphabetically">Ordenar por ordem alfabética</string>
+    <string name="menu_sort_distance">Ordenar por distância</string>
+    <string name="menu_startnavigation">Navegue através de rota</string>
+    <string name="menu_stopnavigation">Parar navegação</string>
+    <string name="menu_thisnavpoint">Navegue aqui</string>
+    <string name="menu_track2route">Converter em rota</string>
+    <string name="menu_tracks">Pista</string>
+    <string name="menu_view">Ver</string>
+    <string name="menu_visible">Certifique-se visível</string>
+    <string name="menu_waypoints">Pontos de percurso</string>
+    <string name="more">Mais</string>
+    <string name="msg_badtrackimplementation">Por favor, observe que prejudicará o desempenho em pistas longas, seja paciente.</string>
+    <string name="msg_cleaning">A limpar...</string>
+    <string name="msg_clearcurrenttrack">This will clear all your moving history, are you sure?</string>
+    <string name="msg_connectingtoserver">A ligar ao servidor...</string>
+    <string name="msg_empty_route_list">Há rotas disponíveis. Use o menu para criar uma rota ou carregá-la de um ficheiro.</string>
+    <string name="msg_empty_track_list">No tracks available. Use menu to load track from file.</string>
+    <string name="msg_emptytracksegment">Selected track segment is empty, nothing to save</string>
+    <string name="msg_expandcurrenttrack">If you have not cleared your current track for a long time this can significantly degrade performance. Proceed?</string>
+    <string name="msg_initializingdata">A iniciar dados...</string>
+    <string name="msg_initializingmaps">A iniciar mapas...</string>
+    <string name="msg_initializingplugins">A iniciar plugins...</string>
+    <string name="msg_initializingview">A iniciar vista...</string>
+    <string name="msg_loadingimagefile">A carregar ficheiro de imagem do mapa mundo...</string>
+    <string name="msg_loadingmapfile">A carregar ficheiro de dados do mapa mundo...</string>
+    <string name="msg_newdatafolder">Por pedido popular o Androzic agora funciona, de forma diferente, com pastas . Pode selecionar livremente qualquer pasta de mapas e dados. A pasta de dados agora é unificada para todos os tipos de dados: waypoints, trilhas e rotas. Tem que copiar os seus ficheiros de dados existentes manualmente para a seguinte pasta criada automaticamente: \'%s\'.</string>
+    <string name="msg_nothing_found">Nothing was found. Please take into account that data is searched only if it is loaded in Androzic, named locations are searched only if Internet connection is available.</string>
+    <string name="msg_paid">Versão de doador</string>
+    <string name="msg_scansdcard">A verificar cartão SD</string>
+    <string name="msg_wait">Espere por favor...</string>
+    <string name="n">N</string>
+    <string name="name">Nome</string>
+    <string name="navigate">Navegar</string>
+    <string name="never">nunca</string>
+    <string name="new_coordinates">Novas coordenadas recebidas de %s</string>
+    <string name="no">Não</string>
+    <string name="nomaps">Não foram encontrados mapas</string>
+    <string name="nomaps_explained">Pasta de mapas \'%s\' está vazia. Quer descarregar e instalar o mapa mundial (250KB)?</string>
+    <string name="northing">Para Norte</string>
+    <string name="notif_loc_short">A localizar</string>
+    <string name="notif_loc_started">Androzic esta a obter a sua localização</string>
+    <string name="notif_loc_waiting">Androzic is waiting for location</string>
+    <string name="notif_nav_short">A navegar</string>
+    <string name="notif_nav_started">Androzic está navegando você</string>
+    <string name="notif_nav_to">Androzic a navegar para %s</string>
+    <string name="notif_trk_failure">Androzic has problem with tracking</string>
+    <string name="notif_trk_started">Androzic está a controlar o seu movimento</string>
+    <string name="ok">OK</string>
+    <string name="perm_location_description">Aceder à localização fornecida pelo Androzic</string>
+    <string name="perm_location_title">Obter a localização</string>
+    <string name="perm_navigation_description">Initiate/modify navigation provided by Androzic</string>
+    <string name="perm_navigation_title">Initiate navigation</string>
+    <string name="perm_read_map_data_title">Obter dados do mapa do Androzic</string>
+    <string name="perm_read_preferences_title">Ler as preferências de utilizador do Androzic</string>
+    <string name="perm_tracking_description">Receber a pista fornecida pelo Androzic</string>
+    <string name="perm_tracking_title">Obter a pista</string>
+    <string name="perm_write_map_data_title">Acrescentar dados no mapa Androzic</string>
+    <string name="pref_about_title">Sobre Androzic</string>
+    <string name="pref_advanced_title">Avançado</string>
+    <string name="pref_application_title">Sobre comentários e</string>
+    <string name="pref_charset_summary">O conjunto de caracteres para o mapa e dados de ficheiro de texto. Atenção: não pode misturar ficheiros no Android nativo (UTF-8) e conjuntos de caracteres nacionais, altere essa configuração apenas se todos os seus ficheiros estão em codificação nacional, caso contrário manualmente recodifique todos os ficheiros que não estão na codificação UTF-8. Tem efeito apenas após a reinicialização do programa.</string>
+    <string name="pref_charset_title">Codificação de ficheiro de texto</string>
+    <string name="pref_credits_title">Créditos</string>
+    <string name="pref_cursor_title">A mover o cursor</string>
+    <string name="pref_cursorcolor_title">Cor ativa</string>
+    <string name="pref_cursorvector_summary">Selecione a base para o comprimento do vetor linha</string>
+    <string name="pref_cursorvector_title">Tipo de linha do vetor</string>
+    <string name="pref_cursorvectormlpr_summary">Selecione linha de vetor quantas bases serão usados para definir o seu comprimento</string>
+    <string name="pref_cursorvectormlpr_title">Multiplicador de linha vector</string>
+    <string name="pref_donate_google_title">Doar via Google Play Store</string>
+    <string name="pref_donate_paypal_title">Doar via PayPal</string>
+    <string name="pref_exit_title">Exit confirmation</string>
+    <string name="pref_facebook_title">Gosto no Facebook</string>
+    <string name="pref_faq_title">PERGUNTAS FREQUENTES</string>
+    <string name="pref_feature_title">Feedback and support</string>
+    <string name="pref_folder_data_title">Pasta de dados</string>
+    <string name="pref_folder_icon_title">Pasta de ícones</string>
+    <string name="pref_folder_map_title">Pasta de mapas</string>
+    <string name="pref_folder_prefix_caution">Essa opção é somente para usuários avançados. Use-o com cuidado: se não for conjunto corretamente aplicativo pode falhar ao iniciar.</string>
+    <string name="pref_folder_prefix_title">Pasta de aplicativo</string>
+    <string name="pref_folder_title">Pastas</string>
+    <string name="pref_googleplus_title">Entrar no Google+</string>
+    <string name="pref_grid_mapshow_title">Mostrar grelha do mapa</string>
+    <string name="pref_grid_preference_title">Preferências de grelha</string>
+    <string name="pref_grid_title">Grelhas</string>
+    <string name="pref_grid_usermpp_summary">Metros máximos por escala de pixel no qual grade personalizada será visíveis</string>
+    <string name="pref_grid_usermpp_title">Limitação de grelha personalizada</string>
+    <string name="pref_grid_userscale_title">Intervalo de grelha personalizado</string>
+    <string name="pref_grid_usershow_title">Mostrar grelha personalizada</string>
+    <string name="pref_grid_userunit_title">Unidade de grelha personalizada</string>
+    <string name="pref_hideactionbar_summary">Marque para ocultar a barra de ação do programa quando o mapa é exibido. Tem efeito somente após a reinicialização do programa.</string>
+    <string name="pref_hideactionbar_title">Ocultar barra de ação</string>
+    <string name="pref_loc_gpstimeout_summary">Especificar o tempo limite em segundos da última correção de GPS, após o qual local será determinado pelas redes</string>
+    <string name="pref_loc_gpstimeout_title">Tempo limite de localização GPS</string>
+    <string name="pref_loc_store_summary">Marcar para iniciar a aplicação na última localização</string>
+    <string name="pref_loc_store_title">Lembrar o último local</string>
+    <string name="pref_loc_title">Localização</string>
+    <string name="pref_loc_usenetwork_summary">Marca para usar a localização de redes se localização GPS não está disponível</string>
+    <string name="pref_loc_usenetwork_title">Usar redes</string>
+    <string name="pref_locale_title">Idioma</string>
+    <string name="pref_lookahead_summary">Quantidade de ecrã para olhar em frente</string>
+    <string name="pref_lookahead_title">Olhar em frente</string>
+    <string name="pref_map_title">Mapa</string>
+    <string name="pref_mapadjacent_summary">Marque para exibir mapas adjacentes e melhores (EXPERIMENTAL, pode prejudicar significativamente o desempenho!)</string>
+    <string name="pref_mapadjacent_title">Mapas adjacentes</string>
+    <string name="pref_mapbest_summary">Marca para permitir que o aplicativo tenta carregar o melhor mapa para o local atual</string>
+    <string name="pref_mapbest_title">carregar melhor mapa</string>
+    <string name="pref_mapbestinterval_summary">Período de tempo entre pesquisas de melhores mapas</string>
+    <string name="pref_mapbestinterval_title">Melhor intervalo de mapa</string>
+    <string name="pref_mapcropborder_summary">Marca para cortar mapa ao longo de marcadores de canto</string>
+    <string name="pref_mapcropborder_title">Cortar margens do mapa</string>
+    <string name="pref_mapdim_summary">Marque para fazer tela escurecer automaticamente durante a noite</string>
+    <string name="pref_mapdim_title">Luminosidade automática do ecrã</string>
+    <string name="pref_mapdimvalue_title">quantidade de luminosidade </string>
+    <string name="pref_mapdrawborder_summary">Marca para desenhar borda junto marcadores de canto</string>
+    <string name="pref_mapdrawborder_title">Desenhar borda do mapa</string>
+    <string name="pref_mapfollowonloc_title">Siga no primeiro local</string>
+    <string name="pref_maphideondrag_summary">Marca para ocultar objetos do mapa enquanto arrasta</string>
+    <string name="pref_maphideondrag_title">Ocultar objetos ao arrastar</string>
+    <string name="pref_maprenderinterval_summary">Período de tempo mínimo entre as atualizações de mapa</string>
+    <string name="pref_maprenderinterval_title">Intervalo de atualização</string>
+    <string name="pref_name">Configurações do Androzic</string>
+    <string name="pref_navigation_linewidth_summary">Largura de uma linha de rumo ao ponto de passagem de navegação atual</string>
+    <string name="pref_navigation_linewidth_title">Largura de linha de rolamento</string>
+    <string name="pref_navigation_loadlast_summary">Marca para carregar uma rota não terminar na próxima inicialização do aplicativo</string>
+    <string name="pref_navigation_loadlast_title">Carregar a última rota</string>
+    <string name="pref_navigation_proximity_summary">Proximidade em metros, no qual a rota navegação vai avançar para o próximo waypoint disponível</string>
+    <string name="pref_navigation_proximity_title">Proximidade do ponto de percurso</string>
+    <string name="pref_navigation_proximitycircle_summary">Marca de desenhar o círculo de proximidade ao redor de waypoints da rota durante a navegação</string>
+    <string name="pref_navigation_proximitycircle_title">Círculo de proximidade</string>
+    <string name="pref_navigation_title">Navegação</string>
+    <string name="pref_navigation_traverse_summary">Marca para usar lógica transversal juntamente com proximidade para mudar a rota próximo waypoint</string>
+    <string name="pref_navigation_traverse_title">Usar a lógica de travessia</string>
+    <string name="pref_onlinemap_summary">Fonte do mapa on-line</string>
+    <string name="pref_onlinemap_title">Provedor de mapa</string>
+    <string name="pref_onlinemaps_title">Mapa Online</string>
+    <string name="pref_onlinemapscale_summary">Nível do zoom será interpretado como 100%</string>
+    <string name="pref_onlinemapscale_title">Nível de zoom por defeito</string>
+    <string name="pref_orientation_title">Orientação do ecrã</string>
+    <string name="pref_panelactions_title">Ações do painel deslizante</string>
+    <string name="pref_plugins_title">Plugin</string>
+    <string name="pref_route_linewidth_summary">Pixeis de largura da linha de rota</string>
+    <string name="pref_route_linewidth_title">Largura da linha</string>
+    <string name="pref_route_pointwidth_summary">O tamanho do pixel do marcador do ponto de percurso da rota</string>
+    <string name="pref_route_pointwidth_title">Tamanho do marcador</string>
+    <string name="pref_route_preload_hidden_summary">Hide preloaded routes until they are viewed, edited or navigated</string>
+    <string name="pref_route_preload_hidden_title">Hide preloaded routes</string>
+    <string name="pref_route_preload_summary">Marque para pré-carregar rotas a partir de ficheiros no arranque do programa</string>
+    <string name="pref_route_preload_title">Pré carregar rotas</string>
+    <string name="pref_route_showname_summary">Marca para mostrar o nome de waypoint da rota ao lado de um marcador</string>
+    <string name="pref_route_showname_title">Mostrar nome do ponto de percurso</string>
+    <string name="pref_route_title">Rotas</string>
+    <string name="pref_scalebarcolor_title">Cor da barra de escala</string>
+    <string name="pref_show_title">Exibição</string>
+    <string name="pref_showaccuracy_summary">Marca para mostrar o círculo de precisão em torno de cursor de posição</string>
+    <string name="pref_showaccuracy_title">Mostrar o círculo de precisão</string>
+    <string name="pref_showcurrenttrack_summary">Marca para tornar visível a faixa atual mapa</string>
+    <string name="pref_showcurrenttrack_title">Mostrar a faixa atual</string>
+    <string name="pref_showdistance_title">Visualizar distância</string>
+    <string name="pref_showmapinfo_summary">Marca para mostrar o nível atual de nome e de zoom do mapa</string>
+    <string name="pref_showmapinfo_title">Mostrar painel de mapa</string>
+    <string name="pref_showsatinfo_summary">Marca para mostrar as coordenadas atuais e painel de status do GPS</string>
+    <string name="pref_showsatinfo_title">Mostrar painel de satélite</string>
+    <string name="pref_tracking_currentcolor_title">Cor da pista atual</string>
+    <string name="pref_tracking_currentlength_summary">Número máximo de pontos no rasto da pista atual</string>
+    <string name="pref_tracking_currentlength_title">Comprimento da pista atual</string>
+    <string name="pref_tracking_currentload_summary">Marcar para carregar rasto de pista na próxima inicialização da aplicação</string>
+    <string name="pref_tracking_currentload_title">Carregar a pista atual</string>
+    <string name="pref_tracking_linewidth_summary">Pixel width of the track line</string>
+    <string name="pref_tracking_linewidth_title">Largura da linha</string>
+    <string name="pref_tracking_mindistance_summary">Distância mínima em metros que deve ir antes que outro ponto de controle é adquirido</string>
+    <string name="pref_tracking_mindistance_title">Distância mínima</string>
+    <string name="pref_tracking_mintime_summary">Mínimo tempo em milissegundos que deve decorrer antes que um outro ponto de controle é adquirido</string>
+    <string name="pref_tracking_mintime_title">Tempo mínimo</string>
+    <string name="pref_tracking_title">Faixas</string>
+    <string name="pref_twitter_title">Seguir no Twitter</string>
+    <string name="pref_unfollowontap_title">Parar de seguir a arrastar</string>
+    <string name="pref_unit_title">Unidades</string>
+    <string name="pref_unitangle_title">Declinação</string>
+    <string name="pref_unitcoordinate_title">Coordenadas</string>
+    <string name="pref_unitdistance_title">Distância</string>
+    <string name="pref_unitelevation_title">Altitude</string>
+    <string name="pref_unitprecision_title">Extra precision</string>
+    <string name="pref_unitspeed_title">Velocidade</string>
+    <string name="pref_unitsunrise_title">Nascer/Pôr do sol</string>
+    <string name="pref_uri_summary">Pressione para seguir um link para web site</string>
+    <string name="pref_usemapindex_title">Usar mapa índice</string>
+    <string name="pref_useonlinemap_title">Usar mapa online</string>
+    <string name="pref_wakelock_summary">Marque para manter o ecrã do dispositivo ligado e brilhante quando o mapa é exibido</string>
+    <string name="pref_wakelock_title">Manter o ecrã ligado</string>
+    <string name="pref_waypoint_bgcolor_title">Nome da cor de fundo</string>
+    <string name="pref_waypoint_color_title">Cor do marcador</string>
+    <string name="pref_waypoint_namecolor_title">Nome da cor</string>
+    <string name="pref_waypoint_showname_summary">Marca para mostrar o nome de waypoint ao lado de um marcador</string>
+    <string name="pref_waypoint_showname_title">Mostrar nome</string>
+    <string name="pref_waypoint_title">Pontos de percurso</string>
+    <string name="pref_waypoint_visible_summary">Marca para centrar o mapa no novo ponto de percurso</string>
+    <string name="pref_waypoint_visible_title">Certifique-se visível ao criar</string>
+    <string name="pref_waypoint_width_summary">O tamanho do pixel de marcador de ponto de percurso</string>
+    <string name="pref_waypoint_width_title">Tamanho do marcador</string>
+    <string name="primary">Primário</string>
+    <string name="provider">Provedor</string>
+    <string name="proximity">Proximidade</string>
+    <string name="quit">Sair</string>
+    <string name="quitQuestion">Você quer sair?</string>
+    <string name="removeWaypointQuestion">Remover waypoint?</string>
+    <string name="restart_needed">É necessário reiniciar a aplicação</string>
+    <string name="restart_needed_explained">Esta funcionalidade requer a reinicialização da aplicação. Isto significa, forçar a paragem da mesma nas configurações da aplicação Android.</string>
+    <string name="routedetails_name">Detalhes da rota</string>
+    <string name="routeproperties_name">Editar rota</string>
+    <string name="s">S</string>
+    <string name="sat_firstfix">GPS ativo</string>
+    <string name="sat_start">GPS ligado</string>
+    <string name="sat_stop">GPS desativado</string>
+    <string name="satellites">Satélites</string>
+    <string name="save">Salvar</string>
+    <string name="saveroute_name">Guardar rota para ficheiro</string>
+    <string name="savetrack_name">Guardar pista para ficheiro</string>
+    <string name="search_hint">Introduza o nome ou a morada</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Pesquisar"</string>
+    <string name="search_name">Resultados da pesquisa</string>
+    <string name="selectroute_name">Selecione a rota</string>
+    <string name="send_me_bugs">Se encontrar um bug que deseje ficar fixo ou se tem alguma sugestão, não hesite em usar o issue tracker na homepage do projeto.</string>
+    <string name="sensitivity">Sensibilidade</string>
+    <string name="show">Mostrar</string>
+    <string name="showcase_add_waypoint_description">Tap action icon to quickly add new waypoint in current cursor position.</string>
+    <string name="showcase_add_waypoint_title">Adicionar ponto de percurso</string>
+    <string name="showcase_follow_description">Press follow icon to enable following mode. In this mode map will be fixed to your current position. Alternatively you can double tap on map to switch following mode on and off.</string>
+    <string name="showcase_follow_title">Location following</string>
+    <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
+    <string name="showcase_load_waypoints_title">Load waypoints</string>
+    <string name="showcase_panel_description">Slide or drag sliding panel handler to access quick actions. Quick actions can be configured in Settings.</string>
+    <string name="showcase_panel_title">Quick actions</string>
+    <string name="showcase_search_description">You can type specific coordinates in various formats to find them on map, search through loaded waypoint or route names and descriptions, search for places and addresses through Google geocoding service (Internet connection is required for this to work).</string>
+    <string name="showcase_search_title">Pesquisar</string>
+    <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
+    <string name="showcase_waypointset_actions_title">Waypoint set actions</string>
+    <string name="skip_single_locations">Skip single locations</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Nascer do sol</string>
+    <string name="sunset">Pôr do sol</string>
+    <string name="t2r_explained"><b>Esta funcionalidade é experimental.</b> A pista deve ser sensível. Isso significa que deve descrever a viagem do ponto ao ponto B, mas não procurando um ponto ao redor. Tente ambos os algoritmos e ver o que mais lhe convier. \' Cruzeiro´ algoritmo é linear e rota a tempo de geração é previsível enquanto \' Agitar´ algoritmo é totalmente imprevisível. Sensibilidade grosseira pode resultar em falta algumas voltas, enquanto a fina sensibilidade pode adicionar poontos de percurso desnecessários.</string>
+    <string name="textcolor">Nome da cor</string>
+    <string name="till_date">Ending at</string>
+    <string name="track2route_name">Converter a faixa para rotear</string>
+    <string name="trackproperties_name">Editar a pista</string>
+    <string name="update_almanac">Solicitar atualização de Almanaque</string>
+    <string name="upto">Até %.0f de metros</string>
+    <string name="vdop">VDOP</string>
+    <string name="version">Versão: %s</string>
+    <string name="warning">Aviso</string>
+    <string name="waypointproject_name">Projetar novo ponto de percurso</string>
+    <string name="waypointproperties_name">Editar ponto de percurso</string>
+    <string name="waypointset">Conjunto</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Sim</string>
+    <string name="zone">Zona</string>
+</resources>

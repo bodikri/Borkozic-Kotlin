@@ -1,0 +1,555 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:ns1="urn:oasis:names:tc:xliff:document:1.2">
+    <string-array name="angle_units">
+    <item>zem.</item>
+    <item>mag.</item>
+  </string-array>
+    <string-array name="coordinate_units">
+    <item>DD.DDDDDD</item>
+    <item>DD°MM.MMMM\'</item>
+    <item>DD°MM\'SS.SSS\"</item>
+    <item>UTM</item>
+  </string-array>
+    <string-array name="credit_merits">
+    <item>Podpora ozf2, ozfx3 map </item>
+    <item>Ikona aplikace</item>
+    <item>Výběr barev prvotní kód</item>
+    <item>Seekbar nastavení původní kód</item>
+    <item>Východ/západ slunce - výpočty</item>
+    <item>Táhni a pust prvotní kód</item>
+    <item>Multitouch kód</item>
+    <item>Showcase library</item>
+    <item>Ikony rozhranní</item>
+    <item>Ikony waypointů</item>
+    <item>Česká lokalizace</item>
+    <item>Francouzská lokalizace</item>
+    <item>Finská lokalizace</item>
+    <item>Bulharská lokalizace</item>
+    <item>Německá lokalizace</item>
+    <item>Turecká lokalizace</item>
+    <item>Italská lokalizace</item>
+    <item>Španělská lokalizace</item>
+    <item>Švédská lokalizace</item>
+    <item>Ukrajinská lokalizace</item>
+    <item>Portugalská lokalizace</item>
+  </string-array>
+    <string-array name="cursorvector_names">
+    <item>Žádný</item>
+    <item>Vzdálenost přiblížení</item>
+    <item>Čas (minuty)</item>
+  </string-array>
+    <string-array name="distance_abbrs">
+    <item>km</item>
+    <item>mi</item>
+    <item>mi</item>
+    <item>nm</item>
+  </string-array>
+    <string-array name="distance_abbrs_short">
+    <item>m</item>
+    <item>yd</item>
+    <item>ft</item>
+    <item>nmˉ³</item>
+  </string-array>
+    <string-array name="distance_short">
+    <item>metry</item>
+    <item>yardy</item>
+    <item>stopy</item>
+    <item>(námořní míle)ˉ³</item>
+  </string-array>
+    <string-array name="distance_units">
+    <item>kilometry/metry</item>
+    <item>míle/yardy</item>
+    <item>míle/stopy</item>
+    <item>námořní míle</item>
+  </string-array>
+    <string-array name="elevation_abbrs">
+    <item>m</item>
+    <item>ft</item>
+  </string-array>
+    <string-array name="elevation_units">
+    <item>metry</item>
+    <item>stopy</item>
+  </string-array>
+    <string-array name="exit_names">
+    <item>Double press Back</item>
+    <item>Potvrzovací dialog</item>
+    <item>Nothing</item>
+  </string-array>
+    <string-array name="grid_names">
+    <item>Upřednostni mapovou mříž</item>
+    <item>Upřednosti vlastní mříž</item>
+  </string-array>
+    <string-array name="interval_names">
+    <item>Nikdy</item>
+    <item>Denně</item>
+    <item>Týdně</item>
+  </string-array>
+    <string-array name="orientation_names">
+    <item>Nastaveno ze systému</item>
+    <item>Na výšku</item>
+    <item>Na šířku</item>
+  </string-array>
+    <string-array name="panel_action_names">
+    <item>Přiblížit</item>
+    <item>Oddálit</item>
+    <item>Více měřítková mapa</item>
+    <item>Méně měřítková mapa</item>
+    <item>Mapy na kurzoru</item>
+    <item>Správa navigačních bodů</item>
+    <item>Zobrazit informace</item>
+    <item>﻿Sledovat/nesledovat</item>
+    <item>Získej umístění</item>
+    <item>Zapisovat stopu</item>
+    <item>Zobrazit/skrýt stavový řádek</item>
+  </string-array>
+    <string-array name="showdistance_names">
+    <item>Ne</item>
+    <item>Ručně</item>
+    <item>Vždy</item>
+  </string-array>
+    <string-array name="speed_abbrs">
+    <item>km/h</item>
+    <item>mph</item>
+    <item>kts</item>
+    <item>m/s</item>
+  </string-array>
+    <string-array name="speed_units">
+    <item>kilometry za hodinu</item>
+    <item>míle za hodinu</item>
+    <item>uzly</item>
+    <item>metry za sekundu</item>
+  </string-array>
+    <string-array name="sunrise_units">
+    <item>Oficiální</item>
+    <item>Civilní</item>
+    <item>Námořní</item>
+    <item>Astronmický</item>
+  </string-array>
+    <string msgid="5976598919945601918" name="abc_action_bar_home_description">"Přejít na plochu"</string>
+    <string msgid="8388173803310557296" name="abc_action_bar_up_description">"Přejít nahoru"</string>
+    <string msgid="3937310113216875497" name="abc_action_menu_overflow_description">"Další možnosti"</string>
+    <string msgid="4692188335987374352" name="abc_action_mode_done">"Hotovo"</string>
+    <string msgid="1189761859438369441" name="abc_activity_chooser_view_see_all">"Zobrazit vše"</string>
+    <string msgid="2165779757652331008" name="abc_activitychooserview_choose_application">"Vybrat aplikaci"</string>
+    <string msgid="4215997306490295099" name="abc_capital_off">"VYP"</string>
+    <string msgid="884982626291842264" name="abc_capital_on">"ZAP"</string>
+    <string msgid="8833365367933412986" name="abc_menu_alt_shortcut_label">"Alt+"</string>
+    <string msgid="2223301931652355242" name="abc_menu_ctrl_shortcut_label">"Ctrl+"</string>
+    <string msgid="838001238306846836" name="abc_menu_delete_shortcut_label">"delete"</string>
+    <string msgid="7986526966204849475" name="abc_menu_enter_shortcut_label">"enter"</string>
+    <string msgid="375214403600139847" name="abc_menu_function_shortcut_label">"Fn+"</string>
+    <string msgid="4192209724446364286" name="abc_menu_meta_shortcut_label">"Meta+"</string>
+    <string msgid="4741552369836443843" name="abc_menu_shift_shortcut_label">"Shift+"</string>
+    <string msgid="5473865519181928982" name="abc_menu_space_shortcut_label">"mezerník"</string>
+    <string msgid="6180552449598693998" name="abc_menu_sym_shortcut_label">"Sym+"</string>
+    <string msgid="5520303668377388990" name="abc_prepend_shortcut_label">"Menu+"</string>
+    <string msgid="7208076849092622260" name="abc_search_hint">"Vyhledat…"</string>
+    <string msgid="3741173234950517107" name="abc_searchview_description_clear">"Smazat dotaz"</string>
+    <string msgid="693312494995508443" name="abc_searchview_description_query">"Dotaz pro vyhledávání"</string>
+    <string msgid="3417662926640357176" name="abc_searchview_description_search">"Hledat"</string>
+    <string msgid="1486535517437947103" name="abc_searchview_description_submit">"Odeslat dotaz"</string>
+    <string msgid="2293578557972875415" name="abc_searchview_description_voice">"Hlasové vyhledávání"</string>
+    <string msgid="8875138169939072951" name="abc_shareactionprovider_share_with">"Sdílet s"</string>
+    <string msgid="9055268688411532828" name="abc_shareactionprovider_share_with_application">"Sdílet s aplikací <ns1:g id="APPLICATION_NAME">%s</ns1:g>"</string>
+    <string msgid="1656852541809559762" name="abc_toolbar_collapse_description">"Sbalit"</string>
+    <string name="accuracy">Přesnost</string>
+    <string name="action_bar_sort_alpha">Podle abecedy</string>
+    <string name="action_bar_sort_distance">Podle vzdálenosti</string>
+    <string name="advanced">Pokročilé</string>
+    <string name="advanced_name">Rozšířená nastavení</string>
+    <string name="alg_a">Křížový</string>
+    <string name="alg_b">Poskakující</string>
+    <string name="algorithm">Algoritmus</string>
+    <string name="altitude">Nadmořská výška</string>
+    <string name="app_eula">This program is distributed under the terms of
+	the GNU General Public License as published by the Free Software Foundation,
+	either version 3 of the License./n/n
+    This application is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details./n/n
+    All rights granted under this License are granted for the term of copyright
+    on the Program, and are irrevocable provided the stated conditions are met.
+    This License explicitly affirms your unlimited permission to run the unmodified
+    Program./n/n
+    You are not required to accept this License in order to receive or run a copy of
+    the Program. Ancillary propagation of a covered work occurring solely as
+    a consequence of using peer-to-peer transmission to receive a copy likewise does
+    not require acceptance. However, nothing other than this License grants you
+    permission to propagate or modify any covered work. These actions infringe
+    copyright if you do not accept this License. Therefore, by modifying or propagating
+    a covered work, you indicate your acceptance of this License to do so./n/n
+    For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+    <string name="app_name">Borkozic</string>
+    <string name="arrived">Dosáhli jste cíle routy</string>
+    <string name="backQuit">Stiskni znovu pro ukončení</string>
+    <string name="badmaps">Chyba v mapovém indexu</string>
+    <string name="bearing">Azimut °</string>
+    <string msgid="881409763997275156" name="call_notification_answer_action">"Přijmout"</string>
+    <string msgid="8793775615905189152" name="call_notification_answer_video_action">"Video"</string>
+    <string msgid="3229508546291798546" name="call_notification_decline_action">"Odmítnout"</string>
+    <string msgid="2659457946726154263" name="call_notification_hang_up_action">"Zavěsit"</string>
+    <string msgid="6107532579223922871" name="call_notification_incoming_text">"Příchozí hovor"</string>
+    <string msgid="8623827134497363134" name="call_notification_ongoing_text">"Probíhající hovor"</string>
+    <string msgid="59049573811482460" name="call_notification_screening_text">"Prověřování příchozího hovoru"</string>
+    <string name="cancel">Storno</string>
+    <string name="change">Změň</string>
+    <string name="coarse">hrubá</string>
+    <string name="color">Barva</string>
+    <string name="coordformat">Formát souřadnic</string>
+    <string name="coordinates_name">Nové souřadnice</string>
+    <string name="credits_name">Zásluhy na aplikaci</string>
+    <string name="currentloc">Aktuální pozice</string>
+    <string name="declination">Deklinace</string>
+    <string name="degmag">mag.</string>
+    <string name="degtrue">zem.</string>
+    <string name="description">Popis</string>
+    <string name="direction">Zvol směr</string>
+    <string name="distance">Vzdálenost</string>
+    <string name="donation_required">Tato funkce je dostupná pouze pro dárce</string>
+    <string name="done">Hotovo</string>
+    <string name="easting">Východní</string>
+    <string name="err_no_network_provider">Žádné umístění v síti poskytovatele k dispozici</string>
+    <string name="err_noconnection">Chyba sítě</string>
+    <string name="err_nofile">Soubor nenalezen</string>
+    <string name="err_nogps">Zařízení GPS nenalezeno</string>
+    <string name="err_nomemory">Chyba v paměti, prosím zašlete ji autorovi</string>
+    <string name="err_nosdcard">Karta SD nepřístupná</string>
+    <string name="err_notconfigured">Nenastaveno</string>
+    <string name="err_read">Nemohu číst ze souboru</string>
+    <string name="err_shortroute">Routa musí obsahovat alespoň dva body</string>
+    <string name="err_write">Nelze zapsat soubor</string>
+    <string name="err_wrongformat">Špatný formát souboru</string>
+    <string name="exporttrack_name">Export track</string>
+    <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
+    <string name="filename">Jméno souboru</string>
+    <string name="fine">jemná</string>
+    <string name="following_disabled">Následování vypnuto</string>
+    <string name="following_enabled">Následování zapnuto</string>
+    <string name="format">Format</string>
+    <string name="from">Od</string>
+    <string name="from_date">Starting from</string>
+    <string name="generate">Spusť</string>
+    <string name="gotit">Chápu</string>
+    <string name="hdop">HDOP</string>
+    <string name="hemisphere">Polokoule</string>
+    <string name="homepage">Domovská stránka: http://androzic.com/</string>
+    <string name="hsi_name">HSI</string>
+    <string name="icon">Ikona</string>
+    <string name="information_name">Informace</string>
+    <string name="lastfix">Poslední fix</string>
+    <string name="latitude">Z.šířka</string>
+    <string name="line_width">Šířka linie</string>
+    <string name="loadroute_name">Nahraj routu ze souboru</string>
+    <string name="loadtrack_name">Nahraj trek ze souboru</string>
+    <string name="loadwaypoints_name">Otevřít sadu navigačních bodů</string>
+    <string name="longitude">Z.délka</string>
+    <string name="manageroutes_name">Trasy</string>
+    <string name="managetracks_name">Treky</string>
+    <string name="managewaypoints_name">Navigační body</string>
+    <string name="mapinformation_name">Mapové informace</string>
+    <string name="maplist_name">Mapy</string>
+    <string name="markercolor">Barva značky</string>
+    <string name="markericon_name">Vyber ikonu značky</string>
+    <string name="menu_addtoroute">Přidej do routy</string>
+    <string name="menu_addwaypoint">Přidej bod</string>
+    <string name="menu_all">Všechny</string>
+    <string name="menu_anchor">Nastav cíl</string>
+    <string name="menu_atcursor">Na pozici</string>
+    <string name="menu_change">Změň</string>
+    <string name="menu_clear">Vyčistit</string>
+    <string name="menu_clearcurrenttrack">Clear current track</string>
+    <string name="menu_compass">Kompas</string>
+    <string name="menu_copy">Kopírovat do schránky</string>
+    <string name="menu_delete">Odstranit</string>
+    <string name="menu_details">Podrobnosti</string>
+    <string name="menu_dismiss">Omítnout</string>
+    <string name="menu_edit">Edituj</string>
+    <string name="menu_expandcurrenttrack">Show full current track</string>
+    <string name="menu_exportcurrenttrack">Export current track</string>
+    <string name="menu_follow">Trasování ON</string>
+    <string name="menu_gps">GPS nastavení</string>
+    <string name="menu_hsi">HSI</string>
+    <string name="menu_information">Informace</string>
+    <string name="menu_load">Nahraj ze souboru</string>
+    <string name="menu_location">Pozice</string>
+    <string name="menu_manage">Spravuj</string>
+    <string name="menu_maps">Mapy</string>
+    <string name="menu_navigate">Naviguj</string>
+    <string name="menu_navigation">Navigace</string>
+    <string name="menu_new">Nový</string>
+    <string name="menu_new_waypoint">Nový traťový bod</string>
+    <string name="menu_newroute">Nová routa</string>
+    <string name="menu_newwaypointset">Nová sada</string>
+    <string name="menu_nextnavpoint">Přeskoč na další</string>
+    <string name="menu_open">Otevřít</string>
+    <string name="menu_paste">Vložit ze schránky</string>
+    <string name="menu_preferences">Nastavení</string>
+    <string name="menu_prevnavpoint">Jdi na předchozí</string>
+    <string name="menu_project">Vypočti nový</string>
+    <string name="menu_properties">Vlastnosti</string>
+    <string name="menu_remove">Odeber</string>
+    <string name="menu_resetindex">Reset indexu</string>
+    <string name="menu_routes">Routy</string>
+    <string name="menu_save">Ulož do souboru</string>
+    <string name="menu_search">Hledat</string>
+    <string name="menu_share">Sdílej</string>
+    <string name="menu_sort">Seřaď</string>
+    <string name="menu_sort_alphabetically">Řadit podle abecedy</string>
+    <string name="menu_sort_distance">Seřaď podle vzdálenosti</string>
+    <string name="menu_startnavigation">Naviguj po routě</string>
+    <string name="menu_stopnavigation">Zastav navigaci</string>
+    <string name="menu_thisnavpoint">Naviguj sem</string>
+    <string name="menu_track2route">Převeď na routu</string>
+    <string name="menu_tracks">Treky</string>
+    <string name="menu_view">Pohled</string>
+    <string name="menu_visible">Zobraz na mapě</string>
+    <string name="menu_waypoints">Body</string>
+    <string name="more">Více</string>
+    <string name="msg_badtrackimplementation">..Upozornění.. Při dlouhých trecích je možné zpomalení systému ...</string>
+    <string name="msg_cleaning">Čištění…</string>
+    <string name="msg_clearcurrenttrack">This will clear all your moving history, are you sure?</string>
+    <string name="msg_connectingtoserver">Probíhá připojování k serveru…</string>
+    <string name="msg_empty_route_list">Nejsou k dispozici žádné trasy. Použij menu k jejich vytvoření nebo načtení ze souboru.</string>
+    <string name="msg_empty_track_list">No tracks available. Use menu to load track from file.</string>
+    <string name="msg_emptytracksegment">Selected track segment is empty, nothing to save</string>
+    <string name="msg_expandcurrenttrack">If you have not cleared your current track for a long time this can significantly degrade performance. Proceed?</string>
+    <string name="msg_initializingdata">Inicializuji data…</string>
+    <string name="msg_initializingmaps">Inicializuji mapy…</string>
+    <string name="msg_initializingplugins">Nahrávám pluginy…</string>
+    <string name="msg_initializingview">﻿Inicializuji zobrazení…</string>
+    <string name="msg_loadingimagefile">Nahrávám obrázek mapy světa…</string>
+    <string name="msg_loadingmapfile">Nahrávám datový soubor mapy světa…</string>
+    <string name="msg_newdatafolder">Na základě častého požadavku Androzic nyní funguje se složkami jinak. Můžete svobodně vybrat libovolnou složku pro mapy a data. Složka dat je nyní jednotná pro všechny datové soubory:, průjezdní body a trasy. Musíte ručně zkopírovat existující datové soubory do následující složky vytvořené automaticky: \'%s\'.</string>
+    <string name="msg_nothing_found">Nic nebylo nalezeno. Berte v úvahu, že data jsou prohledána pouze pokud jsou načtena v Androzic, pojmenovaná umístění budou vyhledány pouze v případě, že je k dispozici připojení k Internetu.</string>
+    <string name="msg_paid">Dárcovská verze</string>
+    <string name="msg_scansdcard">Prohledávám SD kartu</string>
+    <string name="msg_wait">Čekejte prosím…</string>
+    <string name="n">S</string>
+    <string name="name">Jméno</string>
+    <string name="navigate">Naviguj</string>
+    <string name="never">nikdy</string>
+    <string name="new_coordinates">Nové souřadnice přijaty ze %s</string>
+    <string name="no">Ne</string>
+    <string name="nomaps">Mapy nenalezeny</string>
+    <string name="nomaps_explained">Mapový adresář \'%s\' je prázdný. Stáhnout a instalovat mapu světa (250KB)?</string>
+    <string name="northing">Severní</string>
+    <string name="notif_loc_short">Hledám</string>
+    <string name="notif_loc_started">Androzic získává polohu</string>
+    <string name="notif_loc_waiting">Androzic is waiting for location</string>
+    <string name="notif_nav_short">Niviguji</string>
+    <string name="notif_nav_started">Adrozic tě naviguje</string>
+    <string name="notif_nav_to">Androzic naviguje k %s</string>
+    <string name="notif_trk_failure">Androzic has problem with tracking</string>
+    <string name="notif_trk_started">Androzic zaznamenává váš pohyb</string>
+    <string name="ok">OK</string>
+    <string name="perm_location_description">Access location provided by Androzic</string>
+    <string name="perm_location_title">Get location</string>
+    <string name="perm_navigation_description">Initiate/modify navigation provided by Androzic</string>
+    <string name="perm_navigation_title">Initiate navigation</string>
+    <string name="perm_read_map_data_title">Získat data z mapy</string>
+    <string name="perm_read_preferences_title">Čtení uživatelské předvolby</string>
+    <string name="perm_tracking_description">Receive track provided by Androzic</string>
+    <string name="perm_tracking_title">Get track</string>
+    <string name="perm_write_map_data_title">Přidání dat do mapy</string>
+    <string name="pref_about_title">O Androzic</string>
+    <string name="pref_advanced_title">Pokročilé</string>
+    <string name="pref_application_title">O aplikaci, zpětná vazba</string>
+    <string name="pref_charset_summary">The character set for map and data text files. Caution: you can not mix files in Android native (UTF-8) and national character sets, change this setting only if all your files are in national encoding, otherwise manually recode the files which are not in UTF-8 encoding. Takes affect only after application restart.</string>
+    <string name="pref_charset_title">Text file encoding</string>
+    <string name="pref_credits_title">Zásluhy</string>
+    <string name="pref_cursor_title">Pohyblivý kurzor</string>
+    <string name="pref_cursorcolor_title">Aktivní barva</string>
+    <string name="pref_cursorvector_summary">Vyber základ délky vektoru</string>
+    <string name="pref_cursorvector_title">Typ vektoru</string>
+    <string name="pref_cursorvectormlpr_summary">Vyber kolik vektorových bází bude použito k nastavení délky</string>
+    <string name="pref_cursorvectormlpr_title">Vektorový násobič</string>
+    <string name="pref_donate_google_title">Přispět přes obchod Google</string>
+    <string name="pref_donate_paypal_title">Přispět přes PayPal</string>
+    <string name="pref_exit_title">Potvrzení ukončení</string>
+    <string name="pref_facebook_title">Like! na Facebooku</string>
+    <string name="pref_faq_title">Otázky</string>
+    <string name="pref_feature_title">Feedback and support</string>
+    <string name="pref_folder_data_title">Složka dat</string>
+    <string name="pref_folder_icon_title">Složka ikon</string>
+    <string name="pref_folder_map_title">Adresář map</string>
+    <string name="pref_folder_prefix_caution">Tato možnost je pouze pro pokročilé uživatele. Používejte s rozvahou. Pokud špatně nastavíte, je možné že aplikace nenaběhne.</string>
+    <string name="pref_folder_prefix_title">Adresář aplikace</string>
+    <string name="pref_folder_title">Adresáře</string>
+    <string name="pref_googleplus_title">Připojte se na Google+</string>
+    <string name="pref_grid_mapshow_title">Zobrazí mapovou mříž</string>
+    <string name="pref_grid_preference_title">Nastavení mříže</string>
+    <string name="pref_grid_title">Mřížka</string>
+    <string name="pref_grid_usermpp_summary">Maximální zvětšení v metrech na pixel, kdy bude zobrazena vlastní mříž</string>
+    <string name="pref_grid_usermpp_title">Limit vlastní mříže</string>
+    <string name="pref_grid_userscale_title">Interval vlastní mříže</string>
+    <string name="pref_grid_usershow_title">Zobraz vlastní mříž</string>
+    <string name="pref_grid_userunit_title">Jednotka vlastní mříže</string>
+    <string name="pref_hideactionbar_summary">Mark to hide application action bar when map is displayed. Takes affect only after application restart.</string>
+    <string name="pref_hideactionbar_title">Skrýt panel akcí</string>
+    <string name="pref_loc_gpstimeout_summary">Zadej interval v sekundách od poslední polohy z GPS, od kterého bude poloha určena z GSM sítě</string>
+    <string name="pref_loc_gpstimeout_title">Timeout GPS polohy</string>
+    <string name="pref_loc_store_summary">Označ pro nahrání aplikace na posledním místě</string>
+    <string name="pref_loc_store_title">Zapamatuj poslední polohu</string>
+    <string name="pref_loc_title">Poloha</string>
+    <string name="pref_loc_usenetwork_summary">Označ, pro určení polohy z GSM sítě pokud není dostupná poloha z GPS</string>
+    <string name="pref_loc_usenetwork_title">Použij mob. síť</string>
+    <string name="pref_locale_title">Jazyk</string>
+    <string name="pref_lookahead_summary">Procent obrazovky k přednačtení zobrazení</string>
+    <string name="pref_lookahead_title">Zobrazení přednačtení</string>
+    <string name="pref_map_title">Mapa</string>
+    <string name="pref_mapadjacent_summary">Označ pro zobrazení sousedních a lepších map (experimentální, může výrazně snížit výkon!)</string>
+    <string name="pref_mapadjacent_title">Sousední mapy</string>
+    <string name="pref_mapbest_summary">Označ, aplikace nahraje automaticky nejpodrobnější mapu pro aktuální pozici</string>
+    <string name="pref_mapbest_title">Nahraj podrobnou mapu</string>
+    <string name="pref_mapbestinterval_summary">Časový interval pro automatické nahrání nejpodrobnější mapy</string>
+    <string name="pref_mapbestinterval_title">Podrobná mapa - interval</string>
+    <string name="pref_mapcropborder_summary">Zatrhni pro ořezávání map podle rohových značek</string>
+    <string name="pref_mapcropborder_title">Oříznout kraje map</string>
+    <string name="pref_mapdim_summary">Označ, obrazovka automaticky ztmavne v nočních hodinách</string>
+    <string name="pref_mapdim_title">Obrazovka ztmavení</string>
+    <string name="pref_mapdimvalue_title">Ztmavnutí</string>
+    <string name="pref_mapdrawborder_summary">Zatrhni pro vykreslení okraje podle rohových značek</string>
+    <string name="pref_mapdrawborder_title">Zobrazuj kraj mapy</string>
+    <string name="pref_mapfollowonloc_title">Sledovat po lokalizaci</string>
+    <string name="pref_maphideondrag_summary">Označ, mapové objekty při přesunu jsou skryty</string>
+    <string name="pref_maphideondrag_title">Skryj při přesunu</string>
+    <string name="pref_maprenderinterval_summary">Interval obnovy mapy</string>
+    <string name="pref_maprenderinterval_title">Interval obnovy</string>
+    <string name="pref_name">Nastavení Androzic</string>
+    <string name="pref_navigation_linewidth_summary">Šířka navigační linie k navigovanému bodu</string>
+    <string name="pref_navigation_linewidth_title">Šířka navigační linie</string>
+    <string name="pref_navigation_loadlast_summary">Označ, nahraje poslední nedokončenou routu při startu programu</string>
+    <string name="pref_navigation_loadlast_title">Nahraj poslední routu</string>
+    <string name="pref_navigation_proximity_summary">Vzdálenost od bodu routy v metrech při které se přepne navigace na následující bod routy při navigaci po routě</string>
+    <string name="pref_navigation_proximity_title">Vzdálenost od bodu</string>
+    <string name="pref_navigation_proximitycircle_summary">Označ, pro vykreslení kruhů kolem bodů routy při navigaci (proximita)</string>
+    <string name="pref_navigation_proximitycircle_title">Kruh vzdálenosti</string>
+    <string name="pref_navigation_title">Navigace</string>
+    <string name="pref_navigation_traverse_summary">Označ, pro použití postupné navigace a proximity k přesunutí na další bod routy</string>
+    <string name="pref_navigation_traverse_title">Použij postupnou logiku</string>
+    <string name="pref_onlinemap_summary">Zdroj online mapy</string>
+    <string name="pref_onlinemap_title">Poskytovatel map</string>
+    <string name="pref_onlinemaps_title">Online mapa</string>
+    <string name="pref_onlinemapscale_summary">Zvětšení, které bude interpretováno jako 100%</string>
+    <string name="pref_onlinemapscale_title">Výchozí zvětšení</string>
+    <string name="pref_orientation_title">Orientace obrazovky</string>
+    <string name="pref_panelactions_title">Akce posuvného panelu</string>
+    <string name="pref_plugins_title">Pluginy</string>
+    <string name="pref_route_linewidth_summary">Šířka linie routy v pixlech</string>
+    <string name="pref_route_linewidth_title">Šířka linie</string>
+    <string name="pref_route_pointwidth_summary">Velikost bodu routy v pixlech</string>
+    <string name="pref_route_pointwidth_title">Velikost bodu</string>
+    <string name="pref_route_preload_hidden_summary">Hide preloaded routes until they are viewed, edited or navigated</string>
+    <string name="pref_route_preload_hidden_title">Hide preloaded routes</string>
+    <string name="pref_route_preload_summary">Mark to preload routes from files on application start</string>
+    <string name="pref_route_preload_title">Přednastavení trasy</string>
+    <string name="pref_route_showname_summary">Označ, zobrazí jméno bodu routy za značkou</string>
+    <string name="pref_route_showname_title">Zobraz jméno</string>
+    <string name="pref_route_title">Routy</string>
+    <string name="pref_scalebarcolor_title">Barva pruhu měřítka</string>
+    <string name="pref_show_title">Zobrazit</string>
+    <string name="pref_showaccuracy_summary">Označ, kolem kurzoru bude zobrazen kruh zobrazující přesnost</string>
+    <string name="pref_showaccuracy_title">Zobraz kruh přesnosti</string>
+    <string name="pref_showcurrenttrack_summary">Označ, aktuální trek bude viditelný na mapě</string>
+    <string name="pref_showcurrenttrack_title">Zobraz trek</string>
+    <string name="pref_showdistance_title">Ukaž vzdálenost</string>
+    <string name="pref_showmapinfo_summary">Označ, zobrazí panel se jménem a zvětšením mapy</string>
+    <string name="pref_showmapinfo_title">Mapový panel</string>
+    <string name="pref_showsatinfo_summary">Označ, zobrazí panel aktuální polohy a stavu GPS</string>
+    <string name="pref_showsatinfo_title">Zobraz panel satelitů</string>
+    <string name="pref_tracking_currentcolor_title">Barva treku</string>
+    <string name="pref_tracking_currentlength_summary">Největší počet bodů v aktuálně zaznamenávaném treku</string>
+    <string name="pref_tracking_currentlength_title">Délka treku</string>
+    <string name="pref_tracking_currentload_summary">Označ, nahraje poslední aktuální trek při startu programu</string>
+    <string name="pref_tracking_currentload_title">Nahraj poslední trek</string>
+    <string name="pref_tracking_linewidth_summary">Pixel width of the track line</string>
+    <string name="pref_tracking_linewidth_title">Šířka linie</string>
+    <string name="pref_tracking_mindistance_summary">Nejkratší vzdálenost v metrech pro záznam dalšího bodu treku</string>
+    <string name="pref_tracking_mindistance_title">Nejkratší vzdálenost</string>
+    <string name="pref_tracking_mintime_summary">Nejkratší čas v milisekundách pro záznam dalšího bodu treku</string>
+    <string name="pref_tracking_mintime_title">Nejkratší čas</string>
+    <string name="pref_tracking_title">Treky</string>
+    <string name="pref_twitter_title">Následuj mě na Twitteru</string>
+    <string name="pref_unfollowontap_title">Při přesunu netrasuj</string>
+    <string name="pref_unit_title">Jednotky</string>
+    <string name="pref_unitangle_title">Deklinace</string>
+    <string name="pref_unitcoordinate_title">Formát jednotek</string>
+    <string name="pref_unitdistance_title">Vzdálenost</string>
+    <string name="pref_unitelevation_title">Výška</string>
+    <string name="pref_unitprecision_title">Extra precision</string>
+    <string name="pref_unitspeed_title">Rychlost</string>
+    <string name="pref_unitsunrise_title">Východ/Západ sl.</string>
+    <string name="pref_uri_summary">Zmáčkni pro pokračování na stránky projektu</string>
+    <string name="pref_usemapindex_title">Použij mapový index</string>
+    <string name="pref_useonlinemap_title">Použij online mapu</string>
+    <string name="pref_wakelock_summary">Ponechat zapnutý a rozsvícený display pokud je zobrazena mapa</string>
+    <string name="pref_wakelock_title">Ponechat zapnutý display</string>
+    <string name="pref_waypoint_bgcolor_title">Barva pozadí názvu</string>
+    <string name="pref_waypoint_color_title">Barva značky</string>
+    <string name="pref_waypoint_namecolor_title">Barva názvu</string>
+    <string name="pref_waypoint_showname_summary">Označ, zobrazí jméno bodu za značkou</string>
+    <string name="pref_waypoint_showname_title">Zobraz jméno</string>
+    <string name="pref_waypoint_title">Body</string>
+    <string name="pref_waypoint_visible_summary">Centrovat mapu na nově vytvořeném navigačním bodě?</string>
+    <string name="pref_waypoint_visible_title">Zajistit viditelnost při vytvoření</string>
+    <string name="pref_waypoint_width_summary">Počet pixelů bodu zobrazeného na mapě</string>
+    <string name="pref_waypoint_width_title">Velikost bodu</string>
+    <string name="primary">Primární</string>
+    <string name="provider">Poskytovatel</string>
+    <string name="proximity">Vzdálenost</string>
+    <string name="quit">Konec</string>
+    <string name="quitQuestion">Opravdu ukončit?</string>
+    <string name="removeWaypointQuestion">Odstranit bod?</string>
+    <string name="restart_needed">Je nutný restart aplikace</string>
+    <string name="restart_needed_explained">Tato funkce potřebuje restart aplikace. Nestačí pouze opustit aplikaci, ale je nutné aplikaci zastavit ve správci aplikací.</string>
+    <string name="routedetails_name">Detail cesty</string>
+    <string name="routeproperties_name">Oprav routu</string>
+    <string name="s">J</string>
+    <string name="sat_firstfix">GPS aktivní</string>
+    <string name="sat_start">GPS zapnuta</string>
+    <string name="sat_stop">GPS vypnuta</string>
+    <string name="satellites">Satelity</string>
+    <string name="save">Ulož</string>
+    <string name="saveroute_name">Ulož routu do souboru</string>
+    <string name="savetrack_name">Ulož trek do souboru</string>
+    <string name="search_hint">Zadej adresu nebo jméno</string>
+    <string msgid="6264217191555673260" name="search_menu_title">"Hledat"</string>
+    <string name="search_name">Výsledky hledání</string>
+    <string name="selectroute_name">Označ routu</string>
+    <string name="send_me_bugs">Pokud narazíte na chybu, nebo máte nápad na vylepšení, neváhejte použít \"tracker\" na stránkách projektu.</string>
+    <string name="sensitivity">Citlivost</string>
+    <string name="show">Ukaž</string>
+    <string name="showcase_add_waypoint_description">Tap action icon to quickly add new waypoint in current cursor position.</string>
+    <string name="showcase_add_waypoint_title">Přidej bod</string>
+    <string name="showcase_follow_description">Press follow icon to enable following mode. In this mode map will be fixed to your current position. Alternatively you can double tap on map to switch following mode on and off.</string>
+    <string name="showcase_follow_title">Location following</string>
+    <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
+    <string name="showcase_load_waypoints_title">Load waypoints</string>
+    <string name="showcase_panel_description">Slide or drag sliding panel handler to access quick actions. Quick actions can be configured in Settings.</string>
+    <string name="showcase_panel_title">Rychlá akce</string>
+    <string name="showcase_search_description">You can type specific coordinates in various formats to find them on map, search through loaded waypoint or route names and descriptions, search for places and addresses through Google geocoding service (Internet connection is required for this to work).</string>
+    <string name="showcase_search_title">Hledat</string>
+    <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
+    <string name="showcase_waypointset_actions_title">Waypoint set actions</string>
+    <string name="skip_single_locations">Skip single locations</string>
+    <string msgid="6277540029070332960" name="status_bar_notification_info_overflow">"999+"</string>
+    <string name="sunrise">Východ sl.</string>
+    <string name="sunset">Západ sl.</string>
+    <string name="t2r_explained"><b>Tato možnost je zkušební.</b> Trek bude přesný. To znamená, že trek bude popisovat cestu z bodu A do bodu B nebude hledat body okolo. Použijte oba algoritmy, porovnejte který je pro Vás lepší. `Křížový´ algoritmus je lineární a čas pro vygenerování routy je předvídatelný. `Poskakující´ algoritmus je nepřídatelný. Hrubá citlivost vynechává jemné zatáčky, kdežto jemná přidává mnoho bodů.</string>
+    <string name="textcolor">Barva názvu</string>
+    <string name="till_date">Ending at</string>
+    <string name="track2route_name">Převeď trek na routu</string>
+    <string name="trackproperties_name">Oprava treku</string>
+    <string name="update_almanac">Žádost o obnovení kalendáře</string>
+    <string name="upto">Až %.0f metrů</string>
+    <string name="vdop">VDOP</string>
+    <string name="version">Verze: %s</string>
+    <string name="warning">Upozornění</string>
+    <string name="waypointproject_name">Výpočet nového bodu</string>
+    <string name="waypointproperties_name">Oprav bod</string>
+    <string name="waypointset">Nastav</string>
+    <string name="widget_name">Androzic Location</string>
+    <string name="yes">Ano</string>
+    <string name="zone">Zóna</string>
+</resources>

@@ -20,6 +20,8 @@
 
 package com.borkozic.map.online;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Locale;
 
@@ -64,7 +66,7 @@ public class TileProvider
     		int stringlen = (3 * x + y) & 7;
     		uri = uri.replace("{$g}", secret.substring(0, stringlen));
     	}
-    	
+		Log.d("TILE_DEBUG", "Generated URI: " + uri);
 		return uri;
 	}
 	
