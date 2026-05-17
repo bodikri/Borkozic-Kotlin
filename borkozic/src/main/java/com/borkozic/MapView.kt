@@ -653,7 +653,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
 
     fun update() {
         synchronized(lock) {
-            val mc = application?.mapCenter
+            val mc = application?.getMapCenter()
             if (mc != null) {
                 mapCenter = mc
                 mapCenterXY = application?.getXYbyLatLon(mapCenter[0], mapCenter[1]) ?: intArrayOf(0, 0)
