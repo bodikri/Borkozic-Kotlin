@@ -1,0 +1,22 @@
+# Default ignored files
+/workspace.xml
+*.iml
+/.idea
+/.gradle
+/local.properties
+/.idea/workspace.xml
+/.idea/libraries
+.DS_Store
+/build
+/captures
+.gradle
+.externalNativeBuild
+.cxx
+*.keystore
+!gradle-wrapper.jar
+/borkozic/build
+/borkoziclib/build
+/borkozic/src/main/gen
+memory/
+borkozic/build/
+borkoziclib/build/
