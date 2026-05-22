@@ -19,4 +19,14 @@
 /borkozic/src/main/gen
 memory/
 borkozic/build/
-borkoziclib/build/.hprof
+borkoziclib/build/
+.hprof
+docs/
+AGENTS.md
+SOUL.md
+IDENTITY.md
+TOOLS.md
+MEMORY.md
+HEARTBEAT.md
+DREAMS.md
+openclaw-transfer/
