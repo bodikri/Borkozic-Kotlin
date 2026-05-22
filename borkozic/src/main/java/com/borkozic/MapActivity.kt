@@ -103,10 +103,12 @@ import com.borkozic.waypoint.WaypointProject
 import com.borkozic.waypoint.WaypointProperties
 import net.londatiga.android.ActionItem
 import net.londatiga.android.QuickAction3D
-import org.miscwidgets.interpolator.EasingType
-import org.miscwidgets.interpolator.ExpoInterpolator
-import org.miscwidgets.widget.Panel
-import org.miscwidgets.widget.Panel.OnPanelListener
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
+import com.borkozic.ui.SidePanel
+import com.borkozic.ui.SidePanelAction
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
@@ -136,7 +138,7 @@ import kotlin.times
 //import androidx.core.app.FragmentManager;
 //import android.support.v7.app.AppCompatActivity;
 class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenceChangeListener,
-    OnWaypointActionListener, OnSeekBarChangeListener, OnPanelListener {
+    OnWaypointActionListener, OnSeekBarChangeListener {
     // main preferences
     protected var precisionFormat: String = "%.0f"
     protected var speedFactor: Double = 0.0
@@ -223,8 +225,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private var animationSet = false
     private var isFullscreen = false
     private var keepScreenOn = false
-    private var panelActions: Array<String?> = emptyArray()
     private var activeActions: MutableList<String?>? = null
+
+    // ── Compose side panel state (състояние на страничния панел) ────────
+    private var isPanelOpen by mutableStateOf(false)
+    private var isFollowingState by mutableStateOf(false)
+    private var isLocatingState by mutableStateOf(false)
+    private var isTrackingState by mutableStateOf(false)
     var disable: LightingColorFilter = LightingColorFilter(-0x1, -0xaaaaab)
 
     protected var ready: Boolean = false
@@ -279,8 +286,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
-        panelActions = getResources().getStringArray(R.array.panel_action_values)
-
         setContentView(R.layout.act_main)
         coordinates = findViewById<View?>(R.id.coordinates) as TextView?
         satInfo = findViewById<View?>(R.id.sats) as TextView?
@@ -314,18 +319,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         waitBar = findViewById<View?>(R.id.waitbar) as TextView
         map = findViewById<View?>(R.id.mapview) as MapView?
 
-        // set button actions
-        findViewById<View?>(R.id.zoomin).setOnClickListener(this)
-        findViewById<View?>(R.id.zoomout).setOnClickListener(this)
-        findViewById<View?>(R.id.nextmap).setOnClickListener(this)
-        findViewById<View?>(R.id.prevmap).setOnClickListener(this)
-        findViewById<View?>(R.id.maps).setOnClickListener(this)
-        findViewById<View?>(R.id.waypoints).setOnClickListener(this)
-        findViewById<View?>(R.id.info).setOnClickListener(this)
-        findViewById<View?>(R.id.follow).setOnClickListener(this)
-        findViewById<View?>(R.id.locate).setOnClickListener(this)
-        findViewById<View?>(R.id.tracking).setOnClickListener(this)
-        findViewById<View?>(R.id.expand).setOnClickListener(this)
+        // set button actions for edit panels (side panel buttons handled by Compose)
         findViewById<View?>(R.id.finishedit).setOnClickListener(this)
         findViewById<View?>(R.id.addpoint).setOnClickListener(this)
         findViewById<View?>(R.id.insertpoint).setOnClickListener(this)
@@ -335,15 +329,30 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         findViewById<View?>(R.id.cutafter).setOnClickListener(this)
         findViewById<View?>(R.id.cutbefore).setOnClickListener(this)
 
-        findViewById<View?>(R.id.norm_button).setOnClickListener(this)
-        findViewById<View?>(R.id.emer_button).setOnClickListener(this)
-        findViewById<View?>(R.id.zero_button).setOnClickListener(this)
-        findViewById<View?>(R.id.clear_button).setOnClickListener(this)
-
-
-        val panel = findViewById<View?>(R.id.panel) as Panel
-        panel.setOnPanelListener(this)
-        panel.setInterpolator(ExpoInterpolator(EasingType.Type.OUT))
+        // ── Side Panel (Compose) ─────────────────────────────────────────
+        val panelOnLeft = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+        if (settings.getBoolean(getString(R.string.ui_drawer_open), false)) {
+            isPanelOpen = true
+        }
+        val sidePanelView = findViewById<ComposeView>(R.id.side_panel)
+        sidePanelView.setContent {
+            SidePanel(
+                isOpen = isPanelOpen,
+                isOnLeft = panelOnLeft,
+                onOpenChanged = { open ->
+                    isPanelOpen = open
+                    val editor = PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    editor.putBoolean(getString(R.string.ui_drawer_open), open)
+                    editor.apply()
+                },
+                activeActions = activeActions?.filterNotNull().orEmpty(),
+                isFollowing = isFollowingState,
+                isLocating = isLocatingState,
+                isTracking = isTrackingState,
+                isFullscreen = isFullscreen,
+                onAction = { action -> onSidePanelAction(action) },
+            )
+        }
 
         wptQuickActionAddToRoute = QuickAction3D(
             this,
@@ -655,11 +664,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         // prepare overlays
         updateOverlays(settings, false)
 
-        if (settings.getBoolean(getString(R.string.ui_drawer_open), false)) {
-            val panel = findViewById<View?>(R.id.panel) as Panel
-            panel.setOpen(true, false)
-        }
-
         onSharedPreferenceChanged(settings, getString(R.string.pref_wakelock))
         map!!.setKeepScreenOn(keepScreenOn)
 
@@ -904,9 +908,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     }
                 })
             } else if (action == LocationService.BROADCAST_TRACKING_STATUS) {
-                updateMapButtons()
+                isTrackingState = locationService != null && locationService!!.isTracking()
             } else if (action == BaseLocationService.BROADCAST_LOCATING_STATUS) {
-                updateMapButtons()
+                isLocatingState = locationService != null && locationService!!.isLocating()
                 if (locationService != null && !locationService!!.isLocating()) map!!.clearLocation()
             } else if (action == Intent.ACTION_SCREEN_OFF) {
                 map!!.pause()
@@ -1139,52 +1143,126 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         if (map != null) map!!.postInvalidate()
     }
 
-    private fun updateMapButtons() {
-        val container = findViewById<View?>(R.id.button_container) as ViewGroup
-
-        for (action in panelActions) {
-            val id = getResources().getIdentifier(action, "id", getPackageName())
-            val aib = container.findViewById<View?>(id) as ImageButton?
-            if (aib != null) {
-                if (activeActions!!.contains(action)) {
-                    aib.setVisibility(View.VISIBLE)
-                    when (id) {
-                        R.id.follow ->                            // aib.setImageDrawable(getResources().getDrawable(map.isFollowing() ? R.drawable.cursor_drag_arrow : R.drawable.target));
-                            aib.setImageDrawable(
-                                ResourcesCompat.getDrawable(
-                                    getResources(),
-                                    (if (map!!.isFollowing()) R.drawable.cursor_drag_arrow else R.drawable.target),
-                                    null
-                                )
-                            )
-
-                        R.id.locate -> {
-                            val isLocating =
-                                locationService != null && locationService!!.isLocating()
-                            aib.setImageDrawable(
-                                ResourcesCompat.getDrawable(
-                                    getResources(),
-                                    (if (isLocating) R.drawable.pin_map_no else R.drawable.pin_map),
-                                    null
-                                )
-                            )
+    /**
+     * Handles all side panel button actions (обработва всички действия от страничния панел).
+     */
+    private fun onSidePanelAction(action: SidePanelAction) {
+        when (action) {
+            SidePanelAction.EP -> {
+                val IntentBtnEmer = Intent(this, BtnsProceduresSet::class.java)
+                IntentBtnEmer.putExtra(BTN_TITLE, getString(R.string.buttonEP))
+                startActivity(IntentBtnEmer)
+            }
+            SidePanelAction.NP -> {
+                val IntentBtnNorm = Intent(this, BtnsProceduresSet::class.java)
+                IntentBtnNorm.putExtra(BTN_TITLE, getString(R.string.buttonNP))
+                startActivity(IntentBtnNorm)
+            }
+            SidePanelAction.ZOOM_IN -> {
+                if (application!!.getNextZoom() != 0.0) {
+                    waitBar!!.visibility = View.VISIBLE
+                    waitBar!!.setText(R.string.msg_wait)
+                    executorThread.execute {
+                        synchronized(map!!) {
+                            if (application!!.zoomIn()) {
+                                map!!.updateMapInfo()
+                                map!!.update()
+                            }
                         }
-
-                        R.id.tracking -> {
-                            val isTracking =
-                                locationService != null && locationService!!.isTracking()
-                            aib.setImageDrawable(
-                                ResourcesCompat.getDrawable(
-                                    getResources(),
-                                    (if (isTracking) R.drawable.doc_delete else R.drawable.doc_edit),
-                                    null
-                                )
-                            )
+                        finishHandler!!.sendEmptyMessage(0)
+                    }
+                }
+            }
+            SidePanelAction.ZOOM_OUT -> {
+                if (application!!.getPrevZoom() != 0.0) {
+                    waitBar!!.visibility = View.VISIBLE
+                    waitBar!!.setText(R.string.msg_wait)
+                    executorThread.execute {
+                        synchronized(map!!) {
+                            if (application!!.zoomOut()) {
+                                map!!.updateMapInfo()
+                                map!!.update()
+                            }
+                        }
+                        finishHandler!!.sendEmptyMessage(0)
+                    }
+                }
+            }
+            SidePanelAction.NEXT_MAP -> {
+                waitBar!!.visibility = View.VISIBLE
+                waitBar!!.setText(R.string.msg_wait)
+                executorThread.execute {
+                    synchronized(map!!) {
+                        if (application!!.prevMap()) {
+                            map!!.suspendBestMap()
+                            map!!.updateMapInfo()
+                            map!!.update()
                         }
                     }
-                } else {
-                    aib.setVisibility(View.GONE)
+                    finishHandler!!.sendEmptyMessage(0)
                 }
+            }
+            SidePanelAction.PREV_MAP -> {
+                waitBar!!.visibility = View.VISIBLE
+                waitBar!!.setText(R.string.msg_wait)
+                executorThread.execute {
+                    synchronized(map!!) {
+                        if (application!!.nextMap()) {
+                            map!!.suspendBestMap()
+                            map!!.updateMapInfo()
+                            map!!.update()
+                        }
+                    }
+                    finishHandler!!.sendEmptyMessage(0)
+                }
+            }
+            SidePanelAction.MAPS_AT_CURSOR -> startActivityForResult(
+                Intent(this, MapList::class.java).putExtra("pos", true),
+                RESULT_LOAD_MAP_ATPOSITION
+            )
+            SidePanelAction.WAYPOINTS -> startActivityForResult(
+                Intent(this, WaypointListActivity::class.java),
+                RESULT_MANAGE_WAYPOINTS
+            )
+            SidePanelAction.INFO -> startActivity(Intent(this, Information::class.java))
+            SidePanelAction.FOLLOW -> {
+                setFollowing(!map!!.isFollowing())
+                isFollowingState = map!!.isFollowing()
+            }
+            SidePanelAction.LOCATE -> {
+                val isLocating = locationService != null && locationService!!.isLocating()
+                application!!.enableLocating(!isLocating)
+                val editor = PreferenceManager.getDefaultSharedPreferences(this).edit()
+                editor.putBoolean(getString(R.string.lc_locate), !isLocating)
+                editor.apply()
+                isLocatingState = !isLocating
+            }
+            SidePanelAction.TRACKING -> {
+                val isTracking = locationService != null && locationService!!.isTracking()
+                application!!.enableTracking(!isTracking)
+                val editor = PreferenceManager.getDefaultSharedPreferences(this).edit()
+                editor.putBoolean(getString(R.string.lc_track), !isTracking)
+                editor.apply()
+                isTrackingState = !isTracking
+            }
+            SidePanelAction.EXPAND -> {
+                if (isFullscreen) {
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
+                } else {
+                    window.setFlags(
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                        WindowManager.LayoutParams.FLAG_FULLSCREEN
+                    )
+                }
+                isFullscreen = !isFullscreen
+            }
+            SidePanelAction.ZERO_LEVEL -> {
+                zeroElevation = lastElevation
+                application!!.setZeroLevelDouble(lastElevation)
+            }
+            SidePanelAction.CLEAR -> {
+                zeroElevation = 0.0
+                application!!.setZeroLevelDouble(0.0)
             }
         }
     }
@@ -1227,15 +1305,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             mapZoom!!.setText(zoomStr + "%")
         }
 
-        val zoomin = findViewById<View?>(R.id.zoomin) as ImageButton
-        val zoomout = findViewById<View?>(R.id.zoomout) as ImageButton
-        zoomin.setEnabled(application!!.getNextZoom() != 0.0)
-        zoomout.setEnabled(application!!.getPrevZoom() != 0.0)
-
-        val disable = LightingColorFilter(-0x1, -0xbbbbbc)
-
-        zoomin.setColorFilter(if (zoomin.isEnabled()) null else disable)
-        zoomout.setColorFilter(if (zoomout.isEnabled()) null else disable)
+        // Zoom enable state now handled by Compose SidePanel
+        // (zoomin/zoomout buttons no longer exist in XML layout)
     }
 
     protected fun updateGPSStatus() {
@@ -1830,30 +1901,26 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             .setEnabled(application!!.currentTrackOverlay != null)
         menu.findItem(R.id.menuClearCurrentTrack)
             .setEnabled(application!!.currentTrackOverlay != null)
-        //menu.findItem(R.id.menuManageAreas).setVisible(!nva);
+        // menuAreas is now a direct item — always enabled (user can always enter to load areas)
+        menu.findItem(R.id.menuAreas).isEnabled = true
         menu.findItem(R.id.menuManageRoutes)
-            .setVisible(!nvr) //при стартиране на навигация по маршриут изчезва полето
+            .setVisible(!nvr)
         menu.findItem(R.id.menuStartNavigation)
-            .setVisible(!nvr) //полето се премахва от възможния избор за менюто и се замества със две полета меню за следваща и предишна точка по маршрут при активиран маршрут
+            .setVisible(!nvr)
         menu.findItem(R.id.menuStartNavigation)
-            .setEnabled(rts) //ако има налични маршрути полето е активно
-        menu.findItem(R.id.menuStartArea)
-            .setEnabled(ars) //ако има налични зони полето става активоно - за сега няма вързана активност
+            .setEnabled(rts)
         menu.findItem(R.id.menuNavigationDetails)
-            .setVisible(nvr) //полето се показва ако има стартирана навигация по маршриут
-        menu.findItem(R.id.menuAreaDetails)
-            .setVisible(nva) //полето се показва само ако има стартирано авигация към зона
+            .setVisible(nvr)
         menu.findItem(R.id.menuNextNavPoint)
-            .setVisible(nvr) //полето се показва ако има стартирана навигация по маршриут
+            .setVisible(nvr)
         menu.findItem(R.id.menuPrevNavPoint)
-            .setVisible(nvr) //полето се показва ако има стартирана навигация по маршриут
+            .setVisible(nvr)
         menu.findItem(R.id.menuNextNavPoint)
-            .setEnabled(navigationService != null && navigationService!!.hasNextRouteWaypoint()) //полето е активно при наличие на следваща точка по маршрута
+            .setEnabled(navigationService != null && navigationService!!.hasNextRouteWaypoint())
         menu.findItem(R.id.menuPrevNavPoint)
-            .setEnabled(navigationService != null && navigationService!!.hasPrevRouteWaypoint()) //полето е активно при наличие на предишна точка по маршрута
+            .setEnabled(navigationService != null && navigationService!!.hasPrevRouteWaypoint())
         menu.findItem(R.id.menuStopNavigation)
-            .setEnabled(nvw) //полето се показва ако има стартирана навигация към точка
-        menu.findItem(R.id.menuStopNavigationArea).setEnabled(nva) // полето става неактивно
+            .setEnabled(nvw)
         menu.findItem(R.id.menuSetAnchor).setVisible(showDistance > 0 && !map!!.isFollowing())
         menu.findItem(R.id.menuPasteLocation).setEnabled(cbm)
         return true
@@ -1969,24 +2036,12 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 return true
             }
 
-            R.id.menuManageAreas -> {
-                //Log.e(TAG, "on_menuManageAreas");
+            R.id.menuAreas -> {
                 startActivityForResult(
                     Intent(this, AreaListActivity::class.java).putExtra(
                         "MODE",
                         AreaList.MODE_MANAGE
                     ), RESULT_MANAGE_AREAS
-                )
-                return true
-            }
-
-            R.id.menuStartArea -> {
-                //Log.e(TAG, "on_menuManageAreas");
-                startActivity(
-                    Intent(this, AreaListActivity::class.java).putExtra(
-                        "MODE",
-                        AreaList.MODE_START
-                    )
                 )
                 return true
             }
@@ -2289,8 +2344,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     }
                 }
                 if (resultCode == RESULT_OK) {
-                    val extras = data!!.getExtras()
-                    val index = extras!!.getInt("index")
+                    val extras = data?.getExtras() ?: return
+                    val index = extras.getInt("index")
                     val dir = extras.getInt("dir")
                     if (dir != 0) startForegroundService(
                         Intent(
@@ -2386,163 +2441,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
     override fun onClick(v: View) {
         when (v.getId()) {
-            R.id.zoomin -> {
-                if (application!!.getNextZoom() != 0.0) {
-                    waitBar!!.setVisibility(View.VISIBLE)
-                    waitBar!!.setText(R.string.msg_wait)
-                    executorThread.execute(object : Runnable {
-                        override fun run() {
-                            synchronized(map!!) {
-                                if (application!!.zoomIn()) {
-                                    map!!.updateMapInfo()
-                                    map!!.update()
-                                }
-                            }
-                            finishHandler!!.sendEmptyMessage(0)
-                        }
-                    })
-                }
-            }
-
-            R.id.zoomout -> {
-                if (application!!.getPrevZoom() != 0.0) {
-                    waitBar!!.setVisibility(View.VISIBLE)
-                    waitBar!!.setText(R.string.msg_wait)
-                    executorThread.execute(object : Runnable {
-                        override fun run() {
-                            synchronized(map!!) {
-                                if (application!!.zoomOut()) {
-                                    map!!.updateMapInfo()
-                                    map!!.update()
-                                }
-                            }
-                            finishHandler!!.sendEmptyMessage(0)
-                        }
-                    })
-                }
-            }
-
-            R.id.nextmap -> {
-                waitBar!!.setVisibility(View.VISIBLE)
-                waitBar!!.setText(R.string.msg_wait)
-                executorThread.execute(object : Runnable {
-                    override fun run() {
-                        synchronized(map!!) {
-                            if (application!!.prevMap()) {
-                                map!!.suspendBestMap()
-                                map!!.updateMapInfo()
-                                map!!.update()
-                            }
-                        }
-                        finishHandler!!.sendEmptyMessage(0)
-                    }
-                })
-            }
-
-            R.id.prevmap -> {
-                waitBar!!.setVisibility(View.VISIBLE)
-                waitBar!!.setText(R.string.msg_wait)
-                executorThread.execute(object : Runnable {
-                    override fun run() {
-                        synchronized(map!!) {
-                            if (application!!.nextMap()) {
-                                map!!.suspendBestMap()
-                                map!!.updateMapInfo()
-                                map!!.update()
-                            }
-                        }
-                        finishHandler!!.sendEmptyMessage(0)
-                    }
-                })
-            }
-
-            R.id.maps -> startActivityForResult(
-                Intent(this, MapList::class.java).putExtra(
-                    "pos",
-                    true
-                ), RESULT_LOAD_MAP_ATPOSITION
-            )
-
-            R.id.waypoints -> startActivityForResult(
-                Intent(this, WaypointListActivity::class.java),
-                RESULT_MANAGE_WAYPOINTS
-            )
-
-            R.id.info ->                 //Log.d(TAG, "onStartINFO");
-                startActivity(Intent(this, Information::class.java))
-
-            R.id.emer_button -> {
-                val be = findViewById<View?>(R.id.emer_button) as Button
-                //Log.d(TAG, "onEmerButtonPress");
-                val IntentBtnEmer = Intent(this, BtnsProceduresSet::class.java)
-                IntentBtnEmer.putExtra(BTN_TITLE, be.getText()) // Send btn Emer
-                startActivity(IntentBtnEmer)
-            }
-
-            R.id.norm_button -> {
-                val bn = findViewById<View?>(R.id.norm_button) as Button
-                //Log.d(TAG, "onNormButtonPress");
-                val IntentBtnNorm = Intent(this, BtnsProceduresSet::class.java)
-                IntentBtnNorm.putExtra(BTN_TITLE, bn.getText()) // Send btn Norm
-                startActivity(IntentBtnNorm)
-            }
-
-            R.id.zero_button -> {
-                zeroElevation = lastElevation
-                application!!.setZeroLevelDouble(lastElevation)
-            }
-
-            R.id.clear_button -> {
-                zeroElevation = 0.0
-                //application.bearingSet-=5;
-                //Log.d(TAG, "Bearing="+application.bearingSet);
-                application!!.setZeroLevelDouble(0.0)
-            }
-
-            R.id.follow -> setFollowing(!map!!.isFollowing())
-            R.id.locate -> {
-                val isLocating = locationService != null && locationService!!.isLocating()
-                application!!.enableLocating(!isLocating)
-                val editor = PreferenceManager.getDefaultSharedPreferences(this)!!.edit()
-                editor.putBoolean(getString(R.string.lc_locate), !isLocating)
-                editor.apply()
-            }
-
-            R.id.tracking -> {
-                val isTracking = locationService != null && locationService!!.isTracking()
-                application!!.enableTracking(!isTracking)
-                val editor = PreferenceManager.getDefaultSharedPreferences(this)!!.edit()
-                editor.putBoolean(getString(R.string.lc_track), !isTracking)
-                editor.apply()
-            }
-
-            R.id.expand -> {
-                val expand = findViewById<View?>(R.id.expand) as ImageButton
-                if (isFullscreen) {
-                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-                    expand.setImageDrawable(
-                        ResourcesCompat.getDrawable(
-                            getResources(),
-                            R.drawable.expand,
-                            null
-                        )
-                    )
-                } else { //ContextCompat.getDrawable(getActivity(), R.drawable.name)||ResourcesCompat.getDrawable(getResources(), R.drawable.name, null);
-                    getWindow().setFlags(
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                        WindowManager.LayoutParams.FLAG_FULLSCREEN
-                    )
-                    expand.setImageDrawable(
-                        ResourcesCompat.getDrawable(
-                            getResources(),
-                            R.drawable.collapse,
-                            null
-                        )
-                    )
-                }
-                isFullscreen = !isFullscreen
-            }
-
             R.id.cutbefore -> {
                 application!!.editingTrack!!.cutBefore(trackBar!!.getProgress())
                 val nb: Int = application!!.editingTrack!!.points.size - 1
@@ -2929,20 +2827,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         }
     }
 
-    override fun onPanelClosed(panel: Panel?) {
-        // save panel state
-        val editor = PreferenceManager.getDefaultSharedPreferences(this)!!.edit()
-        editor.putBoolean(getString(R.string.ui_drawer_open), false)
-        editor.apply()
-    }
 
-    override fun onPanelOpened(panel: Panel?) {
-        updateMapButtons()
-        // save panel state
-        val editor = PreferenceManager.getDefaultSharedPreferences(this)!!.edit()
-        editor.putBoolean(getString(R.string.ui_drawer_open), true)
-        editor.apply()
-    }
 
 
     @SuppressLint("HandlerLeak")

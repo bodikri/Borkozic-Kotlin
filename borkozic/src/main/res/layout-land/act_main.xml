@@ -1,68 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:panel="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
 
 	<include layout="@layout/inc_map" />
-  
+
+	<LinearLayout android:id="@+id/topbar"
+		android:orientation="vertical"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+
+		android:background="#88000000">
+
+		<include layout="@layout/inc_satinfo" />
+
+		<TableLayout
+			android:id="@+id/movinginfo"
+			android:visibility="gone"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:shrinkColumns="*"
+			android:stretchColumns="*"
+			android:weightSum="5">
+			<LinearLayout
+				android:orientation="horizontal"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:weightSum="9"
+				android:layout_weight="0.01">
+				<include layout="@layout/inc_routeinfo" />
+				<include layout="@layout/inc_waypointinfo" />
+			</LinearLayout>
+			<TableRow
+				android:gravity="center_vertical">
+				<include layout="@layout/inc_speed" />
+				<include layout="@layout/inc_turn" />
+				<include layout="@layout/inc_xtk" />
+			</TableRow>
+			<TableRow android:id="@+id/movingrow"
+				android:gravity="center_vertical">
+				<include layout="@layout/inc_elevation"/>
+				<include layout="@layout/inc_track"/>
+				<include layout="@layout/inc_above_below_glideslope"/>
+			</TableRow>
+		</TableLayout>
+	</LinearLayout>
+
 	<LinearLayout
 		android:orientation="horizontal"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:layout_alignParentTop="true"
-		android:layout_alignParentLeft="true">
+		android:layout_alignParentLeft="true"
+		android:layout_alignParentStart="true"
+		android:baselineAligned="false" >
     
 		<RelativeLayout
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:layout_weight="1">  
 
-			<LinearLayout android:id="@+id/topbar"
-				android:orientation="vertical"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:layout_alignParentTop="true"
-				 android:background="#88000000">
-
-				<TableLayout
-					android:id="@+id/movinginfo"
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:shrinkColumns="*"
-					android:stretchColumns="*"
-					android:visibility="gone"
-					android:weightSum="5">
-
-					<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-						android:layout_width="match_parent"
-						android:layout_height="wrap_content"
-						android:layout_weight="0.01"
-						android:orientation="horizontal"
-						android:weightSum="9">
-
-						<include layout="@layout/inc_routeinfo" />
-
-						<include layout="@layout/inc_waypointinfo" />
-					</LinearLayout>
-
-					<TableRow
-						android:id="@+id/movingrow"
-						android:gravity="center_vertical">
-
-						<include
-							layout="@layout/inc_speed"
-							android:layout_width="wrap_content"
-							android:layout_height="wrap_content" />
-
-						<include layout="@layout/inc_elevation" />
-
-						<include layout="@layout/inc_track" />
-
-					</TableRow>
-				</TableLayout>
-
-			</LinearLayout>
 
 			<LinearLayout android:id="@+id/bottombar"
 				android:orientation="vertical"
@@ -78,7 +78,6 @@
 					android:orientation="horizontal" 
 					android:layout_width="fill_parent"
 					android:layout_height="wrap_content">
-			    
 					<include layout="@layout/inc_trackedit" /> 
 		
 				</LinearLayout>
@@ -102,58 +101,9 @@
 				android:visibility="gone"
 				android:background="#88000000"
 				android:padding="3dip"
-				android:orientation="vertical" 
+				android:orientation="vertical"
 				android:layout_width="wrap_content"
 				android:layout_height="fill_parent">
-
-				<TableRow
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:gravity="center_vertical">
-
-					<include layout="@layout/inc_xtk" />
-				</TableRow>
-
-				<TableRow
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:gravity="center_vertical">
-
-					<include layout="@layout/inc_turn" />
-				</TableRow>
-
-				<TableRow
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:gravity="center_vertical">
-
-					<include layout="@layout/inc_distance" />
-				</TableRow>
-
-				<TableRow
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:gravity="center_vertical">
-
-					<include
-						layout="@layout/inc_above_below_glideslope"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content" />
-
-				</TableRow>
-
-				<TableRow
-					android:layout_width="match_parent"
-					android:layout_height="match_parent"
-					android:gravity="center_vertical">
-
-					<include
-						layout="@layout/inc_satinfo"
-						android:layout_width="wrap_content"
-						android:layout_height="wrap_content" />
-
-				</TableRow>
-
 				<include layout="@layout/inc_routeedit" />
 
 			</LinearLayout>
@@ -161,22 +111,12 @@
 		</LinearLayout>
 	</LinearLayout>
 
-	<org.miscwidgets.widget.Panel android:id="@+id/panel" 
-	    android:layout_width="wrap_content" 
-	    android:layout_height="fill_parent" 
+	<androidx.compose.ui.platform.ComposeView
+	    android:id="@+id/side_panel"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
 		android:layout_alignParentLeft="true"
-	    android:layout_gravity="left"
-	    panel:handle="@+id/panelHandle"
-	    panel:content="@+id/panelContent"
-	    panel:position="left"
-	    panel:animationDuration="600"
-	    panel:openedHandle="@drawable/left_switcher_expanded_background"
-	    panel:closedHandle="@drawable/left_switcher_collapsed_background">
-
-		<include layout="@layout/inc_panelhandle" />
-		<include layout="@layout/inc_mapbuttons" />
-			    
-	</org.miscwidgets.widget.Panel>
+		android:layout_alignParentStart="true" />
   
 	<include layout="@layout/inc_wait" />    
 </RelativeLayout>
