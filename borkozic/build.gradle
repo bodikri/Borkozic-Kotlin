@@ -29,6 +29,14 @@ android {
         jvmTarget = '11'
     }
 
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = '1.4.8'
+    }
+
     useLibrary 'org.apache.http.legacy'
 }
 
@@ -46,4 +54,19 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.1'
     implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+
+    // Compose versions compatible with Kotlin 1.8.22 + compiler 1.4.8
+    implementation 'androidx.compose.ui:ui:1.4.3'
+    implementation 'androidx.compose.material3:material3:1.1.2'
+    implementation 'androidx.compose.material:material-icons-extended:1.4.3'
+    implementation 'androidx.compose.runtime:runtime-livedata:1.4.3'
+
+    // Compose AndroidX integration
+    implementation 'androidx.activity:activity-compose:1.7.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-runtime-compose:2.6.2'
+
+    // Navigation Compose
+    implementation 'androidx.navigation:navigation-compose:2.6.0'
+
 }
