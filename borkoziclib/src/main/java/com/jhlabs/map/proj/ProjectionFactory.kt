@@ -41,6 +41,7 @@ import java.io.FileReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.io.StreamTokenizer
+import java.text.ParsePosition
 import java.lang.Boolean
 import java.util.Arrays
 import java.util.Hashtable
@@ -310,7 +311,7 @@ object ProjectionFactory {
     }
 
     private fun parseAngle(s: String): Double {
-        return format.parse(s, null).toDouble()
+        return format.parse(s, ParsePosition(0)).toDouble()
     }
 
     private var registry: Hashtable<Any?, Any?>? = null
@@ -637,8 +638,8 @@ object ProjectionFactory {
                             val t = StringTokenizer(line, " ")
                             val slon = t.nextToken()
                             val slat = t.nextToken()
-                            p.x = format.parse(slon, null).toDouble()
-                            p.y = format.parse(slat, null).toDouble()
+                            p.x = format.parse(slon, ParsePosition(0)).toDouble()
+                            p.y = format.parse(slat, ParsePosition(0)).toDouble()
                             projection.transform(p, p)
                             println(p.x.toString() + " " + p.y)
                         }
