@@ -27,6 +27,11 @@
     <string name="maplist_name">Maps</string>
     <string name="search_name">Search results</string>
     <string name="credits_name">Application credits</string>
+    <string name="manageareas_name">Areas</string>
+    <string name="loadarea_name">Load area from file</string>
+    <string name="savearea_name">Save area to file</string>
+    <string name="areaproperties_name">Edit area</string>
+    <string name="areadetails_name">Area details</string>
     <string name="widget_name">Borkozic Location</string>
 
     <string name="version">Version: %s</string>
@@ -404,8 +409,52 @@
     <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
     <string name="showcase_waypointset_actions_title">Waypoint set actions</string>
     <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
-				
-	<string name="app_eula">This program is distributed under the terms of
+
+    <string name="app_sharing_name">Borkozic Location Share</string>
+    <string name="selectarea_name">Select area</string>
+    <string name="msg_needs_setup">You have to setup your session details</string>
+    <string name="msg_needs_enable">Enable sharing to receive information about session users</string>
+    <string name="msg_no_users">Looks like nobody shares their location with you</string>
+    <string name="msg_empty_area_list">No areas available. Use menu to create area or load it from file.</string>
+    <string name="err_shortarea">Area must contain at least 3 waypoints</string>
+    <string name="area_line_width">Area line width</string>
+    <string name="area_color">Area Color</string>
+    <string name="area_line_color">Area Line Color</string>
+    <string name="area_transparency">Area transparency</string>
+    <string name="menu_addtoarea">Add to area</string>
+    <string name="menu_start_nav_area">Navigate to area</string>
+    <string name="menu_areas">Areas</string>
+    <string name="menu_newarea">New area</string>
+    <string name="menu_help">Help</string>
+    <string name="pref_area_title">Areas</string>
+    <string name="pref_area_preload_title">Preload areas</string>
+    <string name="pref_area_preload_summary">Mark to preload areas from files on application start</string>
+    <string name="pref_area_preload_hidden_title">Hide preloaded areas</string>
+    <string name="pref_area_preload_hidden_summary">Hide preloaded areas until they are viewed, edited or navigated</string>
+    <string name="pref_area_linewidth_title">Area Line width</string>
+    <string name="pref_area_linewidth_summary">Pixel width of the area line</string>
+    <string name="pref_area_pointwidth_title">Marker size</string>
+    <string name="pref_area_pointwidth_summary">The pixel size of area waypoint marker</string>
+    <string name="pref_area_showname_title">Show waypoint name</string>
+    <string name="pref_area_showname_summary">Mark to show area waypoint name beside a marker</string>
+    <string name="pref_sharing_title">Location sharing</string>
+    <string name="pref_sharing_session_title">Session title</string>
+    <string name="pref_sharing_session_summary">Unique string identifying a session, it must be the same for all users in a group and must be secret to not let unwanted users join this group</string>
+    <string name="pref_sharing_user_title">User identifier</string>
+    <string name="pref_sharing_user_summary">Unique string identifying a user within a session group</string>
+    <string name="pref_sharing_updateinterval_title">Update interval</string>
+    <string name="pref_sharing_updateinterval_summary">Time interval in seconds at which location data is sent and received</string>
+    <string name="pref_sharing_timeout_title">Location timeout</string>
+    <string name="pref_sharing_timeout_summary">Time after which user will be displayed as lost</string>
+    <string name="pref_sharing_notifications_title">New user notification</string>
+    <string name="pref_sharing_tagcolor_title">Tag color</string>
+    <string name="pref_sharing_tagsize_title">Tag size</string>
+    <string name="notif_sharing">Sharing location in real-time</string>
+    <string name="notif_error">Unable to share location</string>
+    <string name="notif_newsession">%s has joined session</string>
+    <string name="msgPermissionsRationale">Permissions should be granted to display shared locations on map</string>
+
+    <string name="app_eula">This program is distributed under the terms of
 	the GNU General Public License as published by the Free Software Foundation,
 	either version 3 of the License./n/n
     This application is distributed in the hope that it will be useful,
