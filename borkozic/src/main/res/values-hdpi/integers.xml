@@ -5,4 +5,5 @@
 <integer name="def_route_pointwidth">10</integer>
 <integer name="def_track_linewidth">2</integer>
 <integer name="def_navigation_linewidth">7</integer>
+
 </resources>

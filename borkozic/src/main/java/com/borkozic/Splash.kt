@@ -52,10 +52,13 @@ import android.view.Window
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import com.borkozic.data.Area
 import com.borkozic.data.Route
 import com.borkozic.data.Track
+import com.borkozic.overlay.AreaOverlay
 import com.borkozic.overlay.CurrentTrackOverlay
 import com.borkozic.overlay.RouteOverlay
+import com.borkozic.util.AreaFilenameFilter
 import com.borkozic.util.AutoloadedRouteFilenameFilter
 import com.borkozic.util.FileList
 import com.borkozic.util.GpxFiles
@@ -495,6 +498,35 @@ class Splash : Activity(), OnClickListener {
                         for (route in routes!!) {
                             val newRoute = RouteOverlay(this@Splash, route)
                             application.routeOverlays.add(newRoute)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+
+            // load areas
+            if (settings.getBoolean(getString(R.string.pref_area_preload), resources.getBoolean(R.bool.def_area_preload))) {
+                val hide = settings.getBoolean(getString(R.string.pref_area_preload_hidden), resources.getBoolean(R.bool.def_area_preload_hidden))
+                val areaFiles = FileList.getFileListing(File(application.dataPath), AreaFilenameFilter())
+                for (file in areaFiles) {
+                    var areas: List<Area>? = null
+                    try {
+                        val lc = file.name.lowercase()
+                        if (lc.endsWith(".art2")) {
+                            areas = OziExplorerFiles.loadAreasFromFile(file, application.charset ?: "")
+                        } else if (lc.endsWith(".kml")) {
+                            areas = KmlFiles.loadAreasFromFile(file)
+                        } else if (lc.endsWith(".gpx")) {
+                            areas = GpxFiles.loadAreasFromFile(file)
+                        }
+                        application.addAreas(areas ?: emptyList())
+                        for (area in areas!!) {
+                            val newArea = AreaOverlay(this@Splash, area)
+                            if (hide) {
+                                newArea.area.show = false
+                            }
+                            application.areaOverlays.add(newArea)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()

@@ -89,11 +89,11 @@ open class Map : Serializable {
     @JvmField
     var grGrid: Grid? = null
     @JvmField
-    protected var projection: Projection? = null
+    var projection: Projection? = null
     @JvmField
-    protected var cornerMarkers: Array<MapPoint>? = null
+    var cornerMarkers: Array<MapPoint>? = null
     @JvmField
-    protected val calibrationPoints = ArrayList<MapPoint>()
+    val calibrationPoints = ArrayList<MapPoint>()
     @JvmField
     var zoom: Double = 0.0
     @JvmField

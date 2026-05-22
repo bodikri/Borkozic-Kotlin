@@ -19,10 +19,14 @@
 <bool name="def_unitprecision">false</bool>
 <bool name="def_waypoint_visible">true</bool>
 <bool name="def_route_preload">true</bool>
+    <bool name="def_area_preload">true</bool>
 <bool name="def_route_preload_hidden">false</bool>
+    <bool name="def_area_preload_hidden">false</bool>
 <bool name="def_tracking_currentload">true</bool>
 <bool name="def_navigation_traverse">true</bool>
 <bool name="def_navigation_proximitycircle">false</bool>
 <bool name="def_navigation_loadlast">true</bool>
+
+    <bool name="def_notifications">true</bool>
 
 </resources>

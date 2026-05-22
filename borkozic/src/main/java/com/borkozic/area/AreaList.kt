@@ -270,11 +270,11 @@ class AreaList : ListFragment() {
         const val MODE_MANAGE = 1
         const val MODE_START = 2
 
-        private const val qaAreaDetails = 1
-        private const val qaAreaNavigate = 2
-        private const val qaAreaProperties = 3
-        private const val qaAreaEdit = 4
-        private const val qaAreaSave = 5
-        private const val qaAreaRemove = 6
+        const val qaAreaDetails = 1
+        const val qaAreaNavigate = 2
+        const val qaAreaProperties = 3
+        const val qaAreaEdit = 4
+        const val qaAreaSave = 5
+        const val qaAreaRemove = 6
     }
 }

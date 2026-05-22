@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:androzic="http://schemas.android.com/apk/res/com.borkozic"
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:androzic="http://schemas.android.com/apk/res-auto"
     android:title="@string/pref_navigation_title" >
 
     <com.borkozic.ui.preference.HelpfulEditTextPreference
@@ -8,7 +9,6 @@
         android:inputType="number"
         android:key="@string/pref_navigation_proximity"
         android:maxLength="4"
-        android:numeric="integer"
         android:singleLine="true"
         android:summary="@string/pref_navigation_proximity_summary"
         android:title="@string/pref_navigation_proximity_title" />

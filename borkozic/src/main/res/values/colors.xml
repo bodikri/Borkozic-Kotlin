@@ -11,8 +11,12 @@
     <color name="waypointtext">#FF000000</color>
     <color name="proximity">#55FF0000</color>
     <color name="routeline">#FF006600</color>
+    <color name="arealinecolor">#021920</color>
+    <color name="areacolor">#80DCE310</color>
     <color name="routewaypoint">#FFFFFF00</color>
+    <color name="areawaypoint">#FFFFFF00</color>
     <color name="routewaypointtext">#FFFFFFFF</color>
+    <color name="areawaypointtext">#FFFFFFFF</color>
     <color name="navigationline">#88FFFF00</color>
     <color name="distanceline">#888888FF</color>
     <color name="accuracy">#330000FF</color>
@@ -22,4 +26,10 @@
     <color name="scalebar">#000000</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="theme_primary_color">#795548</color>
+    <color name="theme_primary_darker_color">#5d4037</color>
+    <color name="theme_accent_color">#ff7240</color>
+    <color name="usertag">#FF9933CC</color>
+    <color name="usertagwithalpha">#88FFFFFF</color>
 </resources>

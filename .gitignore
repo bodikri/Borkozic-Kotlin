@@ -19,4 +19,4 @@
 /borkozic/src/main/gen
 memory/
 borkozic/build/
-borkoziclib/build/
+borkoziclib/build/.hprof

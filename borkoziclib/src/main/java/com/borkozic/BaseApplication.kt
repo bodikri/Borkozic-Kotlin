@@ -1,0 +1,62 @@
+/*
+ * Borkozic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
+ * Copyright (C) 2010-2012 Andrey Novikov <http://andreynovikov.info/>
+ * 
+ * This file is part of Borkozic application.
+ * 
+ * Borkozic is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Borkozic is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Borkozic. If not, see <http://www.gnu.org/licenses/>.
+ */
+package com.borkozic
+
+import android.app.Application
+import android.os.Build
+
+abstract class BaseApplication : Application() {
+    abstract val rootPath: String?
+
+    companion object {
+        private var self: BaseApplication? = null
+
+        @JvmStatic
+        fun <T : BaseApplication?> getApplication(): T? {
+            return self as T?
+        }
+
+        @JvmStatic
+        protected fun setInstance(instance: BaseApplication?) {
+            self = instance
+        }
+
+        @JvmStatic
+        val deviceName: String
+            /**
+             * Returns device name in user-friendly format
+             */
+            get() {
+                val manufacturer = Build.MANUFACTURER
+                val model = Build.MODEL
+                if (model.startsWith(manufacturer)) return capitalize(
+                    model
+                )
+                else return capitalize(manufacturer) + " " + model
+            }
+
+        private fun capitalize(s: String?): String {
+            if (s == null || s.length == 0) return ""
+            val first = s.get(0)
+            if (Character.isUpperCase(first)) return s
+            else return first.uppercaseChar().toString() + s.substring(1)
+        }
+    }
+}

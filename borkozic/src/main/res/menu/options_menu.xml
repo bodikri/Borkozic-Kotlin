@@ -35,12 +35,33 @@
                 android:title="@string/menu_load" />
         </menu>
     </item>
+
+    <item
+        android:id="@+id/menuMaps"
+        android:icon="@drawable/ic_action_map"
+        android:orderInCategory="0"
+        android:title="@string/menu_maps"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/menuMapInfo"
+                android:icon="@drawable/ic_action_info"
+                android:title="@string/menu_information" />
+            <item
+                android:id="@+id/menuCursorMaps"
+                android:title="@string/menu_atcursor" />
+            <item
+                android:id="@+id/menuAllMaps"
+                android:icon="@drawable/ic_action_list_2"
+                android:title="@string/menu_all" />
+        </menu>
+    </item>
     <item
         android:id="@+id/menuNavigation"
         android:icon="@drawable/ic_action_directions"
-        android:orderInCategory="0"
-        android:title="@string/menu_navigation"
-        app:showAsAction="ifRoom">
+        android:orderInCategory="1"
+        android:title="@string/menu_navigation">
+        <!--app:showAsAction="ifRoom">-->
         <menu>
             <item
                 android:id="@+id/menuManageRoutes"
@@ -69,26 +90,10 @@
         </menu>
     </item>
     <item
-        android:id="@+id/menuMaps"
-        android:icon="@drawable/ic_action_map"
-        android:orderInCategory="0"
-        android:title="@string/menu_maps"
-        app:showAsAction="ifRoom">
-        <menu>
-            <item
-                android:id="@+id/menuMapInfo"
-                android:icon="@drawable/ic_action_info"
-                android:title="@string/menu_information" />
-            <item
-                android:id="@+id/menuCursorMaps"
-                android:title="@string/menu_atcursor" />
-            <item
-                android:id="@+id/menuAllMaps"
-                android:icon="@drawable/ic_action_list_2"
-                android:title="@string/menu_all" />
-        </menu>
-    </item>
-
+        android:id="@+id/menuAreas"
+        android:icon="@drawable/ic_action_directions"
+        android:orderInCategory="1"
+        android:title="@string/menu_areas" />
     <item
         android:id="@+id/menuView"
         android:icon="@drawable/ic_action_show"

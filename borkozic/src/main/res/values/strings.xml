@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Borkozic</string>
+    <string name="app_sharing_name">Borkozic Location Share</string>
     <string name="managetracks_name">Tracks</string>
     <string name="trackproperties_name">Edit track</string>
     <string name="loadtrack_name">Load track from file</string>
@@ -18,6 +19,14 @@
     <string name="saveroute_name">Save route to file</string>
     <string name="routeproperties_name">Edit route</string>
     <string name="routedetails_name">Route details</string>
+
+    <string name="manageareas_name">Areas</string>
+    <string name="selectarea_name">Select area</string>
+    <string name="loadarea_name">Load area from file</string>
+    <string name="savearea_name">Save area to file</string>
+    <string name="areaproperties_name">Edit area</string>
+    <string name="areadetails_name">Area details</string>
+
     <string name="markericon_name">Select marker icon</string>
     <string name="pref_name">Borkozic settings</string>
     <string name="hsi_name">HSI</string>
@@ -27,11 +36,6 @@
     <string name="maplist_name">Maps</string>
     <string name="search_name">Search results</string>
     <string name="credits_name">Application credits</string>
-    <string name="manageareas_name">Areas</string>
-    <string name="loadarea_name">Load area from file</string>
-    <string name="savearea_name">Save area to file</string>
-    <string name="areaproperties_name">Edit area</string>
-    <string name="areadetails_name">Area details</string>
     <string name="widget_name">Borkozic Location</string>
 
     <string name="version">Version: %s</string>
@@ -50,6 +54,13 @@
     <string name="msg_dedicated">Dedicated to our Creator and Savior</string>
     <string name="msg_nothing_found">Nothing was found. Please take into account that data is searched only if it is loaded in Borkozic, named locations are searched only if Internet connection is available.</string>
     <string name="msg_empty_route_list">No routes available. Use menu to create route or load it from file.</string>
+
+    <string name="msg_needs_setup">You have to setup your session details</string>
+    <string name="msg_needs_enable">Enable sharing to receive information about session users</string>
+    <string name="msg_no_users">Looks like nobody shares their location with you</string>
+
+    <string name="msg_empty_area_list">No areas available. Use menu to create area or load it from file.</string>
+
     <string name="msg_empty_track_list">No tracks available. Use menu to load track from file.</string>
     <string name="msg_newdatafolder">On popular request Borkozic now works with folders differently. You can freely select any folder for maps and data. Data folder is now unified for all data types: waypoints, tracks and routes. You have to copy your existing data files manually to the following autocreated folder: &#8216;%s&#8217;.</string>
     <string name="msg_expandcurrenttrack">If you have not cleared your current track for a long time this can significantly degrade performance. Proceed?</string>
@@ -67,6 +78,9 @@
     <string name="err_wrongformat">Wrong file format</string>
     <string name="err_read">Can not read file</string>
     <string name="err_shortroute">Route must contain at least two waypoints</string>
+
+    <string name="err_shortarea">Area must contain at least 3 waypoints</string>
+
     <string name="err_nogps">No GPS device found</string>
     <string name="err_nomemory">Memory shortage detected, please report this to developer</string>
     <string name="err_notconfigured">Not configured</string>
@@ -110,6 +124,10 @@
     <string name="proximity">Proximity</string>
     <string name="accuracy">Accuracy</string>
     <string name="line_width">Line width</string>
+    <string name="area_line_width">Area line width</string>
+    <string name="area_color">Area Color</string>
+    <string name="area_line_color">Area Line Color</string>
+    <string name="area_transparency">Area transparency</string>
     <string name="filename">File name</string>
     <string name="coordformat">Coordinates format</string>
     <string name="direction">Select direction</string>
@@ -171,6 +189,7 @@
 
     <string name="menu_addwaypoint">Add waypoint</string>
     <string name="menu_addtoroute">Add to route</string>
+    <string name="menu_addtoarea">Add to area</string>
     <string name="menu_tracks">Tracks</string>
     <string name="menu_new_waypoint">New waypoint</string>
     <string name="menu_waypoints">Waypoints</string>
@@ -181,11 +200,14 @@
     <string name="menu_stopnavigation">Stop navigating</string>
     <string name="menu_navigate">Navigate</string>
     <string name="menu_startnavigation">Navigate via route</string>
+    <string name="menu_start_nav_area">Navigate to area</string>
     <string name="menu_nextnavpoint">Skip to next</string>
     <string name="menu_prevnavpoint">Go to previous</string>
     <string name="menu_thisnavpoint">Navigate here</string>
     <string name="menu_routes">Routes</string>
     <string name="menu_newroute">New route</string>
+    <string name="menu_areas">Areas</string>
+    <string name="menu_newarea">New area</string>
     <string name="menu_properties">Properties</string>
     <string name="menu_project">Project new</string>
     <string name="menu_new">New</string>
@@ -224,6 +246,8 @@
     <string name="menu_track2route">Convert to route</string>
     <string name="menu_resetindex">Reset index</string>
     <string name="menu_newwaypointset">New set</string>
+
+    <string name="menu_help">Help</string>
 
     <string name="action_bar_sort_alpha">Alphabetically</string>
     <string name="action_bar_sort_distance">By distance</string>
@@ -353,6 +377,17 @@
     <string name="pref_route_pointwidth_summary">The pixel size of route waypoint marker</string>
     <string name="pref_route_showname_title">Show waypoint name</string>
     <string name="pref_route_showname_summary">Mark to show route waypoint name beside a marker</string>
+    <string name="pref_area_title">Areas</string>
+    <string name="pref_area_preload_title">Preload areas</string>
+    <string name="pref_area_preload_summary">Mark to preload areas from files on application start</string>
+    <string name="pref_area_preload_hidden_title">Hide preloaded areas</string>
+    <string name="pref_area_preload_hidden_summary">Hide preloaded areas until they are viewed, edited or navigated</string>
+    <string name="pref_area_linewidth_title">Area Line width</string>
+    <string name="pref_area_linewidth_summary">Pixel width of the area line</string>
+    <string name="pref_area_pointwidth_title">Marker size</string>
+    <string name="pref_area_pointwidth_summary">The pixel size of area waypoint marker</string>
+    <string name="pref_area_showname_title">Show waypoint name</string>
+    <string name="pref_area_showname_summary">Mark to show area waypoint name beside a marker</string>
     <string name="pref_navigation_title">Navigation</string>
     <string name="pref_navigation_proximity_title">Waypoint proximity</string>
     <string name="pref_navigation_proximity_summary">Proximity in meters at which route navigation will proceed to next available waypoint</string>
@@ -376,6 +411,20 @@
     <string name="pref_uri_summary">Press to follow a link to web site</string>
     <string name="pref_credits_title">Credits</string>
 
+    <string name="pref_sharing_title">Location sharing</string>
+    <string name="pref_sharing_session_title">Session title</string>
+    <string name="pref_sharing_session_summary">Unique string identifying a session, it must be the same for all users in a group and must be secret to not let unwanted users join this group</string>
+    <string name="pref_sharing_user_title">User identifier</string>
+    <string name="pref_sharing_user_summary">Unique string identifying a user within a session group</string>
+    <string name="pref_sharing_updateinterval_title">Update interval</string>
+    <string name="pref_sharing_updateinterval_summary">Time interval in seconds at which location data is sent and received</string>
+    <string name="pref_sharing_timeout_title">Location timeout</string>
+    <string name="pref_sharing_timeout_summary">Time after which user will be displayed as lost</string>
+    <string name="pref_sharing_notifications_title">New user notification</string>
+    <string name="pref_sharing_tagcolor_title">Tag color</string>
+    <string name="pref_sharing_tagsize_title">Tag size</string>
+
+
     <string name="notif_loc_short">Locating</string>
     <string name="notif_loc_waiting">Borkozic is waiting for location</string>
     <string name="notif_loc_started">Borkozic is obtaining your location</string>
@@ -384,6 +433,10 @@
     <string name="notif_nav_short">Navigating</string>
     <string name="notif_nav_started">Borkozic is navigating you</string>
     <string name="notif_nav_to">Borkozic is navigating to %s</string>
+
+    <string name="notif_sharing">Sharing location in real-time</string>
+    <string name="notif_error">Unable to share location</string>
+    <string name="notif_newsession">%s has joined session</string>
 
     <string name="perm_location_title">Get location</string>
     <string name="perm_location_description">Access location provided by Borkozic</string>
@@ -394,6 +447,8 @@
     <string name="perm_read_preferences_title">Read Borkozic user preferences</string>
     <string name="perm_read_map_data_title">Get data from Borkozic map</string>
     <string name="perm_write_map_data_title">Add data to Borkozic map</string>
+
+    <string name="msgPermissionsRationale">Permissions should be granted to display shared locations on map</string>
 
     <string name="faquri">http://androzic.com/wiki/en/FAQ</string>
 
@@ -409,52 +464,8 @@
     <string name="showcase_load_waypoints_description">Tap action icon to load waypoint file. Loaded waypoints are grouped in a set. Each time you modify a set, corresponding file is automatically updated.</string>
     <string name="showcase_waypointset_actions_title">Waypoint set actions</string>
     <string name="showcase_waypointset_actions_description">Long tap on a waypoint set title to access additional actions.</string>
-
-    <string name="app_sharing_name">Borkozic Location Share</string>
-    <string name="selectarea_name">Select area</string>
-    <string name="msg_needs_setup">You have to setup your session details</string>
-    <string name="msg_needs_enable">Enable sharing to receive information about session users</string>
-    <string name="msg_no_users">Looks like nobody shares their location with you</string>
-    <string name="msg_empty_area_list">No areas available. Use menu to create area or load it from file.</string>
-    <string name="err_shortarea">Area must contain at least 3 waypoints</string>
-    <string name="area_line_width">Area line width</string>
-    <string name="area_color">Area Color</string>
-    <string name="area_line_color">Area Line Color</string>
-    <string name="area_transparency">Area transparency</string>
-    <string name="menu_addtoarea">Add to area</string>
-    <string name="menu_start_nav_area">Navigate to area</string>
-    <string name="menu_areas">Areas</string>
-    <string name="menu_newarea">New area</string>
-    <string name="menu_help">Help</string>
-    <string name="pref_area_title">Areas</string>
-    <string name="pref_area_preload_title">Preload areas</string>
-    <string name="pref_area_preload_summary">Mark to preload areas from files on application start</string>
-    <string name="pref_area_preload_hidden_title">Hide preloaded areas</string>
-    <string name="pref_area_preload_hidden_summary">Hide preloaded areas until they are viewed, edited or navigated</string>
-    <string name="pref_area_linewidth_title">Area Line width</string>
-    <string name="pref_area_linewidth_summary">Pixel width of the area line</string>
-    <string name="pref_area_pointwidth_title">Marker size</string>
-    <string name="pref_area_pointwidth_summary">The pixel size of area waypoint marker</string>
-    <string name="pref_area_showname_title">Show waypoint name</string>
-    <string name="pref_area_showname_summary">Mark to show area waypoint name beside a marker</string>
-    <string name="pref_sharing_title">Location sharing</string>
-    <string name="pref_sharing_session_title">Session title</string>
-    <string name="pref_sharing_session_summary">Unique string identifying a session, it must be the same for all users in a group and must be secret to not let unwanted users join this group</string>
-    <string name="pref_sharing_user_title">User identifier</string>
-    <string name="pref_sharing_user_summary">Unique string identifying a user within a session group</string>
-    <string name="pref_sharing_updateinterval_title">Update interval</string>
-    <string name="pref_sharing_updateinterval_summary">Time interval in seconds at which location data is sent and received</string>
-    <string name="pref_sharing_timeout_title">Location timeout</string>
-    <string name="pref_sharing_timeout_summary">Time after which user will be displayed as lost</string>
-    <string name="pref_sharing_notifications_title">New user notification</string>
-    <string name="pref_sharing_tagcolor_title">Tag color</string>
-    <string name="pref_sharing_tagsize_title">Tag size</string>
-    <string name="notif_sharing">Sharing location in real-time</string>
-    <string name="notif_error">Unable to share location</string>
-    <string name="notif_newsession">%s has joined session</string>
-    <string name="msgPermissionsRationale">Permissions should be granted to display shared locations on map</string>
-
-    <string name="app_eula">This program is distributed under the terms of
+				
+	<string name="app_eula">This program is distributed under the terms of
 	the GNU General Public License as published by the Free Software Foundation,
 	either version 3 of the License./n/n
     This application is distributed in the hope that it will be useful,

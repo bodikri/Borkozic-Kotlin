@@ -33,7 +33,6 @@ import android.graphics.drawable.Drawable
 import android.hardware.GeomagneticField
 import android.location.Location
 import android.os.Build
-import android.os.Environment
 import android.os.Handler
 import android.os.Message
 import android.preference.PreferenceManager
@@ -1844,8 +1843,7 @@ class Borkozic : BaseApplication() {
         } catch (e: PackageManager.NameNotFoundException) {
         }
 
-        val sdcard = Environment.getExternalStorageDirectory()
-        Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this, sdcard.getAbsolutePath()))
+        Thread.setDefaultUncaughtExceptionHandler(CrashHandler(this, cacheDir.absolutePath))
 
         val wm = getSystemService(WINDOW_SERVICE) as WindowManager?
         if (wm != null) {

@@ -4,6 +4,8 @@ import com.borkozic.BaseApplication
 
 import android.app.ListActivity
 import android.content.*
+import android.os.Build
+import androidx.core.content.ContextCompat
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.IBinder
@@ -139,8 +141,8 @@ class AreaDetails : ListActivity(), AdapterView.OnItemClickListener {
     private val navigationConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             navigationService = (service as NavigationService.LocalBinder).getService()
-            registerReceiver(navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS))
-            registerReceiver(navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE))
+            ContextCompat.registerReceiver(this@AreaDetails, navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS), ContextCompat.RECEIVER_NOT_EXPORTED)
+            ContextCompat.registerReceiver(this@AreaDetails, navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE), ContextCompat.RECEIVER_NOT_EXPORTED)
             Log.d(TAG, "Navigation broadcast receiver registered")
             runOnUiThread { adapter.notifyDataSetChanged() }
         }

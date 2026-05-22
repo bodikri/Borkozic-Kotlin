@@ -84,6 +84,13 @@
 	<string name="pref_route_linewidth">route_linewidth</string>
 	<string name="pref_route_pointwidth">route_pointwidth</string>
 	<string name="pref_route_showname">route_showname</string>
+
+	<string name="pref_area_preload">area_preload</string>
+	<string name="pref_area_preload_hidden">area_preload_hidden</string>
+	<string name="pref_area_linewidth">area_linewidth</string>
+	<string name="pref_area_pointwidth">area_pointwidth</string>
+	<string name="pref_area_showname">area_showname</string>
+
 	<string name="pref_navigation_proximity">navigation_proximity</string>
 	<string name="pref_navigation_traverse">navigation_traverse</string>
 	<string name="pref_navigation_loadlast">navigation_loadlast</string>
@@ -98,6 +105,14 @@
 	<string name="pref_facebook">facebook</string>
 	<string name="pref_twitter">twitter</string>
 	<string name="pref_credits">credits</string>
+
+	<string name="pref_sharing_session" translatable="false">sharing_session</string>
+	<string name="pref_sharing_user" translatable="false">sharing_user</string>
+	<string name="pref_sharing_updateinterval" translatable="false">sharing_updateinterval</string>
+	<string name="pref_sharing_timeout" translatable="false">sharing_timeout</string>
+	<string name="pref_sharing_notifications" translatable="false">sharing_notifications</string>
+	<string name="pref_sharing_tagcolor" translatable="false">sharing_tagcolor</string>
+	<string name="pref_sharing_tagsize" translatable="false">sharing_tagsize</string>
 																																													
 	<string name="def_cursorvector">1</string>
 	<string name="def_showdistance">1</string>

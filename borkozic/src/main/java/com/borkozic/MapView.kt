@@ -97,6 +97,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
      * True when map rotation set track up
      */
     var isTrackUp = true
+    @JvmField
     var planeLogo: String? = null
     private var plLogSize = 0
     private var lastBestMap: Long = 0
@@ -127,6 +128,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
     private var smoothB = 0f
     private var smoothBS = 0f
     var bearing = 0f
+    private var prevTouchAngle = 0f  // delta rotation tracking
     var fingerBearing = 0f
     private var speed = 0f
     private var mpp = 0.0
@@ -296,18 +298,18 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
         val cx = width / 2
         val cy = height / 2
 
-        if (isTrackUp) {
-            if (!scaled && !isFollowing) {
-                Log.i(TAG, "fingerBearing$fingerBearing")
-                canvas.rotate(-fingerBearing, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
-                application?.drawMap(fingerBearing, mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
-            } else {
-                canvas.rotate(-bearing, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
-                application?.drawMap(bearing, mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
-            }
-        } else {
-            application?.drawMap(0f, mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
+        // Rotation — APPLY REGARDLESS OF scaled (was skipped when scale != 1.0)
+        // bearing is in RADIANS (from atan2), canvas.rotate() expects DEGREES — convert!
+        val rotBearingDeg = if (isTrackUp && !isFollowing) Math.toDegrees(bearing.toDouble()).toFloat() else 0f
+        if (rotBearingDeg != 0f) {
+            Log.d(TAG, "doDraw1: bearingRad=$bearing rotBearingDeg=$rotBearingDeg scaled=$scaled")
         }
+        if (rotBearingDeg != 0f && !isFollowing) {
+            canvas.rotate(rotBearingDeg, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
+            Log.d(TAG, "doDraw2: bearingRad=$bearing rotBearingDeg=$rotBearingDeg scaled=$scaled")
+        }
+        // drawMap needs bearing in radians for coordinate transforms — pass raw bearing, not degrees
+        application?.drawMap(bearing, mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
 
         canvas.translate((lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
 
@@ -671,14 +673,9 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
 
     private fun onDragFinished(deltaX: Int, deltaY: Int) {
         synchronized(lock) {
-            val mapChanged = if (isTrackUp) {
-                val rad = Math.toRadians(-bearing.toDouble())
-                val dX = (deltaX * cos(rad) + deltaY * sin(rad)).toInt()
-                val dY = (deltaX * sin(-rad) + deltaY * cos(rad)).toInt()
-                application?.scrollMap(-dX, -dY) ?: false
-            } else {
-                application?.scrollMap(-deltaX, -deltaY) ?: false
-            }
+            // Always drag in screen space — finger direction = map movement direction
+            // No bearing rotation needed (canvas handles visual rotation separately)
+            val mapChanged = application?.scrollMap(-deltaX, -deltaY) ?: false
             if (mapChanged) updateMapInfo()
             update()
         }
@@ -713,6 +710,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
 
     private fun onDoubleTap(x: Int, y: Int) {
         setFollowingThroughContext(!isFollowing)
+        // Zero bearing when snapping to North — prevents stale rotation on next drag
+        synchronized(lock) {
+            bearing = 0f
+        }
     }
 
     @SuppressLint("HandlerLeak")
@@ -982,6 +983,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
     }
 
     override fun getPositionAndScale(obj: Any, objPosAndScaleOut: PositionAndScale) {
+        objPosAndScaleOut.set(0f, 0f, true, scale, false, 1f, 1f, true, bearing)
     }
 
     override fun selectObject(obj: Any?, touchPoint: PointInfo) {
@@ -1000,10 +1002,16 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
         if (touchPoint.isDown && touchPoint.numTouchPoints == 2) {
             if (pinch == 0f) {
                 pinch = touchPoint.multiTouchDiameterSq
+                prevTouchAngle = touchPoint.multiTouchAngle  // reset on gesture start
             }
-            fingerBearing = touchPoint.multiTouchAngle
-            Log.i(TAG, "setPositionAndScale$fingerBearing")
+            // Delta angle — multiTouchAngle is ABSOLUTE, we need relative change
+            val deltaAngle = touchPoint.multiTouchAngle - prevTouchAngle
+            prevTouchAngle = touchPoint.multiTouchAngle
             synchronized(lock) {
+                // Only accumulate bearing when NOT following — pinch/zoom shouldn't rotate map in following mode
+                if (!isFollowing) {
+                    bearing += deltaAngle
+                }
                 scale = touchPoint.multiTouchDiameterSq / pinch
                 scale = if (scale > 1) {
                     kotlin.math.log10(scale) + 1

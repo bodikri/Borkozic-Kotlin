@@ -28,6 +28,7 @@ import android.content.BroadcastReceiver
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import androidx.core.content.ContextCompat
 import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
@@ -194,8 +195,8 @@ class RouteDetails : ListActivity(), OnItemClickListener {
     private val navigationConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             navigationService = (service as NavigationService.LocalBinder).getService()
-            registerReceiver(navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS))
-            registerReceiver(navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE))
+            ContextCompat.registerReceiver(this@RouteDetails, navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS), ContextCompat.RECEIVER_NOT_EXPORTED)
+            ContextCompat.registerReceiver(this@RouteDetails, navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE), ContextCompat.RECEIVER_NOT_EXPORTED)
             Log.d(TAG, "Navigation broadcast receiver registered")
             runOnUiThread {
                 adapter.notifyDataSetChanged()

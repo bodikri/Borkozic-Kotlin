@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent">
@@ -17,8 +18,7 @@
 
 <!--
 <com.commonsware.cwac.tlv.TouchListView
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tlv="http://schemas.android.com/apk/res/com.androzic"
+    xmlns:tlv="http://schemas.android.com/apk/res/com.borkozic"
 
 	android:id="@android:id/list"
 	android:layout_width="fill_parent"
@@ -26,9 +26,8 @@
 	android:drawSelectorOnTop="false"
 	tlv:normal_height="64dip"
 	tlv:grabber="@+id/icon"
-	tlv:remove_mode="slideRight"
-/>
-  -->
+	tlv:remove_mode="slideRight"/>
+-->
   </LinearLayout>
 
   <LinearLayout android:orientation="horizontal"

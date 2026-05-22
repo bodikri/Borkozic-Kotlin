@@ -208,12 +208,12 @@ class RouteList : ListFragment() {
         const val MODE_MANAGE = 1
         const val MODE_START = 2
 
-        private const val qaRouteDetails = 1
-        private const val qaRouteNavigate = 2
-        private const val qaRouteProperties = 3
-        private const val qaRouteEdit = 4
-        private const val qaRouteSave = 5
-        private const val qaRouteRemove = 6
+        const val qaRouteDetails = 1
+        const val qaRouteNavigate = 2
+        const val qaRouteProperties = 3
+        const val qaRouteEdit = 4
+        const val qaRouteSave = 5
+        const val qaRouteRemove = 6
     }
 
     inner class RouteListAdapter internal constructor(context: Context) : BaseAdapter() {

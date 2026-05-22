@@ -35,4 +35,26 @@
     <style name="FullscreenActionBarStyle" parent="android:Widget.Holo.ActionBar">
         <item name="android:background">@color/black_overlay</item>
     </style>
+
+    <style name="Theme.Application" parent="android:Theme.DeviceDefault.Light.DarkActionBar">
+        <item name="colorPrimary">@color/theme_primary_color</item>
+        <item name="colorPrimaryDark">@color/theme_primary_darker_color</item>
+        <item name="colorAccent">@color/theme_accent_color</item>
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:windowBackground">@color/theme_primary_darker_color</item>
+        <item name="android:colorBackground">@color/theme_primary_darker_color</item>
+        <!--
+        <item name="preferenceTheme">@style/PreferenceThemeOverlay</item>
+        -->
+    </style>
+
+    <style name="SubHeader">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:gravity">center_vertical</item>
+    </style>
+
+    <style name="Theme.Application.Light.DarkActionBar" parent="android:Theme.DeviceDefault.Light.DarkActionBar" />
+
 </resources>

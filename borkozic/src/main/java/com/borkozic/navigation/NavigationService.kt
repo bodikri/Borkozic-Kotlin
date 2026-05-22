@@ -222,7 +222,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                     this,
                     NOTIFICATION_ID,
                     activity,
-                    PendingIntent.FLAG_CANCEL_CURRENT
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 navigateTo(mo)
             }
@@ -234,7 +234,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                     this,
                     NOTIFICATION_ID,
                     activity,
-                    PendingIntent.FLAG_CANCEL_CURRENT
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 navigateTo(mo!!)
             }
@@ -249,7 +249,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                     this,
                     NOTIFICATION_ID,
                     activity,
-                    PendingIntent.FLAG_CANCEL_CURRENT
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 navigateTo(application!!.getRoute(index)!!, dir)
                 if (start != -1) setRouteWaypoint(start)

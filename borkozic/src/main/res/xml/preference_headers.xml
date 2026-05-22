@@ -25,6 +25,9 @@
 	<header android:fragment="com.borkozic.PreferencesHC$PreferencesFragment" android:title="@string/pref_route_title">
 		<extra android:name="resource" android:value="pref_route" />
 	</header>
+	<header android:fragment="com.borkozic.PreferencesHC$PreferencesFragment" android:title="@string/pref_area_title">
+		<extra android:name="resource" android:value="pref_area" />
+	</header>
 	<header android:fragment="com.borkozic.PreferencesHC$PreferencesFragment" android:title="@string/pref_navigation_title">
 		<extra android:name="resource" android:value="pref_navigation" />
 	</header>

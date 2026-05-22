@@ -14,6 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
  */
 package com.jhlabs.map.proj
+import kotlin.jvm.JvmName
 
 import com.jhlabs.Point2D
 import com.jhlabs.Rectangle2D
@@ -39,13 +40,11 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The minimum latitude of the bounds of this projection
      */
-    @JvmField
     var minLatitude: Double = -Math.PI / 2
 
     /**
      * The minimum longitude of the bounds of this projection. This is relative to the projection centre.
      */
-    @JvmField
     var minLongitude: Double = -Math.PI
     /**
      * Set the maximum latitude. This is only used for Shape clipping and doesn't affect projection.
@@ -53,13 +52,11 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The maximum latitude of the bounds of this projection
      */
-    @JvmField
     var maxLatitude: Double = Math.PI / 2
 
     /**
      * The maximum longitude of the bounds of this projection. This is relative to the projection centre.
      */
-    @JvmField
     var maxLongitude: Double = Math.PI
     /**
      * Set the projection latitude in radians.
@@ -67,13 +64,13 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The latitude of the centre of projection
      */
-    @JvmField
     var projectionLatitude: Double = 0.0
 
     /**
      * The longitude of the centre of projection
      */
-    @JvmField
+    @get:JvmName("getProjectionLongitudeKotlin")
+    @set:JvmName("setProjectionLongitudeKotlin")
     protected var projectionLongitude: Double = 0.0
 
     /**
@@ -82,7 +79,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The projection scale factor
      */
-    @JvmField
     var scaleFactor: Double = 1.0
     /**
      * Set the false Easting in projected units.
@@ -90,7 +86,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The false Easting of this projection
      */
-    @JvmField
     var falseEasting: Double = 0.0
     /**
      * Set the false Northing in projected units.
@@ -98,7 +93,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The false Northing of this projection
      */
-    @JvmField
     var falseNorthing: Double = 0.0
     /**
      * Set the latitude of true scale in radians. This is only used by certain projections.
@@ -106,7 +100,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The latitude of true scale. Only used by specific projections.
      */
-    @JvmField
     var trueScaleLatitude: Double = 0.0
 
     /**
@@ -118,37 +111,33 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * The eccentricity
      */
-    @JvmField
     protected var e: Double = 0.0
 
     /**
      * The eccentricity squared
      */
-    @JvmField
     protected var es: Double = 0.0
 
     /**
      * 1-(eccentricity squared)
      */
-    @JvmField
     protected var one_es: Double = 0.0
 
     /**
      * 1/(1-(eccentricity squared))
      */
-    @JvmField
     protected var rone_es: Double = 0.0
 
     /**
      * The ellipsoid used by this projection
      */
-    @JvmField
-    protected var ellipsoid: Ellipsoid? = null
+    @get:JvmName("getEllipsoidKotlin")
+    @set:JvmName("setEllipsoidKotlin")
+    var ellipsoid: Ellipsoid? = null
 
     /**
      * True if this projection is using a sphere (es == 0)
      */
-    @JvmField
     protected var spherical: Boolean = false
 
     /**
@@ -166,7 +155,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     /**
      * Conversion factor from metres to whatever units the projection uses.
      */
-    @JvmField
     var fromMetres: Double = 1.0
 
     /**
@@ -526,14 +514,12 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
         lon: Double, lat: Double, lp: Point2D.Double
     ) {
         // tolerance for approximating longitude and latitude
-
         var lon = lon
         var lat = lat
         val TOL = 1e-9 // less than a hundreth of a second
 
         // maximum number of loops
         val MAX_LOOP = 1000
-
         var counter = 0
         var dx: Double
         var dy: Double
@@ -713,9 +699,9 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
             }
             sb.append(" +ellps=" + ellipsoid!!.shortName)
             sb.append(" +lon_0=")
-            format.format(projectionLongitude, sb, null)
+            format.format(projectionLongitude, sb, java.text.FieldPosition(0))
             sb.append(" +lat_0=")
-            format.format(projectionLatitude, sb, null)
+            format.format(projectionLatitude, sb, java.text.FieldPosition(0))
             if (falseEasting != 1.0) {
                 sb.append(" +x_0=" + falseEasting)
             }
@@ -740,19 +726,16 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
 
     val minLatitudeDegrees: Double
         get() = minLatitude * RTD
-
     var minLongitudeDegrees: Double
         get() = minLongitude * RTD
         set(minLongitude) {
             this.minLongitude = DTR * minLongitude
         }
-
     var maxLongitudeDegrees: Double
         get() = maxLongitude * RTD
         set(maxLongitude) {
             this.maxLongitude = DTR * maxLongitude
         }
-
     var projectionLatitudeDegrees: Double
         get() = projectionLatitude * RTD
         /**
@@ -772,7 +755,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     fun getProjectionLongitude(): Double {
         return projectionLongitude
     }
-
     var projectionLongitudeDegrees: Double
         get() = projectionLongitude * RTD
         /**
@@ -781,7 +763,6 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
         set(projectionLongitude) {
             this.projectionLongitude = DTR * projectionLongitude
         }
-
     var trueScaleLatitudeDegrees: Double
         get() = trueScaleLatitude * RTD
         /**
@@ -823,11 +804,11 @@ abstract class Projection protected constructor() : Cloneable, Serializable {
     }
 
     // Some useful constants
-    @JvmField
+
     protected val EPS10: Double = 1e-10
-    @JvmField
+
     protected val RTD: Double = 180.0 / Math.PI
-    @JvmField
+
     protected val DTR: Double = Math.PI / 180.0
 
     companion object {
