@@ -47,16 +47,13 @@ import androidx.core.content.ContextCompat
 import com.borkozic.map.Map
 import com.borkozic.overlay.MapOverlay
 import com.borkozic.util.Geo
-import org.metalev.multitouch.controller.MultiTouchController
-import org.metalev.multitouch.controller.MultiTouchController.MultiTouchObjectCanvas
-import org.metalev.multitouch.controller.MultiTouchController.PointInfo
-import org.metalev.multitouch.controller.MultiTouchController.PositionAndScale
 import java.lang.ref.WeakReference
 import kotlin.math.abs
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.sqrt
 
-open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas<Any> {
+open class MapView : SurfaceView, SurfaceHolder.Callback {
     companion object {
         private const val TAG = "MapView"
         private const val MAX_ROTATION_SPEED = 20f
@@ -66,6 +63,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
 
         private const val TAP = 1
         private const val CANCEL = 2
+
+        private const val GESTURE_NOTHING = 0
+        private const val GESTURE_DRAG = 1
+        private const val GESTURE_PINCH = 2
     }
 
     private var vectorType = 1
@@ -128,8 +129,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
     private var smoothB = 0f
     private var smoothBS = 0f
     var bearing = 0f
-    private var prevTouchAngle = 0f  // delta rotation tracking
-    var fingerBearing = 0f
     private var speed = 0f
     private var mpp = 0.0
     private var vectorLength = 0
@@ -148,10 +147,19 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
     private var drawingThread: DrawingThread? = null
     private val lock = Any()
 
-    private var multiTouchController: MultiTouchController<Any>? = null
-    private var pinch = 0f
-    private var scale = 1f
+    // ── Gesture state machine ────────────────────────────────────────────
+    private var gestureMode = GESTURE_NOTHING
+    private var gestureStartPinchDist = 0f
+    private var gestureStartAngle = 0f
+    private var gestureStartBearing = 0f
+    private var gestureStartScale = 1f
+    private var gestureStartMapX = 0
+    private var gestureStartMapY = 0
+    private var gestureDragX = 0  // last drag position
+    private var gestureDragY = 0
     private var wasMultitouch = false
+    private var scale = 1f  // current pinch scale factor
+
 
     private val gestureThresholdDp: Int = (ViewConfiguration.get(BaseApplication.getApplication<Borkozic>() ?: context).scaledTouchSlop * 3)
     private val doubleTapTimeout: Int = ViewConfiguration.getDoubleTapTimeout()
@@ -190,7 +198,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
             -compasNeedl!!.intrinsicWidth / 7, 0,
             compasNeedl!!.intrinsicWidth / 7, compasNeedl!!.intrinsicHeight / 3
         )
-        multiTouchController = MultiTouchController(this, false)
         tapHandler = GestureHandler(this)
 
         viewArea = Rect()
@@ -298,18 +305,13 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
         val cx = width / 2
         val cy = height / 2
 
-        // Rotation — APPLY REGARDLESS OF scaled (was skipped when scale != 1.0)
-        // bearing is in RADIANS (from atan2), canvas.rotate() expects DEGREES — convert!
-        val rotBearingDeg = if (isTrackUp && !isFollowing) Math.toDegrees(bearing.toDouble()).toFloat() else 0f
-        if (rotBearingDeg != 0f) {
-            Log.d(TAG, "doDraw1: bearingRad=$bearing rotBearingDeg=$rotBearingDeg scaled=$scaled")
-        }
+        // Rotation — bearing is in DEGREES now, canvas.rotate() expects degrees
+        val rotBearingDeg = if (isTrackUp && !isFollowing) bearing else 0f
         if (rotBearingDeg != 0f && !isFollowing) {
             canvas.rotate(rotBearingDeg, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
-            Log.d(TAG, "doDraw2: bearingRad=$bearing rotBearingDeg=$rotBearingDeg scaled=$scaled")
         }
-        // drawMap needs bearing in radians for coordinate transforms — pass raw bearing, not degrees
-        application?.drawMap(bearing, mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
+        // drawMap needs bearing in RADIANS for coordinate transforms
+        application?.drawMap(Math.toRadians(bearing.toDouble()).toFloat(), mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
 
         canvas.translate((lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
 
@@ -747,16 +749,12 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        var d = 0f
-        if (multiTouchController?.onTouchEvent(event) == true) {
-            wasMultitouch = true
-            return true
-        }
-
-        val action = event.action and MotionEvent.ACTION_MASK
+        val action = event.actionMasked
+        val pointerCount = event.pointerCount
 
         when (action) {
             MotionEvent.ACTION_DOWN -> {
+                gestureMode = GESTURE_DRAG
                 val hadTapMessage = tapHandler?.hasMessages(TAP) == true
                 if (hadTapMessage) tapHandler?.removeMessages(TAP)
                 tapHandler?.removeMessages(CANCEL)
@@ -765,69 +763,151 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
                     onDoubleTap(penOX, penOY)
                     cancelMotionEvent()
                     wasDoubleTap = true
+                    gestureMode = GESTURE_NOTHING
+                    return true
                 } else {
                     firstTapTime = event.downTime
                 }
 
-                penOX = event.x.toInt()
-                penOY = event.y.toInt()
+                penOX = event.rawX.toInt()
+                penOY = event.rawY.toInt()
                 penX = penOX
                 penY = penOY
+                gestureDragX = penOX
+                gestureDragY = penOY
+                wasMultitouch = false
             }
-            MotionEvent.ACTION_MOVE -> {
-                if (!wasMultitouch && (!isFollowing || !strictUnfollow)) {
-                    val x = event.x.toInt()
-                    val y = event.y.toInt()
-                    val dx = -(penX - x)
-                    val dy = -(penY - y)
 
-                    if (!isFollowing && (abs(dx) > 0 || abs(dy) > 0)) {
-                        penX = x
-                        penY = y
-                        onDragFinished(dx, dy)
+            MotionEvent.ACTION_POINTER_DOWN -> {
+                if (pointerCount == 2) {
+                    gestureMode = GESTURE_PINCH
+                    wasMultitouch = true
+                    tapHandler?.removeMessages(TAP)
+                    tapHandler?.removeMessages(CANCEL)
+                    gestureStartPinchDist = distanceBetweenFingers(event)
+                    gestureStartAngle = angleBetweenFingers(event)
+                    gestureStartBearing = bearing
+                    gestureStartScale = 1f
+                }
+            }
+
+            MotionEvent.ACTION_MOVE -> {
+                when (gestureMode) {
+                    GESTURE_DRAG -> {
+                        if (!isFollowing || !strictUnfollow) {
+                            val rawX = event.rawX.toInt()
+                            val rawY = event.rawY.toInt()
+                            val dx = -(gestureDragX - rawX)
+                            val dy = -(gestureDragY - rawY)
+
+                            if (abs(dx) > 0 || abs(dy) > 0) {
+                                gestureDragX = rawX
+                                gestureDragY = rawY
+
+                                if (!isFollowing) {
+                                    val rad = Math.toRadians(-bearing.toDouble())
+                                    val mapDx = (dx * cos(rad) + dy * sin(rad)).toInt()
+                                    val mapDy = (-dx * sin(rad) + dy * cos(rad)).toInt()
+                                    onDragFinished(mapDx, mapDy)
+                                }
+                                if (!strictUnfollow) setFollowingThroughContext(false)
+                            }
+                        }
                     }
-                    if (abs(dx) > gestureThresholdDp || abs(dy) > gestureThresholdDp) {
-                        if (!strictUnfollow) setFollowingThroughContext(false)
-                    }
-                } else {
-                    if (event.pointerCount == 2) {
-                        Log.i(TAG, "ACTION_MOVE;getPointerCount=2")
-                        val newRot = rotation(event)
-                        fingerBearing = newRot - d
+
+                    GESTURE_PINCH -> {
+                        if (pointerCount == 2) {
+                            val currentDist = distanceBetweenFingers(event)
+                            if (gestureStartPinchDist > 0f) {
+                                val ratio = currentDist / gestureStartPinchDist
+                                scale = if (ratio > 1) {
+                                    kotlin.math.log10(ratio.toDouble()).toFloat() + 1f
+                                } else {
+                                    1f / (kotlin.math.log10(1.0 / ratio).toFloat() + 1f)
+                                }
+                            }
+
+                            if (!isFollowing) {
+                                val currentAngle = angleBetweenFingers(event)
+                                val deltaAngle = currentAngle - gestureStartAngle
+                                var normalized = deltaAngle % 360f
+                                if (normalized > 180f) normalized -= 360f
+                                if (normalized < -180f) normalized += 360f
+                                val newBearing = gestureStartBearing + normalized
+                                bearing = ((newBearing % 360f) + 360f) % 360f
+                            }
+                        }
                     }
                 }
             }
+
+            MotionEvent.ACTION_POINTER_UP -> {
+                if (pointerCount == 2) {
+                    try {
+                        val borkozic = context as MapActivity
+                        borkozic.zoomMap(scale)
+                    } catch (_: Exception) {
+                    }
+                    scale = 1f
+                    gestureMode = GESTURE_DRAG
+                    gestureDragX = event.rawX.toInt()
+                    gestureDragY = event.rawY.toInt()
+                }
+            }
+
             MotionEvent.ACTION_UP -> {
                 upEvent?.recycle()
                 upEvent = MotionEvent.obtain(event)
 
-                val dx = -(penOX - event.x.toInt())
-                val dy = -(penOY - event.y.toInt())
-                if (!wasMultitouch && !wasDoubleTap && abs(dx) < gestureThresholdDp && abs(dy) < gestureThresholdDp) {
+                if (gestureMode == GESTURE_PINCH) {
+                    try {
+                        val borkozic = context as MapActivity
+                        borkozic.zoomMap(scale)
+                    } catch (_: Exception) {
+                    }
+                    scale = 1f
+                }
+
+                val dx = -(penOX - event.rawX.toInt())
+                val dy = -(penOY - event.rawY.toInt())
+                if (gestureMode == GESTURE_DRAG && !wasMultitouch && !wasDoubleTap &&
+                    abs(dx) < gestureThresholdDp && abs(dy) < gestureThresholdDp
+                ) {
                     tapHandler?.sendEmptyMessageDelayed(TAP, doubleTapTimeout.toLong())
                 } else if (wasMultitouch || wasDoubleTap) {
-                    wasMultitouch = false
-                    wasDoubleTap = false
                     cancelMotionEvent()
                 } else {
                     tapHandler?.sendEmptyMessageDelayed(CANCEL, doubleTapTimeout.toLong())
                 }
+
+                wasMultitouch = false
+                wasDoubleTap = false
+                gestureMode = GESTURE_NOTHING
             }
+
             MotionEvent.ACTION_CANCEL -> {
                 wasMultitouch = false
                 wasDoubleTap = false
+                gestureMode = GESTURE_NOTHING
+                scale = 1f
                 cancelMotionEvent()
-            }
-            MotionEvent.ACTION_POINTER_DOWN -> {
-                Log.i(TAG, "ACTION_POINTER_DOWN")
-                d = rotation(event)
-            }
-            MotionEvent.ACTION_POINTER_UP -> {
-                Log.i(TAG, "ACTION_POINTER_UP")
             }
         }
 
         return true
+    }
+
+    private fun distanceBetweenFingers(event: MotionEvent): Float {
+        val dx = event.getX(0) - event.getX(1)
+        val dy = event.getY(0) - event.getY(1)
+        return sqrt((dx * dx + dy * dy).toDouble()).toFloat()
+    }
+
+    private fun angleBetweenFingers(event: MotionEvent): Float {
+        val dx = event.getX(1) - event.getX(0)
+        val dy = event.getY(1) - event.getY(0)
+        val deg = Math.toDegrees(kotlin.math.atan2(dy.toDouble(), dx.toDouble())).toFloat()
+        return ((deg % 360f) + 360f) % 360f
     }
 
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
@@ -976,57 +1056,5 @@ open class MapView : SurfaceView, SurfaceHolder.Callback, MultiTouchObjectCanvas
         return bundle
     }
 
-    override fun getDraggableObjectAtPoint(touchPoint: PointInfo): Any {
-        pinch = 0f
-        scale = 1f
-        return this
-    }
 
-    override fun getPositionAndScale(obj: Any, objPosAndScaleOut: PositionAndScale) {
-        objPosAndScaleOut.set(0f, 0f, true, scale, false, 1f, 1f, true, bearing)
-    }
-
-    override fun selectObject(obj: Any?, touchPoint: PointInfo) {
-        if (obj == null) {
-            pinch = 0f
-            Log.e(TAG, "Scale: $scale")
-            try {
-                val borkozic = context as MapActivity
-                borkozic.zoomMap(scale)
-            } finally {
-            }
-        }
-    }
-
-    override fun setPositionAndScale(obj: Any, newObjPosAndScale: PositionAndScale, touchPoint: PointInfo): Boolean {
-        if (touchPoint.isDown && touchPoint.numTouchPoints == 2) {
-            if (pinch == 0f) {
-                pinch = touchPoint.multiTouchDiameterSq
-                prevTouchAngle = touchPoint.multiTouchAngle  // reset on gesture start
-            }
-            // Delta angle — multiTouchAngle is ABSOLUTE, we need relative change
-            val deltaAngle = touchPoint.multiTouchAngle - prevTouchAngle
-            prevTouchAngle = touchPoint.multiTouchAngle
-            synchronized(lock) {
-                // Only accumulate bearing when NOT following — pinch/zoom shouldn't rotate map in following mode
-                if (!isFollowing) {
-                    bearing += deltaAngle
-                }
-                scale = touchPoint.multiTouchDiameterSq / pinch
-                scale = if (scale > 1) {
-                    kotlin.math.log10(scale) + 1
-                } else {
-                    1 / (kotlin.math.log10(1 / scale) + 1)
-                }.toFloat()
-            }
-        }
-        return true
-    }
-
-    private fun rotation(event: MotionEvent): Float {
-        val deltaX = (event.getX(0) - event.getX(1))
-        val deltaY = (event.getY(0) - event.getY(1))
-        val radians = kotlin.math.atan2(deltaY.toDouble(), deltaX.toDouble())
-        return Math.toDegrees(radians).toFloat()
-    }
 }
