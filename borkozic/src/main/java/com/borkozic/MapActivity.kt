@@ -1662,6 +1662,12 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         application!!.editingRoute = route
         application!!.editingRoute!!.editing = true
 
+        // Center map on first waypoint if route has points
+        val firstWp = application!!.editingRoute!!.waypoints.firstOrNull()
+        if (firstWp != null) {
+            application!!.setMapCenter(firstWp.latitude, firstWp.longitude, true, false)
+        }
+
         var newroute = true
         val iter: MutableIterator<RouteOverlay> = application!!.routeOverlays.iterator()
         while (iter.hasNext()) {
@@ -1687,6 +1693,12 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         setFollowing(false)
         application!!.editingArea = area
         application!!.editingArea!!.editing = true
+
+        // Center map on first waypoint if area has points
+        val firstWp = application!!.editingArea!!.waypoints.firstOrNull()
+        if (firstWp != null) {
+            application!!.setMapCenter(firstWp.latitude, firstWp.longitude, true, false)
+        }
 
         var newarea = true
         val iter: MutableIterator<AreaOverlay> = application!!.areaOverlays.iterator()
