@@ -2,7 +2,7 @@
 # compile_wsl.sh — WSL build wrapper for Borkozic
 # Запазва Windows local.properties, ползва WSL пътища за билд, ВИНАГИ връща обратно
 
-REPO="/mnt/d/Borkozic_Versions/Borkozic-Java_Oki"
+REPO="/mnt/d/Borkozic_Versions/Borkozic-Kotlin_Oki"
 SDK="/home/pc_bodi/.android-sdk-wsl"
 JAVA="/usr/lib/jvm/java-21-openjdk-amd64"
 
