@@ -233,13 +233,6 @@ fun WaypointListScreen(
             }
             toRemove.forEach { application.removeWaypoint(it) }
             multiSelected = mutableSetOf(); showMultiBar = false
-        },
-        ActionItem(201, "Show All", Icons.Default.Visibility) {
-            multiSelected.forEach { (si, ci) ->
-                val set = waypointSets.getOrNull(si) ?: return@forEach
-                application.getWaypoints(set).filterNotNull().getOrNull(ci)?.show = true
-            }
-            multiSelected = mutableSetOf(); showMultiBar = false
         }
     ) else emptyList()
 
