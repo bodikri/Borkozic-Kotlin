@@ -7,13 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.borkozic.R
 import com.borkozic.data.Route
-import com.borkozic.ui.ColorButton
-import com.borkozic.ui.OnColorChangedListener
+import com.borkozic.ui.ColorSwatchButton
 
 @Composable
 fun RoutePropertiesScreen(
@@ -24,7 +23,7 @@ fun RoutePropertiesScreen(
 ) {
     var name by remember { mutableStateOf(route.name) }
     var show by remember { mutableStateOf(route.show) }
-    var colorValue by remember { mutableStateOf(route.lineColor) }
+    var colorValue by remember { mutableStateOf(Color(route.lineColor)) }
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -53,9 +52,9 @@ fun RoutePropertiesScreen(
 
             Text("Color", fontWeight = FontWeight.Bold)
             Spacer(Modifier.height(4.dp))
-            RouteColorButton(
+            ColorSwatchButton(
                 currentColor = colorValue,
-                defaultColor = defaultColor,
+                defaultColor = Color(defaultColor),
                 onColorChanged = { colorValue = it }
             )
         }
@@ -71,33 +70,9 @@ fun RoutePropertiesScreen(
             Button(onClick = {
                 route.name = name
                 route.show = show
-                route.lineColor = colorValue
+                route.lineColor = colorValue.toArgb()
                 onSave(route)
             }) { Text("Done") }
         }
     }
-}
-
-@Composable
-private fun RouteColorButton(
-    currentColor: Int,
-    defaultColor: Int,
-    onColorChanged: (Int) -> Unit
-) {
-    AndroidView(
-        factory = { ctx ->
-            ColorButton(ctx).apply {
-                setColor(currentColor, defaultColor)
-                setOnColorChangeListener(object : OnColorChangedListener {
-                    override fun colorChanged(newColor: Int) {
-                        onColorChanged(newColor)
-                    }
-                })
-            }
-        },
-        modifier = Modifier.wrapContentWidth(),
-        update = { btn ->
-            btn.setColor(currentColor, defaultColor)
-        }
-    )
 }

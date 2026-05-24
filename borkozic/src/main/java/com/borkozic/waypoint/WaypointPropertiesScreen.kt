@@ -1,26 +1,27 @@
 package com.borkozic.waypoint
 
-import android.content.Intent
-import android.widget.PopupMenu
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.borkozic.BaseApplication
 import com.borkozic.Borkozic
-import com.borkozic.R
 import com.borkozic.data.Waypoint
 import com.borkozic.data.WaypointSet
-import com.borkozic.ui.ColorButton
-import com.borkozic.ui.MarkerPickerActivity
-import com.borkozic.ui.OnColorChangedListener
+import com.borkozic.ui.ColorSwatchButton
+import com.borkozic.ui.MarkerPickerDialog
+import com.borkozic.ui.alphaCheckerboard
 import com.borkozic.util.StringFormatter
 import com.jhlabs.map.GeodeticPosition
 import com.jhlabs.map.UTMReference
@@ -36,7 +37,6 @@ fun WaypointPropertiesScreen(
     onSave: (Waypoint) -> Unit,
     onCancel: () -> Unit
 ) {
-    val context = LocalContext.current
     val application = BaseApplication.getApplication<Borkozic>()!!
 
     var name by remember { mutableStateOf(waypoint.name) }
@@ -49,6 +49,10 @@ fun WaypointPropertiesScreen(
     }
     var selectedTab by remember { mutableStateOf(0) }
     var coordFormat by remember { mutableStateOf(application.coordinateFormat) }
+
+    // Icon picker dialog state
+    var showIconDialog by remember { mutableStateOf(false) }
+    var showIconMenu by remember { mutableStateOf(false) }
 
     // Coordinate state — DD
     var latDD by remember { mutableStateOf(StringFormatter.coordinate(0, waypoint.latitude)) }
@@ -74,12 +78,12 @@ fun WaypointPropertiesScreen(
     var utmZone by remember { mutableStateOf("") }
     var utmSouth by remember { mutableStateOf(false) }
 
-    // Colors
+    // Colors as Compose Color
     var markerColor by remember {
-        mutableStateOf(if (waypoint.backcolor == Int.MIN_VALUE) defMarkerColor else waypoint.backcolor)
+        mutableStateOf(if (waypoint.backcolor == Int.MIN_VALUE) Color(defMarkerColor) else Color(waypoint.backcolor))
     }
     var textColor by remember {
-        mutableStateOf(if (waypoint.textcolor == Int.MIN_VALUE) defTextColor else waypoint.textcolor)
+        mutableStateOf(if (waypoint.textcolor == Int.MIN_VALUE) Color(defTextColor) else Color(waypoint.textcolor))
     }
 
     // Set
@@ -170,6 +174,38 @@ fun WaypointPropertiesScreen(
     // Init
     LaunchedEffect(Unit) { initCoordFields(GeodeticPosition(waypoint.latitude, waypoint.longitude)) }
 
+    // Icon picker dialog
+    if (showIconDialog) {
+        MarkerPickerDialog(
+            onIconPicked = { name -> onIconChanged(name); showIconDialog = false },
+            onDismiss = { showIconDialog = false }
+        )
+    }
+
+    // Icon popup menu
+    if (showIconMenu) {
+        AlertDialog(
+            onDismissRequest = { showIconMenu = false },
+            title = { Text("Icon") },
+            text = { },
+            confirmButton = {
+                TextButton(onClick = { showIconMenu = false; showIconDialog = true }) {
+                    Text("Change")
+                }
+            },
+            dismissButton = {
+                Row {
+                    TextButton(onClick = { onIconChanged(null); showIconMenu = false }) {
+                        Text("Remove")
+                    }
+                    TextButton(onClick = { showIconMenu = false }) {
+                        Text("Cancel")
+                    }
+                }
+            }
+        )
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         if (routeIdx == 0) {
             TabRow(selectedTabIndex = selectedTab) {
@@ -193,28 +229,7 @@ fun WaypointPropertiesScreen(
                     onNameChange = { name = it },
                     showIcon = routeIdx == 0 && application.iconsEnabled,
                     iconValue = iconValue,
-                    onIconClick = {
-                        val act = context as? WaypointProperties
-                        if (act != null) {
-                            val fakeView = android.view.View(context)
-                            fakeView.id = android.R.id.content
-                            val popup = PopupMenu(context, fakeView)
-                            popup.menuInflater.inflate(R.menu.marker_popup, popup.menu)
-                            popup.setOnMenuItemClickListener { item ->
-                                when (item.itemId) {
-                                    R.id.change -> {
-                                        act.startActivityForResult(
-                                            Intent(context, MarkerPickerActivity::class.java), 0
-                                        )
-                                        true
-                                    }
-                                    R.id.remove -> { onIconChanged(null); true }
-                                    else -> false
-                                }
-                            }
-                            popup.show()
-                        }
-                    },
+                    onIconClick = { showIconMenu = true },
                     coordFormat = coordFormat,
                     onCoordFormatChange = { updateForFormat(it) },
                     latDD = latDD, onLatDDChange = { latDD = it },
@@ -246,8 +261,8 @@ fun WaypointPropertiesScreen(
                     onMarkerColorChange = { markerColor = it },
                     textColor = textColor,
                     onTextColorChange = { textColor = it },
-                    defMarkerColor = defMarkerColor,
-                    defTextColor = defTextColor
+                    defMarkerColor = Color(defMarkerColor),
+                    defTextColor = Color(defTextColor)
                 )
             }
         }
@@ -272,8 +287,8 @@ fun WaypointPropertiesScreen(
                 } else {
                     waypoint.image = iconValue; waypoint.drawImage = true
                 }
-                if (markerColor != defMarkerColor) waypoint.backcolor = markerColor
-                if (textColor != defTextColor) waypoint.textcolor = textColor
+                waypoint.backcolor = markerColor.toArgb()
+                waypoint.textcolor = textColor.toArgb()
                 if (routeIdx == 0 && waypoint.set == null) {
                     application.addWaypoint(waypoint)
                 }
@@ -463,9 +478,9 @@ private fun AdvancedTab(
     description: String, onDescriptionChange: (String) -> Unit,
     setIndex: Int, onSetIndexChange: (Int) -> Unit,
     waypointSets: List<WaypointSet>,
-    markerColor: Int, onMarkerColorChange: (Int) -> Unit,
-    textColor: Int, onTextColorChange: (Int) -> Unit,
-    defMarkerColor: Int, defTextColor: Int
+    markerColor: Color, onMarkerColorChange: (Color) -> Unit,
+    textColor: Color, onTextColorChange: (Color) -> Unit,
+    defMarkerColor: Color, defTextColor: Color
 ) {
     var showSetDropdown by remember { mutableStateOf(false) }
     val setNames = remember(waypointSets) { waypointSets.map { it.name } }
@@ -513,35 +528,21 @@ private fun AdvancedTab(
             Column(Modifier.weight(1f)) {
                 Text("Marker Color", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
-                PropertyColorButton(markerColor, defMarkerColor, onMarkerColorChange)
+                ColorSwatchButton(
+                    currentColor = markerColor,
+                    defaultColor = defMarkerColor,
+                    onColorChanged = onMarkerColorChange
+                )
             }
             Column(Modifier.weight(1f)) {
                 Text("Text Color", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
-                PropertyColorButton(textColor, defTextColor, onTextColorChange)
+                ColorSwatchButton(
+                    currentColor = textColor,
+                    defaultColor = defTextColor,
+                    onColorChanged = onTextColorChange
+                )
             }
         }
     }
-}
-
-@Composable
-private fun PropertyColorButton(
-    currentColor: Int,
-    defaultColor: Int,
-    onColorChanged: (Int) -> Unit
-) {
-    AndroidView(
-        factory = { ctx ->
-            ColorButton(ctx).apply {
-                setColor(currentColor, defaultColor)
-                setOnColorChangeListener(object : OnColorChangedListener {
-                    override fun colorChanged(newColor: Int) {
-                        onColorChanged(newColor)
-                    }
-                })
-            }
-        },
-        modifier = Modifier.wrapContentWidth(),
-        update = { btn -> btn.setColor(currentColor, defaultColor) }
-    )
 }

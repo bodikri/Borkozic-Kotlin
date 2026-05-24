@@ -7,13 +7,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.borkozic.R
 import com.borkozic.data.Track
-import com.borkozic.ui.ColorButton
-import com.borkozic.ui.OnColorChangedListener
+import com.borkozic.ui.ColorSwatchButton
 
 @Composable
 fun TrackPropertiesScreen(
@@ -24,7 +23,7 @@ fun TrackPropertiesScreen(
 ) {
     var name by remember { mutableStateOf(track.name) }
     var show by remember { mutableStateOf(track.show) }
-    var colorValue by remember { mutableStateOf(track.color) }
+    var colorValue by remember { mutableStateOf(Color(track.color)) }
     var width by remember { mutableStateOf(track.width.toString()) }
     var showWidthDropdown by remember { mutableStateOf(false) }
 
@@ -59,9 +58,9 @@ fun TrackPropertiesScreen(
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Color", fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(4.dp))
-                    TrackColorButton(
+                    ColorSwatchButton(
                         currentColor = colorValue,
-                        defaultColor = defaultColor,
+                        defaultColor = Color(defaultColor),
                         onColorChanged = { colorValue = it }
                     )
                 }
@@ -102,32 +101,10 @@ fun TrackPropertiesScreen(
             Button(onClick = {
                 track.name = name
                 track.show = show
-                track.color = colorValue
+                track.color = colorValue.toArgb()
                 track.width = width.toIntOrNull() ?: track.width
                 onSave(track)
             }) { Text("Done") }
         }
     }
-}
-
-@Composable
-private fun TrackColorButton(
-    currentColor: Int,
-    defaultColor: Int,
-    onColorChanged: (Int) -> Unit
-) {
-    AndroidView(
-        factory = { ctx ->
-            ColorButton(ctx).apply {
-                setColor(currentColor, defaultColor)
-                setOnColorChangeListener(object : OnColorChangedListener {
-                    override fun colorChanged(newColor: Int) {
-                        onColorChanged(newColor)
-                    }
-                })
-            }
-        },
-        modifier = Modifier.wrapContentWidth(),
-        update = { btn -> btn.setColor(currentColor, defaultColor) }
-    )
 }
