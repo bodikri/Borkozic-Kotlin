@@ -50,14 +50,6 @@ import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.borkozic.area.AreaDetails
@@ -111,6 +103,10 @@ import com.borkozic.waypoint.WaypointProject
 import com.borkozic.waypoint.WaypointProperties
 import net.londatiga.android.ActionItem
 import net.londatiga.android.QuickAction3D
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.ComposeView
 import com.borkozic.ui.SidePanel
 import com.borkozic.ui.SidePanelAction
 import java.io.File
@@ -163,6 +159,39 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private var secondBack = false
     private var backToast: Toast? = null
 
+    private var coordinates: TextView? = null
+    private var satInfo: TextView? = null
+    private var accuracy: TextView? = null
+
+    private var waypointName: TextView? = null
+    private var waypointExtra: TextView? = null
+    private var routeName: TextView? = null
+    private var routeExtra: TextView? = null
+    private var areaName: TextView? = null
+    private var areaExtra: TextView? = null
+
+    //private TextView distanceValue;
+    //private TextView distanceUnit;
+    //private TextView bearingValue;
+    //private TextView bearingUnit;
+    private var belowaboveValue: TextView? = null
+    private var belowaboveUnit: TextView? = null
+    private var belowaboveName: TextView? = null
+    private var turnValue: TextView? = null
+
+    private var speedValue: TextView? = null
+    private var speedUnit: TextView? = null
+    private var trackValue: TextView? = null
+    private var trackUnit: TextView? = null
+    private var elevationName: TextView? = null
+    private var elevationValue: TextView? = null
+    private var elevationUnit: TextView? = null
+    private var xtkValue: TextView? = null
+    private var xtkUnit: TextView? = null
+
+    private var currentFile: TextView? = null
+    private var mapZoom: TextView? = null
+
     protected var trackBar: SeekBar? = null
     protected var waitBar: TextView? = null
     @JvmField
@@ -203,7 +232,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private var isFollowingState by mutableStateOf(false)
     private var isLocatingState by mutableStateOf(false)
     private var isTrackingState by mutableStateOf(false)
-    private var uiState by mutableStateOf(MapUiState())
     var disable: LightingColorFilter = LightingColorFilter(-0x1, -0xaaaaab)
 
     protected var ready: Boolean = false
@@ -258,40 +286,72 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             requestWindowFeature(Window.FEATURE_NO_TITLE)
         }
 
-        // ── Compose Root + MapView ──────────────────────────────────────
-        map = MapView(this@MapActivity)
-        map!!.setFocusable(true)
-        map!!.setFocusableInTouchMode(true)
-        map!!.requestFocus()
+        setContentView(R.layout.act_main)
+        coordinates = findViewById<View?>(R.id.coordinates) as TextView?
+        satInfo = findViewById<View?>(R.id.sats) as TextView?
+        accuracy = findViewById<View?>(R.id.accuracy_satinfo) as TextView
+        currentFile = findViewById<View?>(R.id.currentfile) as TextView?
+        mapZoom = findViewById<View?>(R.id.currentzoom) as TextView?
+        waypointName = findViewById<View?>(R.id.waypointname) as TextView?
+        waypointExtra = findViewById<View?>(R.id.waypointextra) as TextView?
+        routeName = findViewById<View?>(R.id.routename) as TextView?
+        routeExtra = findViewById<View?>(R.id.routeextra) as TextView?
+        areaName = findViewById<View?>(R.id.areaname) as TextView?
+        areaExtra = findViewById<View?>(R.id.areaextra) as TextView?
+        speedValue = findViewById<View?>(R.id.speed) as TextView?
+        speedUnit = findViewById<View?>(R.id.speedunit) as TextView?
+        trackValue = findViewById<View?>(R.id.track) as TextView?
+        trackUnit = findViewById<View?>(R.id.trackunit) as TextView
+        elevationValue = findViewById<View?>(R.id.elevation) as TextView?
+        elevationName = findViewById<View?>(R.id.elevationname) as TextView?
+        elevationUnit = findViewById<View?>(R.id.elevationunit) as TextView?
+        //distanceValue = (TextView) findViewById(R.id.distance);
+        //distanceUnit = (TextView) findViewById(R.id.distanceunit);
+        belowaboveValue = findViewById<View?>(R.id.abovebelowGS) as TextView?
+        belowaboveUnit = findViewById<View?>(R.id.abovebelowGSunit) as TextView?
+        belowaboveName = findViewById<View?>(R.id.abovebelowGSname) as TextView?
+        xtkValue = findViewById<View?>(R.id.xtk) as TextView?
+        xtkUnit = findViewById<View?>(R.id.xtkunit) as TextView?
+        //bearingValue = (TextView) findViewById(R.id.bearing);
+        //bearingUnit = (TextView) findViewById(R.id.bearingunit);
+        turnValue = findViewById<View?>(R.id.turn) as TextView?
+        trackBar = findViewById<View?>(R.id.trackbar) as SeekBar?
+        waitBar = findViewById<View?>(R.id.waitbar) as TextView
+        map = findViewById<View?>(R.id.mapview) as MapView?
 
+        // set button actions for edit panels (side panel buttons handled by Compose)
+        findViewById<View?>(R.id.finishedit).setOnClickListener(this)
+        findViewById<View?>(R.id.addpoint).setOnClickListener(this)
+        findViewById<View?>(R.id.insertpoint).setOnClickListener(this)
+        findViewById<View?>(R.id.removepoint).setOnClickListener(this)
+        findViewById<View?>(R.id.orderpoints).setOnClickListener(this)
+        findViewById<View?>(R.id.finishtrackedit).setOnClickListener(this)
+        findViewById<View?>(R.id.cutafter).setOnClickListener(this)
+        findViewById<View?>(R.id.cutbefore).setOnClickListener(this)
+
+        // ── Side Panel (Compose) ─────────────────────────────────────────
         val panelOnLeft = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
         if (settings.getBoolean(getString(R.string.ui_drawer_open), false)) {
             isPanelOpen = true
         }
-
-        setContent {
-            Box(modifier = Modifier.fillMaxSize()) {
-                AndroidView(
-                    factory = { map!! },
-                    modifier = Modifier.fillMaxSize()
-                )
-                MapScreen(
-                    uiState = uiState,
-                    onTrackBarValueChange = { value -> onTrackBarValueChange(value) },
-                    onAction = { action ->
-                        when (action) {
-                            MapScreenAction.CutBefore -> onCutBefore()
-                            MapScreenAction.CutAfter -> onCutAfter()
-                            MapScreenAction.FinishTrackEdit -> onFinishTrackEdit()
-                            MapScreenAction.FinishEdit -> onFinishEdit()
-                            MapScreenAction.AddPoint -> onAddPoint()
-                            MapScreenAction.InsertPoint -> onInsertPoint()
-                            MapScreenAction.RemovePoint -> onRemovePoint()
-                            MapScreenAction.OrderPoints -> onOrderPoints()
-                        }
-                    }
-                )
-            }
+        val sidePanelView = findViewById<ComposeView>(R.id.side_panel)
+        sidePanelView.setContent {
+            SidePanel(
+                isOpen = isPanelOpen,
+                isOnLeft = panelOnLeft,
+                onOpenChanged = { open ->
+                    isPanelOpen = open
+                    val editor = PreferenceManager.getDefaultSharedPreferences(this).edit()
+                    editor.putBoolean(getString(R.string.ui_drawer_open), open)
+                    editor.apply()
+                },
+                activeActions = activeActions?.filterNotNull().orEmpty(),
+                isFollowing = isFollowingState,
+                isLocating = isLocatingState,
+                isTracking = isTrackingState,
+                isFullscreen = isFullscreen,
+                onAction = { action -> onSidePanelAction(action) },
+            )
         }
 
         wptQuickActionAddToRoute = QuickAction3D(
@@ -336,6 +396,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             )
         )
         mobQuickAction!!.setOnActionItemClickListener(mapObjectActionItemClickListener)
+
+        trackBar!!.setOnSeekBarChangeListener(this)
+        //Да се заредят planeLogo and size
+        //onSharedPreferenceChanged(settings, getString(R.string.pref_exit));
+        map!!.planeLogo = (application!!.planePath!!).substring(36)
+        map!!.setMovingCursorSize(
+            settings.getInt(
+                "planelogosize",
+                resources.getInteger(R.integer.def_planelogosize)
+            )
+        )
+        map!!.initialize(application!!)
 
         dimView = RelativeLayout(this)
         //Зарежда навигация към точка ако има стартиран такъв (MapObject-Wpt)
@@ -474,13 +546,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         speedFactor =
             resources.getStringArray(R.array.speed_factors)[speedIdx].toDouble() //множител който преобразува от м/с в км/ч или мили(както е избрано в  настройките)
         speedAbbr = resources.getStringArray(R.array.speed_abbrs)[speedIdx]
-        // speedUnit!!.setText(speedAbbr) - removed, using uiState instead
+        speedUnit!!.setText(speedAbbr)
         val distanceIdx = settings.getString(getString(R.string.pref_unitdistance), "0")!!.toInt()
         val elevationIdx = settings.getString(getString(R.string.pref_unitelevation), "0")!!.toInt()
         elevationFactor =
             resources.getStringArray(R.array.elevation_factors)[elevationIdx].toDouble() //множител който преобразува височината от метри в фити
         elevationAbbr = resources.getStringArray(R.array.elevation_abbrs)[elevationIdx]
-        // elevationUnit!!.setText(elevationAbbr) - removed, using uiState instead
+        elevationUnit!!.setText(elevationAbbr)
         StringFormatter.distanceFactor =
             resources.getStringArray(R.array.distance_factors)[distanceIdx].toDouble()
         StringFormatter.distanceAbbr = resources.getStringArray(R.array.distance_abbrs)[distanceIdx]
@@ -493,7 +565,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
         application!!.angleType =
             settings.getString(getString(R.string.pref_unitangle), "0")!!.toInt()
-        // trackUnit!!.setText((if (application!!.angleType == 0) "deg" else getString(R.string.degmag))) - removed, using uiState instead
+        trackUnit!!.setText((if (application!!.angleType == 0) "deg" else getString(R.string.degmag)))
         //bearingUnit.setText((application.angleType == 0 ? "deg" : getString(R.string.degmag)));
         application!!.coordinateFormat =
             settings.getString(getString(R.string.pref_unitcoordinate), "0")!!.toInt()
@@ -582,22 +654,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
         // prepare views
         customizeLayout(settings)
-        // Update edit panel visibility based on editing state
-        if (application!!.editingRoute != null || application!!.editingArea != null) {
-            uiState = uiState.copy(showEditRoute = true)
-        } else {
-            // Check which edit panel should be shown
-            if (application!!.editingTrack != null) {
-                uiState = uiState.copy(showEditTrack = true)
-            } else {
-                // Hide all edit panels if not editing
-                uiState = uiState.copy(
-                    showEditTrack = false,
-                    showEditRoute = false,
-                    showEditArea = false
-                )
-            }
-        }
+        findViewById<View?>(R.id.editroute).setVisibility(if (application!!.editingRoute != null || application!!.editingArea != null) View.VISIBLE else View.GONE) //появяа се само при режим на редакция на маршрут/зона
 
         if (application!!.editingTrack != null) {
             startEditTrack(application!!.editingTrack)
@@ -776,27 +833,29 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
         map = null
 
-        // Removed TextView references since we're now using Compose
-        // coordinates = null
-        // satInfo = null
-        // currentFile = null
-        // mapZoom = null
-        // waypointName = null
-        // waypointExtra = null
-        // routeName = null
-        // routeExtra = null
-        // speedValue = null
-        // speedUnit = null
-        // trackValue = null
-        // elevationValue = null
-        // elevationUnit = null
-        // elevationName = null
-        // xtkValue = null
-        // xtkUnit = null
-        // belowaboveName = null
-        // belowaboveUnit = null
-        // belowaboveValue = null
-        // turnValue = null
+        coordinates = null
+        satInfo = null
+        currentFile = null
+        mapZoom = null
+        waypointName = null
+        waypointExtra = null
+        routeName = null
+        routeExtra = null
+        speedValue = null
+        speedUnit = null
+        trackValue = null
+        elevationValue = null
+        elevationUnit = null
+        elevationName = null
+        //distanceValue = null;
+        //distanceUnit = null;
+        xtkValue = null
+        xtkUnit = null
+        belowaboveName = null
+        belowaboveUnit = null
+        belowaboveValue = null
+        //bearingValue = null;
+        turnValue = null
         trackBar = null
     }
 
@@ -884,29 +943,25 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                         when (status) {
                             BaseLocationService.GPS_OK -> {
                                 if (!map!!.isFixed) {
-                                    uiState = uiState.copy(
-                                        satInfoColor = androidx.compose.ui.graphics.Color(
-                                            ContextCompat.getColor(
-                                                getApplicationContext(),
-                                                R.color.gpsworking
-                                            )
+                                    satInfo!!.setTextColor(
+                                        ContextCompat.getColor(
+                                            getApplicationContext(),
+                                            R.color.gpsworking
                                         )
                                     )
                                     map!!.setMoving(true)
                                     map!!.isFixed = true
                                     updateGPSStatus()
                                 }
-                                uiState = uiState.copy(satInfoText = fsats.toString() + "/" + tsats.toString())
+                                satInfo!!.setText(fsats.toString() + "/" + tsats.toString())
                             }
 
                             BaseLocationService.GPS_OFF -> {
-                                uiState = uiState.copy(
-                                    satInfoText = getString(R.string.sat_stop),
-                                    satInfoColor = androidx.compose.ui.graphics.Color(
-                                        ContextCompat.getColor(
-                                            getApplicationContext(),
-                                            R.color.gpsdisabled
-                                        )
+                                satInfo!!.setText(R.string.sat_stop)
+                                satInfo!!.setTextColor(
+                                    ContextCompat.getColor(
+                                        getApplicationContext(),
+                                        R.color.gpsdisabled
                                     )
                                 )
                                 map!!.setMoving(false)
@@ -916,17 +971,15 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                             BaseLocationService.GPS_SEARCHING -> {
                                 if (map!!.isFixed) {
-                                    uiState = uiState.copy(
-                                        satInfoColor = androidx.compose.ui.graphics.Color(
-                                            ContextCompat.getColor(
-                                                getApplicationContext(),
-                                                R.color.gpsenabled
-                                            )
+                                    satInfo!!.setTextColor(
+                                        ContextCompat.getColor(
+                                            getApplicationContext(),
+                                            R.color.gpsenabled
                                         )
                                     )
                                     map!!.isFixed = false
                                 }
-                                uiState = uiState.copy(satInfoText = fsats.toString() + "/" + tsats.toString())
+                                satInfo!!.setText(fsats.toString() + "/" + tsats.toString())
                             }
                         }
                     }
@@ -974,21 +1027,19 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                         }
                         // Mock provider hack
                         if (!map!!.isFixed && continous && LocationManager.GPS_PROVIDER == location.getProvider()) {
-                            uiState = uiState.copy(
-                                satInfoText = getString(R.string.sat_start),
-                                satInfoColor = androidx.compose.ui.graphics.Color(
-                                    ContextCompat.getColor(
-                                        getApplicationContext(),
-                                        R.color.gpsworking
-                                    )
+                            satInfo!!.setText(R.string.sat_start)
+                            satInfo!!.setTextColor(
+                                ContextCompat.getColor(
+                                    getApplicationContext(),
+                                    R.color.gpsworking
                                 )
-                            )
+                            ) //gpsworking
                             map!!.setMoving(true)
                             map!!.isFixed = true
                             updateGPSStatus()
                         }
-                        uiState = uiState.copy(
-                            accuracyText = if (location.hasAccuracy()) ("Accuracy: " + distanceH(
+                        accuracy!!.setText(
+                            if (location.hasAccuracy()) ("Accuracy: " + distanceH(
                                 location.getAccuracy().toDouble(),
                                 "%.1f",
                                 1000
@@ -1020,15 +1071,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 runOnUiThread(object : Runnable {
                     override fun run() {
                         if (!ready) return
-                        uiState = uiState.copy(
-                            satInfoText = getString(R.string.sat_stop),
-                            satInfoColor = androidx.compose.ui.graphics.Color(
-                                ContextCompat.getColor(
-                                    getApplicationContext(),
-                                    R.color.gpsdisabled
-                                )
+                        satInfo!!.setText(R.string.sat_stop)
+                        satInfo!!.setTextColor(
+                            ContextCompat.getColor(
+                                getApplicationContext(),
+                                R.color.gpsdisabled
                             )
-                        )
+                        ) //gpsdisabled
                         map!!.setMoving(false)
                         map!!.isFixed = false
                         updateGPSStatus()
@@ -1043,15 +1092,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     override fun run() {
                         if (!ready) return
                         if (!map!!.isFixed) {
-                            uiState = uiState.copy(
-                                satInfoText = getString(R.string.sat_start),
-                                //colorGlidePath = ContextCompat.getColor(getApplicationContext(), R.color.aboveGlidePath)
-                                //getResources().getColor(R.color.gpsenabled)
-                                satInfoColor = androidx.compose.ui.graphics.Color(
-                                    ContextCompat.getColor(
-                                        getApplicationContext(),
-                                        R.color.gpsenabled
-                                    )
+                            satInfo!!.setText(R.string.sat_start)
+                            //colorGlidePath = ContextCompat.getColor(getApplicationContext(), R.color.aboveGlidePath)
+                            //getResources().getColor(R.color.gpsenabled)
+                            satInfo!!.setTextColor(
+                                ContextCompat.getColor(
+                                    getApplicationContext(),
+                                    R.color.gpsenabled
                                 )
                             )
                         }
@@ -1113,10 +1160,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
             SidePanelAction.ZOOM_IN -> {
                 if (application!!.getNextZoom() != 0.0) {
-                    uiState = uiState.copy(
-                        showWaitBar = true,
-                        waitBarText = getString(R.string.msg_wait)
-                    )
+                    waitBar!!.visibility = View.VISIBLE
+                    waitBar!!.setText(R.string.msg_wait)
                     executorThread.execute {
                         synchronized(map!!) {
                             if (application!!.zoomIn()) {
@@ -1130,10 +1175,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
             SidePanelAction.ZOOM_OUT -> {
                 if (application!!.getPrevZoom() != 0.0) {
-                    uiState = uiState.copy(
-                        showWaitBar = true,
-                        waitBarText = getString(R.string.msg_wait)
-                    )
+                    waitBar!!.visibility = View.VISIBLE
+                    waitBar!!.setText(R.string.msg_wait)
                     executorThread.execute {
                         synchronized(map!!) {
                             if (application!!.zoomOut()) {
@@ -1146,10 +1189,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
             }
             SidePanelAction.NEXT_MAP -> {
-                uiState = uiState.copy(
-                    showWaitBar = true,
-                    waitBarText = getString(R.string.msg_wait)
-                )
+                waitBar!!.visibility = View.VISIBLE
+                waitBar!!.setText(R.string.msg_wait)
                 executorThread.execute {
                     synchronized(map!!) {
                         if (application!!.prevMap()) {
@@ -1162,10 +1203,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
             }
             SidePanelAction.PREV_MAP -> {
-                uiState = uiState.copy(
-                    showWaitBar = true,
-                    waitBarText = getString(R.string.msg_wait)
-                )
+                waitBar!!.visibility = View.VISIBLE
+                waitBar!!.setText(R.string.msg_wait)
                 executorThread.execute {
                     synchronized(map!!) {
                         if (application!!.nextMap()) {
@@ -1234,7 +1273,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             val pos = coordinates(application!!.coordinateFormat, " ", latlon!![0], latlon[1])
             this.runOnUiThread(object : Runnable {
                 override fun run() {
-                    uiState = uiState.copy(coordinates = pos)
+                    coordinates!!.setText(pos)
                 }
             })
         }
@@ -1245,9 +1284,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         this.runOnUiThread(object : Runnable {
             override fun run() {
                 if (title != null) {
-                    uiState = uiState.copy(currentFile = title)
+                    currentFile!!.setText(title)
                 } else {
-                    uiState = uiState.copy(currentFile = "-no map-")
+                    currentFile!!.setText("-no map-")
                 }
 
                 updateZoomInfo()
@@ -1259,11 +1298,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         val zoom: Double = application!!.getZoom() * 100
 
         if (zoom == 0.0) {
-            uiState = uiState.copy(mapZoom = "---%")
+            mapZoom!!.setText("---%")
         } else {
             val rz = floor(zoom).toInt()
             val zoomStr = if (zoom - rz != 0.0) String.format("%.1f", zoom) else rz.toString()
-            uiState = uiState.copy(mapZoom = zoomStr + "%")
+            mapZoom!!.setText(zoomStr + "%")
         }
 
         // Zoom enable state now handled by Compose SidePanel
@@ -1273,7 +1312,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     protected fun updateGPSStatus() {
         val v =
             if (map!!.isMoving() && application!!.editingRoute == null && application!!.editingTrack == null) View.VISIBLE else View.GONE
-        uiState = uiState.copy(showMovingInfo = v == View.VISIBLE)
+        val view = findViewById<View>(R.id.movinginfo)
+        if (view.getVisibility() != v) {
+            view.setVisibility(v)
+            updateMapViewArea()
+        }
     }
 
     protected fun updateNavigationStatus() //Changed  for Flaying usage-3D
@@ -1281,21 +1324,38 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         val isNavigating = navigationService != null && navigationService!!.isNavigating()
         val isNavigatingViaRoute = isNavigating && navigationService!!.isNavigatingViaRoute()
 
-        // Prepare UI state updates
-        var updatedState = uiState.copy(
-            showWaypointInfo = isNavigating,
-            showRouteInfo = isNavigatingViaRoute,
-            showTurn = isNavigating,
-            showXtk = isNavigatingViaRoute,
-            showBelowabove = isNavigatingViaRoute
-        )
+        // waypoint panel
+        findViewById<View?>(R.id.waypointinfo).setVisibility(if (isNavigating) View.VISIBLE else View.GONE)
+        // route panel
+        findViewById<View?>(R.id.routeinfo).setVisibility(if (isNavigatingViaRoute) View.VISIBLE else View.GONE)
+
+        // distance
+        //distanceValue.setVisibility(isNavigating ? View.VISIBLE : View.GONE);
+        //findViewById(R.id.distancelt).setVisibility(isNavigating ? View.VISIBLE : View.GONE);
+
+        // bearing
+        //bearingValue.setVisibility(isNavigating ? View.VISIBLE : View.GONE);
+        //findViewById(R.id.bearinglt).setVisibility(isNavigating ? View.VISIBLE : View.GONE);
+        // turn
+        turnValue!!.setVisibility(if (isNavigating) View.VISIBLE else View.GONE)
+        findViewById<View?>(R.id.turnlt).setVisibility(if (isNavigating) View.VISIBLE else View.GONE)
+        // xtk
+        xtkValue!!.setVisibility(if (isNavigatingViaRoute) View.VISIBLE else View.GONE)
+        findViewById<View?>(R.id.xtklt).setVisibility(if (isNavigatingViaRoute) View.VISIBLE else View.GONE)
+        // abovebelowGS
+        try {
+            belowaboveValue!!.setVisibility(if (isNavigatingViaRoute) View.VISIBLE else View.GONE)
+            findViewById<View?>(R.id.abovebelowGSlt).setVisibility(if (isNavigatingViaRoute) View.VISIBLE else View.GONE)
+        } catch (e: Exception) {
+        }
+
 
         // we hide elevation in Navigating mode and show Above/Below glide path
-        if (isNavigatingViaRoute && navigationService!!.navRoute != null) {
-            updatedState = updatedState.copy(routeName = "› " + navigationService!!.navRoute!!.name)
+        if (isNavigatingViaRoute) {
+            routeName!!.setText("› " + navigationService!!.navRoute!!.name)
         }
-        if (isNavigating && navigationService!!.navWaypoint != null) {
-            updatedState = updatedState.copy(waypointName = "» " + navigationService!!.navWaypoint!!.name)
+        if (isNavigating) {
+            waypointName!!.setText("» " + navigationService!!.navWaypoint!!.name)
             if (application!!.navigationOverlay == null) {
                 application!!.navigationOverlay = NavigationOverlay(this)
                 application!!.navigationOverlay!!.onMapChanged()
@@ -1304,8 +1364,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             application!!.navigationOverlay!!.onBeforeDestroy()
             application!!.navigationOverlay = null
         }
-
-        uiState = updatedState
 
         updateMapViewArea()
         map!!.update()
@@ -1334,11 +1392,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             turn = -turn
         }
 
-        // Update UI state instead of TextViews
-        var updatedState = uiState.copy(
-            turnValue = Math.round(turn.toFloat()).toString() + trnsym,
-            waypointExtra = extra
-        )
+        //	bearing = application.fixDeclination(bearing);	//distanceValue.setText(dist[0]);	//distanceUnit.setText(dist[1]);	//bearingValue.setText(String.valueOf(Math.round(bearing)));
+        turnValue!!.setText(Math.round(turn.toFloat()).toString() + trnsym)
+        waypointExtra!!.setText(extra)
 
         if (navigationService!!.isNavigatingViaRoute()) {
             val hasNext = navigationService!!.hasNextRouteWaypoint()
@@ -1348,36 +1404,36 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 animation.addAnimation(AlphaAnimation(0.3f, 1.0f))
                 animation.setDuration(500)
                 animation.setRepeatCount(10)
-                // Animations are handled by the Compose UI
+                findViewById<View?>(R.id.waypointinfo).startAnimation(animation)
+                if (!hasNext) {
+                    findViewById<View?>(R.id.routeinfo).startAnimation(animation)
+                }
                 animationSet = true
             } else if (animationSet) {
-                // Animations are handled by the Compose UI
+                findViewById<View?>(R.id.waypointinfo).setAnimation(null)
+                if (!hasNext) {
+                    findViewById<View?>(R.id.routeinfo).setAnimation(null)
+                }
                 animationSet = false
             }
 
             if (navigationService!!.navXTK == Double.NEGATIVE_INFINITY) {
-                updatedState = updatedState.copy(
-                    xtkValue = "--",
-                    xtkUnit = "--"
-                )
+                xtkValue!!.setText("--")
+                xtkUnit!!.setText("--")
             } else {
                 val xtksym =
                     if (navigationService!!.navXTK == 0.0) "" else if (navigationService!!.navXTK > 0) "R" else "L"
                 val xtks: Array<String> = distanceC(abs(navigationService!!.navXTK))
-                updatedState = updatedState.copy(
-                    xtkValue = xtks[0] + xtksym,
-                    xtkUnit = xtks[1]
-                )
+                xtkValue!!.setText(xtks[0] + xtksym)
+                xtkUnit!!.setText(xtks[1])
             }
 
             val navDistance = navigationService!!.navRouteDistanceLeft()
             var eta = navigationService!!.navRouteETE(navDistance)
             if (eta < Int.Companion.MAX_VALUE) eta += navigationService!!.navETE
             extra = distanceH(navDistance + distance, 1000) + " | " + timeHSec(eta)
-            updatedState = updatedState.copy(routeExtra = extra)
+            routeExtra!!.setText(extra)
         }
-
-        uiState = updatedState
     }
 
     //
@@ -1386,20 +1442,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         val needtobe = 0.0 //eOrb - elevationOrGladePath
         val s = location.getSpeed() * speedFactor
         val track: Double = application!!.fixDeclination(location.getBearing().toDouble())
-        val speedText = String.format(precisionFormat, s)
-        val trackText = Math.round(track).toString()
-
-        // Start with basic updates
-        var updatedState = uiState.copy(
-            speedValue = speedText,
-            trackValue = trackText
-        )
-
+        speedValue!!.setText(String.format(precisionFormat, s))
+        trackValue!!.setText(Math.round(track).toString())
         val isNavigating = navigationService != null && navigationService!!.isNavigating()
         val isNavigatingViaRoute = isNavigating && navigationService!!.isNavigatingViaRoute()
-        var elevationColor = Color.WHITE
-        var belowaboveColor = Color.WHITE
-
+        val colorGlidePath: Int
         if (isNavigatingViaRoute) { // Calculate AboveBelow Glide Path
 
             eOrb = belowAboveGlidePath(
@@ -1413,44 +1460,37 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             )
             eOrb =
                 (eOrb - zeroElevation) * elevationFactor //понеже работим със относителна височина - трябва превишението по схемата да е спрямо летището
-            val eOrbText = Math.round(eOrb).toString()
+            belowaboveValue!!.setText(Math.round(eOrb).toString())
 
             if (eOrb < -5)  // Below Glide Path
             {
-                elevationColor = ContextCompat.getColor(
+                colorGlidePath = ContextCompat.getColor(
                     getApplicationContext(),
                     R.color.belowGlidePath
                 ) //5m belowGlidePath - colored in red
-                belowaboveColor = elevationColor
-                updatedState = updatedState.copy(
-                    belowaboveName = "BELOW",
-                    belowaboveColor = androidx.compose.ui.graphics.Color(elevationColor)
-                )
+                belowaboveName!!.setText("BELOW")
+                belowaboveName!!.setTextColor(colorGlidePath)
+                belowaboveValue!!.setTextColor(colorGlidePath)
+                belowaboveUnit!!.setTextColor(colorGlidePath)
             } else if (eOrb > 20) { // Above Glide Path
-                elevationColor = ContextCompat.getColor(
+                colorGlidePath = ContextCompat.getColor(
                     getApplicationContext(),
                     R.color.aboveGlidePath
                 ) //5m belowGlidePath - colored in blue
-                belowaboveColor = elevationColor
-                updatedState = updatedState.copy(
-                    belowaboveName = "above",
-                    belowaboveColor = androidx.compose.ui.graphics.Color(elevationColor)
-                )
+                belowaboveName!!.setText("above")
+                belowaboveName!!.setTextColor(colorGlidePath)
+                belowaboveValue!!.setTextColor(colorGlidePath)
+                belowaboveUnit!!.setTextColor(colorGlidePath)
             } else { // On Glide Path
-                elevationColor = ContextCompat.getColor(
+                colorGlidePath = ContextCompat.getColor(
                     getApplicationContext(),
                     R.color.onGlidePath
                 ) //5m belowGlidePath - colored in white
-                belowaboveColor = elevationColor
-                updatedState = updatedState.copy(
-                    belowaboveName = "OnGlidePath",
-                    belowaboveColor = androidx.compose.ui.graphics.Color(elevationColor)
-                )
+                belowaboveName!!.setText("OnGlidePath")
+                belowaboveName!!.setTextColor(colorGlidePath)
+                belowaboveValue!!.setTextColor(colorGlidePath)
+                belowaboveUnit!!.setTextColor(colorGlidePath)
             }
-
-            updatedState = updatedState.copy(
-                belowaboveValue = eOrbText
-            )
 
             //Log.i(TAG, "UpdateMouvingInfo: AboveBelowGlidePath= " + eOrb);
         } else {
@@ -1458,32 +1498,26 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         }
         lastElevation = location.getAltitude()
         val elev = (lastElevation - zeroElevation) * elevationFactor
-        val elevationText = Math.round(elev).toString()
+        elevationValue!!.setText(Math.round(elev).toString())
         // TODO set separate color
         if (geoid != lastGeoid) {
-            elevationColor = if (geoid) -0x1 else ContextCompat.getColor(
+            val color = if (geoid) -0x1 else ContextCompat.getColor(
                 getApplicationContext(),
                 R.color.gpsenabled
             )
+            elevationValue!!.setTextColor(color)
+            elevationUnit!!.setTextColor(color)
+            (findViewById<View?>(R.id.elevationname) as TextView).setTextColor(color)
             lastGeoid = geoid
         }
-
-        updatedState = updatedState.copy(
-            elevationValue = elevationText,
-            elevationColor = androidx.compose.ui.graphics.Color(elevationColor)
-        )
-
-        uiState = updatedState
     }
 
     private fun customizeLayout(settings: SharedPreferences) {
         val slVisible = settings.getBoolean(getString(R.string.pref_showsatinfo), true)
         val mlVisible = settings.getBoolean(getString(R.string.pref_showmapinfo), true)
 
-        uiState = uiState.copy(
-            showSatInfoBar = slVisible,
-            showMapInfoBar = mlVisible
-        )
+        findViewById<View?>(R.id.satinfo).setVisibility(if (slVisible) View.VISIBLE else View.GONE)
+        findViewById<View?>(R.id.mapinfo).setVisibility(if (mlVisible) View.VISIBLE else View.GONE)
 
         updateMapViewArea()
     }
@@ -1608,13 +1642,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         val p =
             if (application!!.editingTrack!!.editingPos >= 0) application!!.editingTrack!!.editingPos else n
         application!!.editingTrack!!.editingPos = p
-        // Update UI state instead of directly setting trackBar values
-        uiState = uiState.copy(
-            showEditTrack = true,
-            trackBarMax = n.toFloat(),
-            trackBarProgress = p.toFloat()
-        )
+        trackBar!!.setMax(n)
+        trackBar!!.setProgress(0)
+        trackBar!!.setProgress(p)
+        trackBar!!.setKeyProgressIncrement(1)
         onProgressChanged(trackBar!!, p, false)
+        findViewById<View?>(R.id.edittrack).setVisibility(View.VISIBLE)
+        findViewById<View?>(R.id.trackdetails).setVisibility(View.VISIBLE)
         updateGPSStatus()
         if (showDistance > 0) application!!.distanceOverlay!!.setEnabled(false)
         map!!.setFocusable(false)
@@ -1647,7 +1681,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             val newRoute = RouteOverlay(this, application!!.editingRoute!!)
             application!!.routeOverlays.add(newRoute)
         }
-        uiState = uiState.copy(showEditRoute = true) //използвам същият панел с бутони за едитване на маршрут
+        findViewById<View?>(R.id.editroute).setVisibility(View.VISIBLE) //използвам същият панел с бутони за едитване на маршрут
         //Log.d(TAG, "startEditRoute");
         updateGPSStatus()
         application!!.routeEditingWaypoints = Stack<Waypoint?>()
@@ -1680,7 +1714,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             val newArea = AreaOverlay(this, application!!.editingArea!!)
             application!!.areaOverlays.add(newArea)
         }
-        uiState = uiState.copy(showEditArea = true) //използвам същият панел с бутони за едитване на маршрут
+        findViewById<View?>(R.id.editroute).setVisibility(View.VISIBLE) //използвам същият панел с бутони за едитване на маршрут
         //Log.d(TAG, "startEditArea");
         updateGPSStatus()
         application!!.areaEditingWaypoints = Stack<Waypoint?>()
@@ -1704,10 +1738,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     }
 
     fun zoomMap(factor: Float) {
-        uiState = uiState.copy(
-            showWaitBar = true,
-            waitBarText = getString(R.string.msg_wait)
-        )
+        waitBar!!.setVisibility(View.VISIBLE)
+        waitBar!!.setText(R.string.msg_wait)
         executorThread.execute(object : Runnable {
             override fun run() {
                 synchronized(map!!) {
@@ -2419,165 +2451,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         }
     }
 
-    private fun onCutBefore() {
-        application!!.editingTrack!!.cutBefore(trackBar!!.getProgress())
-        val nb: Int = application!!.editingTrack!!.points.size - 1
-        uiState = uiState.copy(
-            trackBarMax = nb.toFloat(),
-            trackBarProgress = 0f
-        )
-    }
-
-    private fun onCutAfter() {
-        application!!.editingTrack!!.cutAfter(trackBar!!.getProgress())
-        val na: Int = application!!.editingTrack!!.points.size - 1
-        uiState = uiState.copy(
-            trackBarMax = na.toFloat(),
-            trackBarProgress = na.toFloat()
-        )
-    }
-
-    private fun onAddPoint() {
-        if (application!!.editingArea != null) {
-            val aloc: DoubleArray = application!!.getMapCenter()
-            application!!.areaEditingWaypoints!!.push(
-                application!!.editingArea!!.addWaypoint(
-                    "AWPT" + application!!.editingArea!!.length(),
-                    aloc[0],
-                    aloc[1]
-                )
-            )
-        } else {
-            val aloc: DoubleArray = application!!.getMapCenter()
-            application!!.routeEditingWaypoints!!.push(
-                application!!.editingRoute!!.addWaypoint(
-                    "RWPT" + application!!.editingRoute!!.length(),
-                    aloc[0],
-                    aloc[1]
-                )
-            )
-        }
-    }
-
-    private fun onInsertPoint() {
-        if (application!!.editingArea != null) {
-            val iloc: DoubleArray = application!!.getMapCenter()
-            application!!.areaEditingWaypoints!!.push(
-                application!!.editingArea!!.insertWaypoint(
-                    "AWPT" + application!!.editingArea!!.length(),
-                    iloc[0],
-                    iloc[1]
-                )
-            )
-        } else {
-            val iloc: DoubleArray = application!!.getMapCenter()
-            application!!.routeEditingWaypoints!!.push(
-                application!!.editingRoute!!.insertWaypoint(
-                    "RWPT" + application!!.editingRoute!!.length(),
-                    iloc[0],
-                    iloc[1]
-                )
-            )
-        }
-    }
-
-    private fun onRemovePoint() {
-        if (application!!.editingArea != null) {
-            if (!application!!.areaEditingWaypoints!!.empty()) {
-                application!!.editingArea!!.removeWaypoint(application!!.areaEditingWaypoints!!.pop()!!)
-            }
-        } else {
-            if (!application!!.routeEditingWaypoints!!.empty()) {
-                application!!.editingRoute!!.removeWaypoint(application!!.routeEditingWaypoints!!.pop()!!)
-            }
-        }
-    }
-
-    private fun onOrderPoints() {
-        if (application!!.editingArea != null) {
-            startActivityForResult(
-                Intent(this, AreaEdit::class.java).putExtra(
-                    "INDEX",
-                    application!!.getAreaIndex(application!!.editingArea!!)
-                ), RESULT_EDIT_AREA
-            )
-        } else {
-            startActivityForResult(
-                Intent(this, RouteEdit::class.java).putExtra(
-                    "INDEX",
-                    application!!.getRouteIndex(application!!.editingRoute!!)
-                ), RESULT_EDIT_ROUTE
-            )
-        }
-    }
-
-    private fun onFinishEdit() {
-        if (application!!.editingArea != null) {
-            if ("New area" == application!!.editingArea!!.name) {
-                val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm")
-                application!!.editingArea!!.name = formatter.format(Date())
-            }
-            application!!.editingArea!!.editing = false
-            val iter: MutableIterator<AreaOverlay> = application!!.areaOverlays.iterator()
-            while (iter.hasNext()) {
-                val ro = iter.next()
-                ro.onAreaPropertiesChanged()
-            }
-            application!!.editingArea = null
-            application!!.areaEditingWaypoints = null
-            uiState = uiState.copy(showEditArea = false) //лентата с която се редактира маршрута/зоната изчезва - използва същата лената и а маршрута
-            updateGPSStatus()
-            if (showDistance == 2) {
-                application!!.distanceOverlay!!.setEnabled(true)
-            }
-            updateMapViewArea()
-            map!!.requestFocus()
-        } else {
-            if ("New route" == application!!.editingRoute!!.name) {
-                val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm")
-                application!!.editingRoute!!.name = formatter.format(Date())
-            }
-            application!!.editingRoute!!.editing = false
-            val iter: MutableIterator<RouteOverlay> = application!!.routeOverlays.iterator()
-            while (iter.hasNext()) {
-                val ro = iter.next()
-                ro.onRoutePropertiesChanged()
-            }
-            application!!.editingRoute = null
-            application!!.routeEditingWaypoints = null
-            uiState = uiState.copy(showEditRoute = false) //лентата с която се редактира маршрута изчезва
-            updateGPSStatus()
-            if (showDistance == 2) {
-                application!!.distanceOverlay!!.setEnabled(true)
-            }
-            updateMapViewArea()
-            map!!.requestFocus()
-        }
-    }
-
-    private fun onFinishTrackEdit() {
-        application!!.editingTrack!!.editing = false
-        application!!.editingTrack!!.editingPos = -1
-        application!!.editingTrack = null
-        uiState = uiState.copy(
-            showEditTrack = false,
-            showTrackDetails = false
-        )
-        updateGPSStatus()
-        if (showDistance == 2) {
-            application!!.distanceOverlay!!.setEnabled(true)
-        }
-        map!!.setFocusable(true)
-        map!!.setFocusableInTouchMode(true)
-        map!!.requestFocus()
-    }
-
-    private fun onTrackBarValueChange(value: Float) {
-        val progress = value.toInt()
-        trackBar!!.setProgress(progress)
-        onProgressChanged(trackBar!!, progress, true)
-    }
-
     override fun onClick(v: View) {
         when (v.getId()) {
             R.id.cutbefore -> {
@@ -2674,7 +2547,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
                 application!!.editingArea = null
                 application!!.areaEditingWaypoints = null
-                uiState = uiState.copy(showEditRoute = false, showEditArea = false)
+                findViewById<View?>(R.id.editroute).setVisibility(View.GONE) //лентата с която се редактира маршрута/зоната изчезва - използва същата лената и а маршрута
                 updateGPSStatus()
                 if (showDistance == 2) {
                     application!!.distanceOverlay!!.setEnabled(true)
@@ -2694,7 +2567,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
                 application!!.editingRoute = null
                 application!!.routeEditingWaypoints = null
-                uiState = uiState.copy(showEditRoute = false, showEditArea = false)
+                findViewById<View?>(R.id.editroute).setVisibility(View.GONE) //лентата с която се редактира маршрута изчезва
                 updateGPSStatus()
                 if (showDistance == 2) {
                     application!!.distanceOverlay!!.setEnabled(true)
@@ -2707,7 +2580,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 application!!.editingTrack!!.editing = false
                 application!!.editingTrack!!.editingPos = -1
                 application!!.editingTrack = null
-                uiState = uiState.copy(showEditTrack = false, showTrackDetails = false)
+                findViewById<View?>(R.id.edittrack).setVisibility(View.GONE)
+                findViewById<View?>(R.id.trackdetails).setVisibility(View.GONE)
                 updateGPSStatus()
                 if (showDistance == 2) {
                     application!!.distanceOverlay!!.setEnabled(true)
@@ -2775,26 +2649,28 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
                 val tp: TrackPoint = application!!.editingTrack!!.getPoint(progress)
                 val ele = tp.elevation * elevationFactor
-                
-                // Update track details using uiState instead of TextViews
-                uiState = uiState.copy(
-                    showTrackDetails = true,
-                    tpNumber = "#" + (progress + 1),
-                    tpLatitude = coordinate(
+                (findViewById<View?>(R.id.tp_number) as TextView).setText("#" + (progress + 1))
+                // FIXME Need UTM support here
+                (findViewById<View?>(R.id.tp_latitude) as TextView).setText(
+                    coordinate(
                         application!!.coordinateFormat,
                         tp.latitude
-                    ),
-                    tpLongitude = coordinate(
+                    )
+                )
+                (findViewById<View?>(R.id.tp_longitude) as TextView).setText(
+                    coordinate(
                         application!!.coordinateFormat,
                         tp.longitude
-                    ),
-                    tpElevation = Math.round(ele).toString() + " " + elevationAbbr,
-                    tpTime = SimpleDateFormat.getDateTimeInstance(
-                        SimpleDateFormat.SHORT, SimpleDateFormat.SHORT
-                    ).format(Date(tp.time)),
-                    trackBarProgress = progress.toFloat()
+                    )
                 )
-                
+                (findViewById<View?>(R.id.tp_elevation) as TextView).setText(
+                    Math.round(ele).toString() + " " + elevationAbbr
+                )
+                (findViewById<View?>(R.id.tp_time) as TextView).setText(
+                    SimpleDateFormat.getDateTimeInstance(
+                        SimpleDateFormat.SHORT, SimpleDateFormat.SHORT
+                    ).format(Date(tp.time))
+                )
                 val mapChanged: Boolean =
                     application!!.setMapCenter(tp.latitude, tp.longitude, false, false)
                 if (mapChanged) map!!.updateMapInfo()
@@ -2977,10 +2853,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         override fun handleMessage(msg: Message) {
             val mapActivity = target.get()
             if (mapActivity != null) {
-                mapActivity.uiState = mapActivity.uiState.copy(
-                    showWaitBar = false,
-                    waitBarText = ""
-                )
+                mapActivity.waitBar!!.setVisibility(View.INVISIBLE)
+                mapActivity.waitBar!!.setText("")
             }
         }
     }
