@@ -34,6 +34,8 @@
 
 	<string name="pref_plane_type">planetype</string>
 	<string name="pref_planelogosize">planelogosize</string>
+	<string name="pref_procedures_emer">proceduresemer</string>
+	<string name="pref_procedures_norm">proceduresnorm</string>
     <string name="pref_mapdiminterval">mapdimint</string>
     <string name="pref_maphideondrag">maphideondrag</string>
     <string name="pref_mapcropborder">mapcropborder</string>

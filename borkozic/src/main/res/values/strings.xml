@@ -327,6 +327,10 @@
     <string name="pref_showcurrenttrack_summary">Mark to make current track visible on map</string>
     <string name="pref_panelactions_title">Sliding panel actions</string>
     <string name="pref_panelogosize_title">PlaneLogo size</string>
+    <string name="pref_procedures_emer_title">Emergency procedures file</string>
+    <string name="pref_procedures_emer_summary">Select .txt file with emergency procedures</string>
+    <string name="pref_procedures_norm_title">Normal procedures file</string>
+    <string name="pref_procedures_norm_summary">Select .txt file with normal procedures</string>
     <string name="pref_lookahead_title">Look ahead</string>
     <string name="pref_lookahead_summary">Screen amount to look ahead</string>
     <string name="pref_unit_title">Units</string>

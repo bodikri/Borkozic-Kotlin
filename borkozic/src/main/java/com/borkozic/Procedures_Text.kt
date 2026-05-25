@@ -39,10 +39,13 @@ class Procedures_Text : Activity() {
         val webView = findViewById<WebView>(R.id.webView)
 
         btnName = intent.getStringExtra(BtnsProceduresSet.BTNS_TITLE)
+        val proceduresFolder = intent.getStringExtra(BtnsProceduresSet.PROCEDURES_FOLDER)
         val xmlName = "$btnName.txt"
 
         try {
-            val stream = FileInputStream(File(application?.planePath, xmlName))
+            val file = if (proceduresFolder != null) File(proceduresFolder, xmlName)
+                       else File(application?.planePath, xmlName)
+            val stream = FileInputStream(file)
             val htmlString = readInputStreamAsString(stream)
             webView.loadDataWithBaseURL(null, htmlString, "text/html", "utf-8", null)
         } catch (e: Exception) {

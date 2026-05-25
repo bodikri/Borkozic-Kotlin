@@ -3,6 +3,7 @@ package com.borkozic
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -20,6 +21,7 @@ class BtnsProceduresSet : Activity() {
     companion object {
         private const val TAG = "BtnsProceduresSet"
         const val BTNS_TITLE = "ButonsTitle"
+        const val PROCEDURES_FOLDER = "ProceduresFolder"
 
         @Throws(IOException::class)
         fun readInputStreamAsString(`in`: InputStream): String {
@@ -52,20 +54,24 @@ class BtnsProceduresSet : Activity() {
 
         application = getApplication() as Borkozic
         val ll = findViewById<LinearLayout>(R.id.linearLayotSet)
-        //Тук трябва да зареддя бутоните които прихващам от MapActiviti
         btnName = intent.getStringExtra(MapActivity.BTN_TITLE)!! // Receive btn Number
         setTitle("$btnName Procedures List")
         Log.d(TAG, "ReceiveBtn: $btnName")
-        val btnTxt = "$btnName.txt"
+
+        // Read procedures file path from preferences
+        val settings = PreferenceManager.getDefaultSharedPreferences(this)
+        val defaultFile = File(application.planePath, "$btnName.txt").absolutePath
+        val proceduresFile = when (btnName) {
+            getString(R.string.buttonEP) -> settings.getString(getString(R.string.pref_procedures_emer), defaultFile)
+            getString(R.string.buttonNP) -> settings.getString(getString(R.string.pref_procedures_norm), defaultFile)
+            else -> defaultFile
+        }!!
 
         var btnsString = ""
         try {
-            //според натиснатия бутон(EMER или NORM) зарежда новите бутони
-            val infilestream = FileInputStream(File(application.planePath, btnTxt))
+            val infilestream = FileInputStream(File(proceduresFile))
             btnsString = readInputStreamAsString(infilestream)
         } catch (e: Exception) {
-            // Show user what is wrong
-            // toast - да показва пътя
             Toast.makeText(
                 this@BtnsProceduresSet,
                 "Папката за процедури е празна или пътя към нея е неточен!",
@@ -75,6 +81,7 @@ class BtnsProceduresSet : Activity() {
 
         //Следва код който да разделя на отделни бутони
         val splitbtns = btnsString.split(";").toTypedArray()
+        val proceduresFolder = File(proceduresFile).parent ?: application.planePath
 
         for (element in splitbtns) {
             val splitbtnName = element.split(":").toTypedArray()
@@ -92,12 +99,12 @@ class BtnsProceduresSet : Activity() {
                 b.id = btnID
                 b.setOnClickListener {
                     val btnsIntent = Intent(this@BtnsProceduresSet, Procedures_Text::class.java)
-                    btnsIntent.putExtra(BTNS_TITLE, btnID.toString()) // Send btn Number
+                    btnsIntent.putExtra(BTNS_TITLE, btnID.toString())
+                    btnsIntent.putExtra(PROCEDURES_FOLDER, proceduresFolder)
                     startActivity(btnsIntent)
                 }
                 ll.addView(b)
             } catch (e: Exception) {
-                // toast - да показва пътя
                 Toast.makeText(
                     this@BtnsProceduresSet,
                     "Избраната папка е: ${application.planePath}",
