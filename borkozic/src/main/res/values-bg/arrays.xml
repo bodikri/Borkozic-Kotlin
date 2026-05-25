@@ -126,4 +126,8 @@
     <item>Запис на маршрута</item>
     <item>Показване/скриване лентата на състоянието</item>
   </string-array>
+  <string-array name="plane_types">
+    <item>L-39 Albatros</item>
+    <item>MiG-29 Fulcrum</item>
+  </string-array>
 </resources>

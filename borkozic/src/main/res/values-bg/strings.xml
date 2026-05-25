@@ -427,6 +427,7 @@
   <string name="menu_start_nav_area">Навигиране към зона</string>
   <string name="menu_view_elsewhere">Поглед навсякъде</string>
   <string name="menu_help">Помощ</string>
+  <string name="pref_plane_type_title">Избери самолет</string>
   <string name="pref_planes_title">Избери самолет по подразбиране</string>
   <string name="pref_area_preload_title">Презареждане на зони</string>
   <string name="pref_area_preload_summary">Отбележи за да се презаредят зоните.</string>

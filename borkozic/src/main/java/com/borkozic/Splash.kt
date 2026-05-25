@@ -380,7 +380,8 @@ class Splash : Activity(), OnClickListener {
             }
 
             val sasdir = File(settings.getString(getString(R.string.pref_folder_sas), getAppBaseDir().absolutePath + File.separator + resources.getString(R.string.def_folder_sas)))
-            val planesdir = File(settings.getString(getString(R.string.pref_folder_plane), getAppBaseDir().absolutePath + File.separator + resources.getString(R.string.def_folder_plane)))
+            val planeType = settings.getString(getString(R.string.pref_plane_type), "L39")!!
+            val planesdir = File(getAppBaseDir(), "planes/$planeType")
 
             val dirL = File(getAppBaseDir(), "planes/L39")
             val dirPC = File(getAppBaseDir(), "planes/PC9")

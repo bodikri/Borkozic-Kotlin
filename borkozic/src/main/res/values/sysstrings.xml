@@ -32,6 +32,7 @@
     <string name="pref_mapdim">mapdim</string>
     <string name="pref_mapdimvalue">mapdimvalue</string>
 
+	<string name="pref_plane_type">planetype</string>
 	<string name="pref_planelogosize">planelogosize</string>
     <string name="pref_mapdiminterval">mapdimint</string>
     <string name="pref_maphideondrag">maphideondrag</string>

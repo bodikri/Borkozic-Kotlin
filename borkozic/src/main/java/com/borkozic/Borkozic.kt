@@ -1681,7 +1681,7 @@ class Borkozic : BaseApplication() {
                 e.printStackTrace()
             }
         }
-        val cursor = File(rootPath, "plane_logo.png")
+        val cursor = File(planePath, "plane_logo.png")
         if (cursor.exists()) {
             try {
                 customCursor = BitmapDrawable(getResources(), cursor.getAbsolutePath())

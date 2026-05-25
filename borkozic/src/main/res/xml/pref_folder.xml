@@ -20,10 +20,13 @@
         android:defaultValue="@string/def_folder_icon"
         android:key="@string/pref_folder_icon"
         android:title="@string/pref_folder_icon_title" />
-    <com.borkozic.ui.FolderPickerPreference
-        android:defaultValue="@string/def_folder_plane"
-        android:key="@string/pref_folder_plane"
-        android:title="@string/pref_folder_plane_title" />
+    <ListPreference
+        android:defaultValue="L39"
+        android:dialogTitle="@string/pref_plane_type_title"
+        android:entries="@array/plane_types"
+        android:entryValues="@array/plane_type_values"
+        android:key="@string/pref_plane_type"
+        android:title="@string/pref_plane_type_title" />
     <com.borkozic.ui.FolderPickerPreference
         android:defaultValue="@string/def_folder_prefix"
         android:dialogMessage="@string/pref_folder_prefix_caution"
