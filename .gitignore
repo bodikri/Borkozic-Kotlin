@@ -30,3 +30,27 @@ MEMORY.md
 HEARTBEAT.md
 DREAMS.md
 openclaw-transfer/
+
+# Gradle
+.gradle/
+gradle/
+build/
+*/build/
+
+# IDE
+.idea/
+.vscode/
+
+# Local configuration
+local.properties
+keystore.properties
+
+# Lock files & cache
+*.lock
+executionHistory/
+buildOutputCleanup/
+fileHashes/
+resourceHashesCache.bin
+
+# OS generated files
+Thumbs.db
