@@ -38,6 +38,14 @@
         borkozic:max="100"
         borkozic:min="10" />
 
+    <ListPreference
+        android:defaultValue="L39"
+        android:dialogTitle="@string/pref_plane_type_title"
+        android:entries="@array/plane_types"
+        android:entryValues="@array/plane_type_values"
+        android:key="@string/pref_plane_type"
+        android:title="@string/pref_plane_type_title" />
+
     <com.borkozic.ui.SeekbarPreference
         android:key="@string/pref_planelogosize"
         android:text=" %"
