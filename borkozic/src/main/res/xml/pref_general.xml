@@ -82,4 +82,23 @@ Line:275,276 and 2420-2424
         android:key="@string/pref_locale"
         android:title="@string/pref_locale_title" />
 
+    <PreferenceScreen
+        android:key="pref_procedures"
+        android:title="@string/buttonEP" >
+
+        <com.borkozic.ui.FilePickerPreference
+            android:defaultValue=""
+            android:dialogMessage="@string/pref_procedures_emer_summary"
+            android:key="@string/pref_procedures_emer"
+            android:summary="@string/pref_procedures_emer_summary"
+            android:title="@string/pref_procedures_emer_title" />
+        <com.borkozic.ui.FilePickerPreference
+            android:defaultValue=""
+            android:dialogMessage="@string/pref_procedures_norm_summary"
+            android:key="@string/pref_procedures_norm"
+            android:summary="@string/pref_procedures_norm_summary"
+            android:title="@string/pref_procedures_norm_title" />
+
+    </PreferenceScreen>
+
 </PreferenceScreen>
