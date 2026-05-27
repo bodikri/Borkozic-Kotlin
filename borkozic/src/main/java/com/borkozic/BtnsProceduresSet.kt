@@ -65,21 +65,28 @@ class BtnsProceduresSet : Activity() {
             getString(R.string.buttonNP) -> getString(R.string.pref_procedures_norm_folder)
             else -> null
         }
+        Log.d(TAG, "prefKey=$prefKey, btnName=$btnName")
         val storedFolder = prefKey?.let { settings.getString(it, null) }
-        val baseFolder = if (storedFolder.isNullOrEmpty()) application.planePath else storedFolder
+        val planePath = application.planePath ?: ""
+        val baseFolder = if (storedFolder.isNullOrEmpty()) planePath else storedFolder
         val proceduresFile = File(baseFolder, "$btnName.txt").absolutePath
-        Log.d(TAG, "proceduresFile: $proceduresFile (storedFolder=$storedFolder, btn=$btnName)")
+        Log.d(TAG, "baseFolder=$baseFolder storedFolder=$storedFolder planePath=$planePath file=$proceduresFile")
 
         var btnsString = ""
         try {
-            val infilestream = FileInputStream(File(proceduresFile))
+            val file = File(proceduresFile)
+            Log.d(TAG, "Reading file: $proceduresFile, exists=${file.exists()}")
+            val infilestream = FileInputStream(file)
             btnsString = readInputStreamAsString(infilestream)
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to read procedures file: $proceduresFile", e)
             Toast.makeText(
                 this@BtnsProceduresSet,
-                "Папката за процедури е празна или пътя към нея е неточен!",
+                "Не може да се прочете: $proceduresFile",
                 Toast.LENGTH_LONG
             ).show()
+            finish()
+            return
         }
 
         //Следва код който да разделя на отделни бутони
