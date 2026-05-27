@@ -60,12 +60,15 @@ class BtnsProceduresSet : Activity() {
 
         // Read procedures file path from preferences
         val settings = PreferenceManager.getDefaultSharedPreferences(this)
-        val defaultFile = File(application.planePath, "$btnName.txt").absolutePath
-        val proceduresFile = when (btnName) {
-            getString(R.string.buttonEP) -> settings.getString(getString(R.string.pref_procedures_emer), defaultFile)
-            getString(R.string.buttonNP) -> settings.getString(getString(R.string.pref_procedures_norm), defaultFile)
-            else -> defaultFile
-        }!!
+        val (prefKey, defaultFileName) = when (btnName) {
+            getString(R.string.buttonEP) -> getString(R.string.pref_procedures_emer) to getString(R.string.pref_procedures_emer_file)
+            getString(R.string.buttonNP) -> getString(R.string.pref_procedures_norm) to getString(R.string.pref_procedures_norm_file)
+            else -> null to btnName
+        }
+        val defaultFile = File(application.planePath, "$defaultFileName.txt").absolutePath
+        val storedFile = settings.getString(prefKey, null)
+        val proceduresFile = if (storedFile.isNullOrEmpty()) defaultFile else storedFile
+        Log.d(TAG, "proceduresFile: $proceduresFile (stored=$storedFile, default=$defaultFile, btn=$btnName)")
 
         var btnsString = ""
         try {
