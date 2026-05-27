@@ -2,8 +2,12 @@ package com.borkozic
 
 import android.app.Activity
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.preference.PreferenceManager
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -71,6 +75,19 @@ class BtnsProceduresSet : Activity() {
         val baseFolder = if (storedFolder.isNullOrEmpty()) planePath else storedFolder
         val proceduresFile = File(baseFolder, "$btnName.txt").absolutePath
         Log.d(TAG, "baseFolder=$baseFolder storedFolder=$storedFolder planePath=$planePath file=$proceduresFile")
+
+        // Check MANAGE_EXTERNAL_STORAGE for Android 11+ when using non-app folders
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val appDataPath = application.getExternalFilesDir(null)?.absolutePath ?: ""
+            if (!Environment.isExternalStorageManager() && !baseFolder.startsWith(appDataPath)) {
+                Toast.makeText(this, "Моля, разрешете достъп до всички файлове в Настройки", Toast.LENGTH_LONG).show()
+                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
+                intent.data = Uri.parse("package:$packageName")
+                startActivity(intent)
+                finish()
+                return
+            }
+        }
 
         var btnsString = ""
         try {
