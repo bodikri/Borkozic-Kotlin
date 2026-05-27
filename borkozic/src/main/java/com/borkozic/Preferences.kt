@@ -39,6 +39,7 @@ import android.preference.Preference.OnPreferenceClickListener
 import android.preference.PreferenceActivity
 import android.preference.PreferenceGroup
 import android.preference.PreferenceScreen
+import android.util.Log
 import android.view.LayoutInflater
 import android.widget.TextView
 import com.borkozic.map.online.TileProvider
