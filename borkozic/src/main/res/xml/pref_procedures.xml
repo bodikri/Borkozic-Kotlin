@@ -4,11 +4,11 @@
     android:title="@string/pref_procedures_title" >
 
     <Preference
-        android:key="pref_procedures_emer_folder"
+        android:key="@string/pref_procedures_emer_folder"
         android:summary="@string/pref_procedures_emer_folder_summary"
         android:title="@string/pref_procedures_emer_folder_title" />
     <Preference
-        android:key="pref_procedures_norm_folder"
+        android:key="@string/pref_procedures_norm_folder"
         android:summary="@string/pref_procedures_norm_folder_summary"
         android:title="@string/pref_procedures_norm_folder_title" />
 
