@@ -167,6 +167,11 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Dialog
                 val fileName = item.substring(3) // remove "📄 "
                 mCurrentValue = File(mCurrentFolder, fileName).absolutePath
                 populateList()
+                // Auto-confirm selection: close dialog with positive result
+                dialog?.let { d ->
+                    onClick(d, android.content.DialogInterface.BUTTON_POSITIVE)
+                    d.dismiss()
+                }
             }
         }
     }

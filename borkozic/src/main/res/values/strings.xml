@@ -97,7 +97,7 @@
     <string name="quitQuestion">Do you want to quit?</string>
     <string name="removeWaypointQuestion">Remove waypoint?</string>
 
-    <string name="buttonEP">Emer</string>
+    <string name="buttonEP">Procedures</string>
     <string name="buttonNP">Norm</string>
     <string name="buttonZeroLevel">Set0</string>
     <string name="buttonClear">SetN</string>
