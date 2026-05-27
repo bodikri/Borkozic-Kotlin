@@ -5,7 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.borkozic.Borkozic
 import com.borkozic.MapView
 import com.borkozic.R

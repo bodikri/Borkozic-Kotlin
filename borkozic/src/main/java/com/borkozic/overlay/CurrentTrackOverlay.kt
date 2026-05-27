@@ -7,7 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.content.SharedPreferences
 import android.os.IBinder
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.borkozic.R
 import com.borkozic.data.Track
 import com.borkozic.location.ILocationService

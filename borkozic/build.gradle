@@ -52,6 +52,7 @@ dependencies {
     implementation project(':borkoziclib')
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
     implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 

@@ -1,6 +1,6 @@
 /*
  * Androzic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
- * Copyright (C) 2010-2012 Andrey Novikov <http://andreynovikov.info/>
+ * Copyright (C) 2010-2012  Andrey Novikov <http://andreynovikov.info/>
  *
  * This file is part of Androzic application.
  *
@@ -8,129 +8,98 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
+
  * Androzic is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+
  * You should have received a copy of the GNU General Public License
- * along with Androzic. If not, see <http://www.gnu.org/licenses/>.
+ * along with Androzic.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.borkozic
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.ProgressDialog
 import android.app.backup.BackupManager
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager.NameNotFoundException
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.preference.EditTextPreference
-import android.preference.ListPreference
-import android.preference.Preference
-import android.preference.Preference.OnPreferenceClickListener
-import android.preference.PreferenceActivity
-import android.preference.PreferenceGroup
-import android.preference.PreferenceScreen
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.preference.CheckBoxPreference
+import androidx.preference.EditTextPreference
+import androidx.preference.ListPreference
+import androidx.preference.Preference
+import androidx.preference.PreferenceFragmentCompat
+import androidx.preference.PreferenceGroup
+import androidx.preference.PreferenceScreen
 import com.borkozic.map.online.TileProvider
 import com.borkozic.ui.SeekbarPreference
 import java.io.File
 
-class Preferences : PreferenceActivity() {
+class Preferences : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        addPreferencesFromResource(R.xml.preferences)
+        if (savedInstanceState == null) {
+            val fragment = when (intent.getStringExtra("pref")) {
+                "pref_behavior" -> OnlineMapPreferencesFragment()
+                "pref_plugins" -> PluginsPreferencesFragment()
+                "pref_app_about" -> ApplicationPreferencesFragment()
+                else -> MainPreferencesFragment()
+            }
+            supportFragmentManager.beginTransaction()
+                .replace(android.R.id.content, fragment)
+                .commit()
+        }
+    }
 
-        val root = preferenceScreen
+    class MainPreferencesFragment : PreferenceFragmentCompat() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.preferences, rootKey)
 
-        for (i in root.preferenceCount - 1 downTo 0) {
-            val pref = root.getPreference(i)
-            val key = pref.key
-            pref.onPreferenceClickListener = OnPreferenceClickListener {
-                startPreference(key)
-                true
+            for (i in 0 until preferenceScreen.preferenceCount) {
+                val pref = preferenceScreen.getPreference(i)
+                val key = pref.key
+                pref.setOnPreferenceClickListener {
+                    startPreference(key)
+                    true
+                }
             }
         }
 
-        if (intent.hasExtra("pref")) {
-            startPreference(intent.extras!!.getString("pref"))
-            finish()
+        private fun startPreference(key: String?) {
+            val fragment = when (key) {
+                "pref_behavior" -> OnlineMapPreferencesFragment()
+                "pref_plugins" -> PluginsPreferencesFragment()
+                "pref_app_about" -> ApplicationPreferencesFragment()
+                else -> InnerPreferencesFragment().apply {
+                    arguments = Bundle().apply { putString("KEY", key) }
+                }
+            }
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(android.R.id.content, fragment)
+                .addToBackStack(null)
+                .commit()
         }
     }
 
-    private fun startPreference(key: String?) {
-        val activity: Class<*> = when (key) {
-            "pref_behavior" -> OnlineMapPreferences::class.java
-            "pref_plugins" -> PluginsPreferences::class.java
-            "pref_app_about" -> ApplicationPreferences::class.java
-            else -> InnerPreferences::class.java
-        }
-        startActivity(Intent(this@Preferences, activity).putExtra("KEY", key))
-    }
-
-    open class InnerPreferences : PreferenceActivity(), OnSharedPreferenceChangeListener {
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-            val key = intent.extras!!.getString("KEY")
-            val res = resources.getIdentifier(key, "xml", packageName)
-
-            addPreferencesFromResource(res)
-        }
+    abstract class BasePreferenceFragment : PreferenceFragmentCompat(),
+        SharedPreferences.OnSharedPreferenceChangeListener {
 
         override fun onResume() {
             super.onResume()
-            // initialize list summaries
-            initSummaries(preferenceScreen)
             preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
-
-            val key = intent.extras!!.getString("KEY")
-            Log.d("InnerPreferences", "onResume key=$key")
-
-            // SAF folder picker for procedures
-            val emerPref = findPreference(getString(R.string.pref_procedures_emer_folder))
-            val normPref = findPreference(getString(R.string.pref_procedures_norm_folder))
-            Log.d("InnerPreferences", "emerPref=$emerPref normPref=$normPref")
-            emerPref?.onPreferenceClickListener = OnPreferenceClickListener {
-                Log.d("InnerPreferences", "Emer folder clicked!")
-                val intent = Intent(this@InnerPreferences, ProceduresFolderPickerActivity::class.java)
-                intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
-                    getString(R.string.pref_procedures_emer_folder))
-                startActivity(intent)
-                true
-            }
-            normPref?.onPreferenceClickListener = OnPreferenceClickListener {
-                Log.d("InnerPreferences", "Norm folder clicked!")
-                val intent = Intent(this@InnerPreferences, ProceduresFolderPickerActivity::class.java)
-                intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
-                    getString(R.string.pref_procedures_norm_folder))
-                startActivity(intent)
-                true
-            }
-
-            // Update summaries with stored URIs
-            updateProceduresSummary(emerPref, getString(R.string.pref_procedures_emer_folder),
-                getString(R.string.pref_procedures_emer_folder_summary))
-            updateProceduresSummary(normPref, getString(R.string.pref_procedures_norm_folder),
-                getString(R.string.pref_procedures_norm_folder_summary))
-        }
-
-        private fun updateProceduresSummary(pref: Preference?, key: String, defaultSummary: String) {
-            val uriStr = preferenceScreen.sharedPreferences.getString(key, null)
-            pref?.summary = if (uriStr.isNullOrEmpty()) defaultSummary else uriStr
+            initSummaries(preferenceScreen)
         }
 
         override fun onPause() {
@@ -138,104 +107,113 @@ class Preferences : PreferenceActivity() {
             preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
         }
 
-        @SuppressLint("NewApi")
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
-            if (key == getString(R.string.pref_folder_root)) {
-                val application = application as Borkozic
-                val root = sharedPreferences.getString(
-                    key!!,
-                    Environment.getExternalStorageDirectory().toString() + File.separator + getString(R.string.def_folder_prefix)
-                )
-                application.rootPath = root!!
-            } else if (key == getString(R.string.pref_folder_map)) {
-                val pd = ProgressDialog(this)
-                pd.setIndeterminate(true)
-                pd.setMessage(getString(R.string.msg_initializingmaps))
-                pd.show()
+            if (key == null) return
 
-                Thread {
-                    val application = application as Borkozic
-                    application.setMapPath(
-                        sharedPreferences.getString(key!!, resources.getString(R.string.def_folder_map))!!
+            when (key) {
+                getString(R.string.pref_folder_root) -> {
+                    val application = requireActivity().application as Borkozic
+                    val root = sharedPreferences.getString(
+                        key,
+                        Environment.getExternalStorageDirectory().toString() + File.separator +
+                                getString(R.string.def_folder_prefix)
                     )
-                    pd.dismiss()
-                }.start()
-            } else if (key == getString(R.string.pref_charset)) {
-                val pd = ProgressDialog(this)
-                pd.setIndeterminate(true)
-                pd.setMessage(getString(R.string.msg_initializingmaps))
-                pd.show()
-
-                Thread {
-                    val application = application as Borkozic
-                    application.charset = sharedPreferences.getString(key!!, "UTF-8")
-                    application.resetMaps()
-                    pd.dismiss()
-                }.start()
+                    application.rootPath = root!!
+                }
+                getString(R.string.pref_folder_map) -> {
+                    showProgressDialog(getString(R.string.msg_initializingmaps)) {
+                        val application = requireActivity().application as Borkozic
+                        application.setMapPath(
+                            sharedPreferences.getString(key, resources.getString(R.string.def_folder_map))!!
+                        )
+                    }
+                }
+                getString(R.string.pref_charset) -> {
+                    showProgressDialog(getString(R.string.msg_initializingmaps)) {
+                        val application = requireActivity().application as Borkozic
+                        application.charset = sharedPreferences.getString(key, "UTF-8")
+                        application.resetMaps()
+                    }
+                }
+                getString(R.string.pref_onlinemap) -> {
+                    updateOnlineMapSettings(sharedPreferences)
+                }
+                getString(R.string.pref_locale) -> {
+                    AlertDialog.Builder(requireContext())
+                        .setTitle(R.string.restart_needed)
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .setMessage(getString(R.string.restart_needed_explained))
+                        .setCancelable(false)
+                        .setPositiveButton(R.string.ok, null)
+                        .show()
+                }
             }
 
-            val pref = findPreference(key!!)
+            val pref = findPreference<Preference>(key)
             setPrefSummary(pref)
 
-            if (key == getString(R.string.pref_onlinemap)) {
-                val application = application as Borkozic
-                val mapzoom = findPreference(getString(R.string.pref_onlinemapscale)) as SeekbarPreference
-                val providers = application.getOnlineMaps()
-                val current = sharedPreferences.getString(key, resources.getString(R.string.def_onlinemap))
-                var curProvider: TileProvider? = null
-                for (provider in providers) {
-                    if (current == provider.code)
-                        curProvider = provider
-                }
-                if (curProvider != null) {
-                    mapzoom.setMin(curProvider.minZoom.toInt())
-                    mapzoom.setMax(curProvider.maxZoom.toInt())
-                    val zoom = sharedPreferences.getInt(
-                        getString(R.string.pref_onlinemapscale),
-                        resources.getInteger(R.integer.def_onlinemapscale)
-                    )
-                    if (zoom < curProvider.minZoom) {
-                        val editor = sharedPreferences.edit()
-                        editor.putInt(getString(R.string.pref_onlinemapscale), curProvider.minZoom.toInt())
-                        editor.commit()
-                    }
-                    if (zoom > curProvider.maxZoom) {
-                        val editor = sharedPreferences.edit()
-                        editor.putInt(getString(R.string.pref_onlinemapscale), curProvider.maxZoom.toInt())
-                        editor.commit()
-                    }
-                }
-            }
-            if (key == getString(R.string.pref_locale)) {
-                AlertDialog.Builder(this).setTitle(R.string.restart_needed)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .setMessage(getString(R.string.restart_needed_explained))
-                    .setCancelable(false).setPositiveButton(R.string.ok, null).show()
-            }
-            sendBroadcast(Intent("onSharedPreferenceChanged").putExtra("key", key))
+            requireActivity().sendBroadcast(Intent("onSharedPreferenceChanged").putExtra("key", key))
             try {
-                if (Build.VERSION.SDK_INT > 7)
-                    BackupManager.dataChanged("com.borkozic")
-            } catch (e: NoClassDefFoundError) {
-                e.printStackTrace()
+                BackupManager.dataChanged("com.borkozic")
+            } catch (_: Exception) {
             }
         }
 
+        private fun updateOnlineMapSettings(sharedPreferences: SharedPreferences) {
+            val application = requireActivity().application as Borkozic
+            val mapzoom = findPreference<SeekbarPreference>(getString(R.string.pref_onlinemapscale))
+            val providers = application.getOnlineMaps()
+            val current = sharedPreferences.getString(
+                getString(R.string.pref_onlinemap),
+                resources.getString(R.string.def_onlinemap)
+            )
+            val curProvider = providers.find { it.code == current }
+            if (curProvider != null && mapzoom != null) {
+                mapzoom.setMin(curProvider.minZoom.toInt())
+                mapzoom.setMax(curProvider.maxZoom.toInt())
+                val zoom = sharedPreferences.getInt(
+                    getString(R.string.pref_onlinemapscale),
+                    resources.getInteger(R.integer.def_onlinemapscale)
+                )
+                if (zoom < curProvider.minZoom) {
+                    sharedPreferences.edit()
+                        .putInt(getString(R.string.pref_onlinemapscale), curProvider.minZoom.toInt())
+                        .apply()
+                }
+                if (zoom > curProvider.maxZoom) {
+                    sharedPreferences.edit()
+                        .putInt(getString(R.string.pref_onlinemapscale), curProvider.maxZoom.toInt())
+                        .apply()
+                }
+            }
+        }
+
+        private fun showProgressDialog(message: String, backgroundTask: () -> Unit) {
+            val progressBar = ProgressBar(requireContext())
+            progressBar.isIndeterminate = true
+            val dialog = AlertDialog.Builder(requireContext())
+                .setMessage(message)
+                .setView(progressBar)
+                .setCancelable(false)
+                .create()
+            dialog.show()
+
+            Thread {
+                backgroundTask()
+                requireActivity().runOnUiThread { dialog.dismiss() }
+            }.start()
+        }
+
         private fun setPrefSummary(pref: Preference?) {
-            if (pref is ListPreference) {
-                val summary = pref.entry
-                if (summary != null) {
-                    pref.summary = summary
+            when (pref) {
+                is ListPreference -> {
+                    pref.entry?.let { pref.summary = it }
                 }
-            } else if (pref is EditTextPreference) {
-                val summary = pref.text
-                if (summary != null) {
-                    pref.summary = summary
+                is EditTextPreference -> {
+                    pref.text?.let { pref.summary = it }
                 }
-            } else if (pref is SeekbarPreference) {
-                val summary = pref.getText()
-                if (summary != null) {
-                    pref.summary = summary
+                is SeekbarPreference -> {
+                    pref.summary = pref.getText()
                 }
             }
         }
@@ -252,40 +230,72 @@ class Preferences : PreferenceActivity() {
         }
     }
 
-    /**
-     * Preference lists Borkozic plugins preferences.
-     */
-    class PluginsPreferences : PreferenceActivity() {
+    class InnerPreferencesFragment : BasePreferenceFragment() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            val key = arguments?.getString("KEY") ?: return
+            val res = resources.getIdentifier(key, "xml", requireActivity().packageName)
+            setPreferencesFromResource(res, rootKey)
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
+            // SAF folder picker for procedures
+            val emerPref = findPreference<Preference>(getString(R.string.pref_procedures_emer_folder))
+            val normPref = findPreference<Preference>(getString(R.string.pref_procedures_norm_folder))
+            emerPref?.setOnPreferenceClickListener {
+                val intent = Intent(requireActivity(), ProceduresFolderPickerActivity::class.java)
+                intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
+                    getString(R.string.pref_procedures_emer_folder))
+                startActivity(intent)
+                true
+            }
+            normPref?.setOnPreferenceClickListener {
+                val intent = Intent(requireActivity(), ProceduresFolderPickerActivity::class.java)
+                intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
+                    getString(R.string.pref_procedures_norm_folder))
+                startActivity(intent)
+                true
+            }
+            updateProceduresSummary(emerPref, getString(R.string.pref_procedures_emer_folder),
+                getString(R.string.pref_procedures_emer_folder_summary))
+            updateProceduresSummary(normPref, getString(R.string.pref_procedures_norm_folder),
+                getString(R.string.pref_procedures_norm_folder_summary))
+        }
 
-            val root = preferenceManager.createPreferenceScreen(this)
-            root.title = getString(R.string.pref_plugins_title)
-            preferenceScreen = root
+        private fun updateProceduresSummary(pref: Preference?, key: String, defaultSummary: String) {
+            val uriStr = preferenceScreen.sharedPreferences.getString(key, null)
+            pref?.summary = if (uriStr.isNullOrEmpty()) defaultSummary else uriStr
+        }
+    }
 
-            val application = application as Borkozic
+    class PluginsPreferencesFragment : PreferenceFragmentCompat() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            val context = preferenceManager.context
+            val screen = preferenceManager.createPreferenceScreen(context)
+            screen.title = getString(R.string.pref_plugins_title)
+            preferenceScreen = screen
+
+            val application = requireActivity().application as Borkozic
             val plugins = application.getPluginsPreferences()
 
             for (plugin in plugins.keys) {
-                val preference = Preference(this)
+                val preference = Preference(context)
                 preference.title = plugin
                 preference.intent = plugins[plugin]
-                root.addPreference(preference)
+                screen.addPreference(preference)
             }
         }
     }
 
-    class OnlineMapPreferences : InnerPreferences() {
+    class OnlineMapPreferencesFragment : BasePreferenceFragment() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.pref_behavior, rootKey)
+        }
 
         override fun onResume() {
-            val application = application as Borkozic
+            val application = requireActivity().application as Borkozic
 
-            val maps = findPreference(getString(R.string.pref_onlinemap)) as ListPreference
-            val mapzoom = findPreference(getString(R.string.pref_onlinemapscale)) as SeekbarPreference
-            // initialize map list
+            val maps = findPreference<ListPreference>(getString(R.string.pref_onlinemap))
+            val mapzoom = findPreference<SeekbarPreference>(getString(R.string.pref_onlinemapscale))
             val providers = application.getOnlineMaps()
-            if (providers != null) {
+            if (providers.isNotEmpty() && maps != null) {
                 val entries = arrayOfNulls<String>(providers.size)
                 val entryValues = arrayOfNulls<String>(providers.size)
                 val current = preferenceScreen.sharedPreferences.getString(
@@ -304,7 +314,7 @@ class Preferences : PreferenceActivity() {
                 maps.entries = entries
                 maps.entryValues = entryValues
 
-                if (curProvider != null) {
+                if (curProvider != null && mapzoom != null) {
                     mapzoom.setMin(curProvider.minZoom.toInt())
                     mapzoom.setMax(curProvider.maxZoom.toInt())
                 }
@@ -313,81 +323,84 @@ class Preferences : PreferenceActivity() {
         }
     }
 
-    class ApplicationPreferences : InnerPreferences() {
+    class ApplicationPreferencesFragment : BasePreferenceFragment() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            setPreferencesFromResource(R.xml.pref_application, rootKey)
 
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-
-            val prefAbout = findPreference(getString(R.string.pref_about))!!
-            prefAbout.onPreferenceClickListener = OnPreferenceClickListener {
-                val factory = LayoutInflater.from(this@ApplicationPreferences)
+            val prefAbout = findPreference<Preference>(getString(R.string.pref_about))!!
+            prefAbout.setOnPreferenceClickListener {
+                val factory = LayoutInflater.from(requireContext())
                 val aboutView = factory.inflate(R.layout.dlg_about, null)
                 val versionLabel = aboutView.findViewById<TextView>(R.id.version_label)
                 val versionName: String = try {
-                    this@ApplicationPreferences.packageManager.getPackageInfo(
-                        this@ApplicationPreferences.packageName, 0
+                    requireActivity().packageManager.getPackageInfo(
+                        requireActivity().packageName, 0
                     ).versionName
                 } catch (ex: NameNotFoundException) {
                     "unable to retreive version"
                 }
                 versionLabel.text = getString(R.string.version, versionName)
-                AlertDialog.Builder(this@ApplicationPreferences).setIcon(R.drawable.icon)
-                    .setTitle(R.string.app_name).setView(aboutView).setPositiveButton("OK", null).create().show()
+                AlertDialog.Builder(requireContext())
+                    .setIcon(R.drawable.icon)
+                    .setTitle(R.string.app_name)
+                    .setView(aboutView)
+                    .setPositiveButton("OK", null)
+                    .create().show()
                 true
             }
 
-            val prefDonateGoogle = findPreference(getString(R.string.pref_donategoogle))!!
-            prefDonateGoogle.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefDonateGoogle = findPreference<Preference>(getString(R.string.pref_donategoogle))
+            prefDonateGoogle?.setOnPreferenceClickListener {
                 val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.borkozic.donate"))
                 startActivity(marketIntent)
                 true
             }
 
-            val prefDonatePaypal = findPreference(getString(R.string.pref_donatepaypal))!!
-            prefDonatePaypal.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefDonatePaypal = findPreference<Preference>(getString(R.string.pref_donatepaypal))
+            prefDonatePaypal?.setOnPreferenceClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.paypaluri))))
                 true
             }
 
-            val application = application as Borkozic
+            val application = requireActivity().application as Borkozic
             if (application.isPaid) {
-                this@ApplicationPreferences.preferenceScreen.removePreference(prefDonateGoogle)
-                this@ApplicationPreferences.preferenceScreen.removePreference(prefDonatePaypal)
+                prefDonateGoogle?.let { preferenceScreen.removePreference(it) }
+                prefDonatePaypal?.let { preferenceScreen.removePreference(it) }
             }
 
-            val prefGooglePlus = findPreference(getString(R.string.pref_googleplus))!!
-            prefGooglePlus.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefGooglePlus = findPreference<Preference>(getString(R.string.pref_googleplus))
+            prefGooglePlus?.setOnPreferenceClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.googleplusuri))))
                 true
             }
 
-            val prefFacebook = findPreference(getString(R.string.pref_facebook))!!
-            prefFacebook.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefFacebook = findPreference<Preference>(getString(R.string.pref_facebook))
+            prefFacebook?.setOnPreferenceClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.facebookuri))))
                 true
             }
 
-            val prefTwitter = findPreference(getString(R.string.pref_twitter))!!
-            prefTwitter.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefTwitter = findPreference<Preference>(getString(R.string.pref_twitter))
+            prefTwitter?.setOnPreferenceClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.twitteruri))))
                 true
             }
 
-            val prefFaq = findPreference(getString(R.string.pref_faq))!!
-            prefFaq.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefFaq = findPreference<Preference>(getString(R.string.pref_faq))
+            prefFaq?.setOnPreferenceClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.faquri))))
                 true
             }
 
-            val prefFeature = findPreference(getString(R.string.pref_feature))!!
-            prefFeature.onPreferenceClickListener = OnPreferenceClickListener {
+            val prefFeature = findPreference<Preference>(getString(R.string.pref_feature))
+            prefFeature?.setOnPreferenceClickListener {
                 startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.featureuri))))
                 true
             }
 
-            val prefCredits = findPreference(getString(R.string.pref_credits))!!
-            prefCredits.onPreferenceClickListener = OnPreferenceClickListener {
-                startActivity(Intent(this@ApplicationPreferences, Credits::class.java))
+            val prefCredits = findPreference<Preference>(getString(R.string.pref_credits))
+            prefCredits?.setOnPreferenceClickListener {
+                startActivity(Intent(requireActivity(), Credits::class.java))
                 true
             }
         }

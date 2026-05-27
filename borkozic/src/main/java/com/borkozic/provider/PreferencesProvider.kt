@@ -30,7 +30,7 @@ import android.content.res.Resources
 import android.database.Cursor
 import android.database.MatrixCursor
 import android.net.Uri
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.util.Log
 import com.borkozic.R
 

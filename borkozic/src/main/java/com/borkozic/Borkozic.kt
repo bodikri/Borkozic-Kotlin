@@ -35,7 +35,7 @@ import android.location.Location
 import android.os.Build
 import android.os.Handler
 import android.os.Message
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.WindowManager

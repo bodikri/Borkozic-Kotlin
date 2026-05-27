@@ -3,7 +3,7 @@ package com.borkozic.overlay
 import android.app.Activity
 import android.content.SharedPreferences
 import android.graphics.*
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import com.borkozic.Borkozic

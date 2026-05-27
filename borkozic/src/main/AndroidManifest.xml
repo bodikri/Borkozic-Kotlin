@@ -143,14 +143,6 @@
             android:label="@string/pref_name"
             android:screenOrientation="portrait"/>
 
-        <activity android:name=".Preferences$PluginsPreferences" />
-        <activity android:name=".Preferences$InnerPreferences" />
-        <activity android:name=".Preferences$OnlineMapPreferences" />
-        <activity android:name=".Preferences$ApplicationPreferences" />
-        <activity
-            android:name=".PreferencesHC"
-            android:label="@string/pref_name"
-            android:screenOrientation="portrait"/>
         <activity
             android:name=".MapList"
             android:label="@string/maplist_name"

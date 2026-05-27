@@ -38,7 +38,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.os.Message
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.provider.SearchRecentSuggestions
 import android.view.LayoutInflater
 import android.view.View

@@ -4,7 +4,7 @@ import android.app.AlertDialog.Builder
 import android.content.Context
 import android.content.DialogInterface
 import android.content.res.TypedArray
-import android.preference.ListPreference
+import androidx.preference.ListPreference
 import android.util.AttributeSet
 import java.util.ArrayList
 import java.util.Arrays

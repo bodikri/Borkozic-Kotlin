@@ -35,7 +35,7 @@ import android.graphics.Path
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater

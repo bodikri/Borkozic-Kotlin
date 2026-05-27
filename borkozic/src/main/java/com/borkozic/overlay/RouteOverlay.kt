@@ -11,7 +11,7 @@ import android.graphics.Paint.Align
 import android.graphics.Path
 import android.graphics.Rect
 import android.graphics.Typeface
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.view.MotionEvent
 import androidx.core.content.ContextCompat
 import com.borkozic.Borkozic

@@ -6,7 +6,7 @@ import android.app.ProgressDialog
 import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.text.Editable
 import android.text.InputFilter
 import android.text.Spanned

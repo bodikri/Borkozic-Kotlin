@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.os.IBinder
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu

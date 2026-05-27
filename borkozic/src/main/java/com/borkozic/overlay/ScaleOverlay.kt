@@ -6,7 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Typeface
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import com.borkozic.Borkozic
 import com.borkozic.MapView
 import com.borkozic.R

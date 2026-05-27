@@ -34,7 +34,7 @@ import android.content.res.Resources
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.util.Log
 import android.view.Window
 import android.view.WindowManager

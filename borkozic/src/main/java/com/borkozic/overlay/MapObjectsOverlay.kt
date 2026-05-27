@@ -9,7 +9,7 @@ import android.graphics.Paint
 import android.graphics.Paint.Align
 import android.graphics.Rect
 import android.graphics.Typeface
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.view.MotionEvent
 import com.borkozic.Borkozic
 import com.borkozic.MapActivity

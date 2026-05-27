@@ -30,7 +30,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.IBinder
 import android.os.RemoteException
-import android.preference.PreferenceManager
+import androidx.preference.PreferenceManager
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
