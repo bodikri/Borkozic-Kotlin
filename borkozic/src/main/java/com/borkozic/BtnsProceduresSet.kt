@@ -114,10 +114,11 @@ class BtnsProceduresSet : Activity() {
         val proceduresFolderPath = if (proceduresFolderUri.isNullOrEmpty()) planePath else null
 
         // Split into buttons
-        val splitbtns = btnsString.split(";").toTypedArray()
+        val splitbtns = btnsString.split(";").filter { it.contains(":") }.toTypedArray()
 
         for (element in splitbtns) {
             val splitbtnName = element.split(":").toTypedArray()
+            if (splitbtnName.size < 2 || splitbtnName[0].isBlank() || splitbtnName[1].isBlank()) continue
 
             try {
                 val b = Button(this)
