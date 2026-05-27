@@ -100,9 +100,12 @@
     <string name="buttonEP">Emer</string>
     <string name="buttonNP">Norm</string>
     <string name="pref_procedures_title">Procedures</string>
-    <string name="pref_procedures_folder_title">Procedures folder</string>
-    <string name="pref_procedures_folder_summary">Select folder containing Emer.txt, Norm.txt and procedure files</string>
-    <string name="pref_procedures_folder_dialog">Navigate to the folder with procedure files (Emer.txt, Norm.txt, XXXX.txt) and tap SELECT FOLDER</string>
+    <string name="pref_procedures_emer_folder_title">Emergency procedures folder</string>
+    <string name="pref_procedures_emer_folder_summary">Select folder with emergency procedure files</string>
+    <string name="pref_procedures_emer_folder_dialog">Navigate to the folder containing emergency procedures (Emer.txt + procedure files) and tap SELECT FOLDER</string>
+    <string name="pref_procedures_norm_folder_title">Normal procedures folder</string>
+    <string name="pref_procedures_norm_folder_summary">Select folder with normal procedure files</string>
+    <string name="pref_procedures_norm_folder_dialog">Navigate to the folder containing normal procedures (Norm.txt + procedure files) and tap SELECT FOLDER</string>
     <string name="buttonZeroLevel">Set0</string>
     <string name="buttonClear">SetN</string>
     <string name="quit">Quit</string>

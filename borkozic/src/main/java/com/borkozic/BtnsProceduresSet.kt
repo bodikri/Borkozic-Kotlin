@@ -60,8 +60,12 @@ class BtnsProceduresSet : Activity() {
 
         // Read procedures folder from preferences
         val settings = PreferenceManager.getDefaultSharedPreferences(this)
-        val proceduresFolderKey = getString(R.string.pref_procedures_folder)
-        val storedFolder = settings.getString(proceduresFolderKey, null)
+        val prefKey = when (btnName) {
+            getString(R.string.buttonEP) -> getString(R.string.pref_procedures_emer_folder)
+            getString(R.string.buttonNP) -> getString(R.string.pref_procedures_norm_folder)
+            else -> null
+        }
+        val storedFolder = prefKey?.let { settings.getString(it, null) }
         val baseFolder = if (storedFolder.isNullOrEmpty()) application.planePath else storedFolder
         val proceduresFile = File(baseFolder, "$btnName.txt").absolutePath
         Log.d(TAG, "proceduresFile: $proceduresFile (storedFolder=$storedFolder, btn=$btnName)")

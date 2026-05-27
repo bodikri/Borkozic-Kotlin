@@ -399,9 +399,12 @@
     <string name="pref_panelogosize_title">Размер самолет</string>
     <string name="buttonEP">Процедури</string>
     <string name="pref_procedures_title">Процедури</string>
-  <string name="pref_procedures_folder_title">Папка с процедури</string>
-  <string name="pref_procedures_folder_summary">Избор на папка съдържаща Emer.txt, Norm.txt и процедурни файлове</string>
-  <string name="pref_procedures_folder_dialog">Навигирайте до папката с процедурите и натиснете SELECT FOLDER</string>
+  <string name="pref_procedures_emer_folder_title">Папка аварийни процедури</string>
+  <string name="pref_procedures_emer_folder_summary">Избор на папка с аварийни процедурни файлове</string>
+  <string name="pref_procedures_emer_folder_dialog">Навигирайте до папката с аварийни процедури (Emer.txt + процедурни файлове) и натиснете SELECT FOLDER</string>
+  <string name="pref_procedures_norm_folder_title">Папка нормални процедури</string>
+  <string name="pref_procedures_norm_folder_summary">Избор на папка с нормални процедурни файлове</string>
+  <string name="pref_procedures_norm_folder_dialog">Навигирайте до папката с нормални процедури (Norm.txt + процедурни файлове) и натиснете SELECT FOLDER</string>
     <string name="manageareas_name">Зони</string>
     <string name="selectarea_name">Избрана зона</string>
     <string name="loadarea_name">Зареди зони от файл</string>
