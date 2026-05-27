@@ -97,10 +97,12 @@
     <string name="quitQuestion">Do you want to quit?</string>
     <string name="removeWaypointQuestion">Remove waypoint?</string>
 
-    <string name="buttonEP">Procedures</string>
+    <string name="buttonEP">Emer</string>
     <string name="buttonNP">Norm</string>
-    <string name="pref_procedures_emer_file">Emer</string>
-    <string name="pref_procedures_norm_file">Norm</string>
+    <string name="pref_procedures_title">Procedures</string>
+    <string name="pref_procedures_folder_title">Procedures folder</string>
+    <string name="pref_procedures_folder_summary">Select folder containing Emer.txt, Norm.txt and procedure files</string>
+    <string name="pref_procedures_folder_dialog">Navigate to the folder with procedure files (Emer.txt, Norm.txt, XXXX.txt) and tap SELECT FOLDER</string>
     <string name="buttonZeroLevel">Set0</string>
     <string name="buttonClear">SetN</string>
     <string name="quit">Quit</string>
@@ -329,10 +331,9 @@
     <string name="pref_showcurrenttrack_summary">Mark to make current track visible on map</string>
     <string name="pref_panelactions_title">Sliding panel actions</string>
     <string name="pref_panelogosize_title">PlaneLogo size</string>
-    <string name="pref_procedures_emer_title">Emergency procedures file</string>
-    <string name="pref_procedures_emer_summary">Select .txt file with emergency procedures</string>
-    <string name="pref_procedures_norm_title">Normal procedures file</string>
-    <string name="pref_procedures_norm_summary">Select .txt file with normal procedures</string>
+    <string name="pref_procedures_folder_title">Procedures folder</string>
+    <string name="pref_procedures_folder_summary">Select folder containing Emer.txt, Norm.txt and procedure files</string>
+    <string name="pref_procedures_folder_dialog">Navigate to the folder containing your procedure files (Emer.txt, Norm.txt, XXXX.txt) and tap SELECT FOLDER</string>
     <string name="pref_lookahead_title">Look ahead</string>
     <string name="pref_lookahead_summary">Screen amount to look ahead</string>
     <string name="pref_unit_title">Units</string>

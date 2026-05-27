@@ -398,10 +398,10 @@
     <string name="pref_maprotation_title">Въртене на картата</string>
     <string name="pref_panelogosize_title">Размер самолет</string>
     <string name="buttonEP">Процедури</string>
-  <string name="pref_procedures_emer_title">Файл аварийни процедури</string>
-  <string name="pref_procedures_emer_summary">Избор на .txt файл с аварийни процедури</string>
-  <string name="pref_procedures_norm_title">Файл нормални процедури</string>
-  <string name="pref_procedures_norm_summary">Избор на .txt файл с нормални процедури</string>
+    <string name="pref_procedures_title">Процедури</string>
+  <string name="pref_procedures_folder_title">Папка с процедури</string>
+  <string name="pref_procedures_folder_summary">Избор на папка съдържаща Emer.txt, Norm.txt и процедурни файлове</string>
+  <string name="pref_procedures_folder_dialog">Навигирайте до папката с процедурите и натиснете SELECT FOLDER</string>
     <string name="manageareas_name">Зони</string>
     <string name="selectarea_name">Избрана зона</string>
     <string name="loadarea_name">Зареди зони от файл</string>

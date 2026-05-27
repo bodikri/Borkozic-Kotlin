@@ -1,21 +1,20 @@
 /*
- * Androzic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
- * Copyright (C) 2010-2012  Andrey Novikov <http://andreynovikov.info/>
+ * Borkozic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
  *
- * This file is part of Androzic application.
+ * This file is part of Borkozic application.
  *
- * Androzic is free software: you can redistribute it and/or modify
+ * Borkozic is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
 
- * Androzic is distributed in the hope that it will be useful,
+ * Borkozic is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
 
  * You should have received a copy of the GNU General Public License
- * along with Androzic.  If not, see <http://www.gnu.org/licenses/>.
+ * along with Borkozic.  If not, see <http://www.gnu.org/licenses/>.
  */
 
 package com.borkozic.ui
@@ -28,19 +27,21 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import java.io.File
 import java.io.FileFilter
-import java.util.Arrays
 
-class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs),
+open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs),
     AdapterView.OnItemClickListener {
 
     private var mCurrentValue: String = ""
+    private var mCurrentFolder: String = ""
     private var mValueText: TextView? = null
     private var mFolderList: ListView? = null
+    private var mSelectBtn: Button? = null
 
     override fun onCreateDialogView(): View {
         val layout = LinearLayout(context)
@@ -55,7 +56,7 @@ class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPre
         }
 
         mValueText = TextView(context)
-        mValueText!!.textSize = 26f
+        mValueText!!.textSize = 16f
         layout.addView(
             mValueText, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
@@ -67,13 +68,45 @@ class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPre
         layout.addView(
             mFolderList, LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
+                0,
+                1f
             )
         )
         mFolderList!!.onItemClickListener = this
 
+        // SELECT FOLDER button
+        mSelectBtn = Button(context)
+        mSelectBtn!!.text = "SELECT FOLDER"
+        mSelectBtn!!.setOnClickListener {
+            // Select current folder
+            if (mCurrentFolder.isNotEmpty()) {
+                mCurrentValue = mCurrentFolder
+                dialog?.let { d ->
+                    onClick(d, android.content.DialogInterface.BUTTON_POSITIVE)
+                    d.dismiss()
+                }
+            }
+        }
+        layout.addView(
+            mSelectBtn, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            )
+        )
+
         if (this.isPersistent)
             mCurrentValue = getPersistedString("")
+
+        if (mCurrentValue.isNotEmpty()) {
+            val f = File(mCurrentValue)
+            if (f.exists() && f.isDirectory) {
+                mCurrentFolder = mCurrentValue
+            } else {
+                mCurrentFolder = Environment.getExternalStorageDirectory().absolutePath
+            }
+        } else {
+            mCurrentFolder = Environment.getExternalStorageDirectory().absolutePath
+        }
 
         populateList()
 
@@ -91,15 +124,7 @@ class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPre
             mCurrentValue = defaultValue as? String ?: ""
 
         if (mCurrentValue.isNullOrEmpty())
-            mCurrentValue = Environment.getExternalStorageDirectory().toString()
-        var def = File(mCurrentValue)
-        if (!def.isAbsolute) {
-            def = File(Environment.getExternalStorageDirectory(), mCurrentValue)
-            mCurrentValue = def.absolutePath
-        }
-        if (shouldPersist()) {
-            persistString(mCurrentValue)
-        }
+            mCurrentValue = ""
     }
 
     override fun onDialogClosed(positiveResult: Boolean) {
@@ -112,49 +137,52 @@ class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPre
     }
 
     override fun getSummary(): CharSequence {
-        val summary = super.getSummary()
-        return summary?.toString() ?: getPersistedString(mCurrentValue)
+        val saved = getPersistedString("")
+        return if (saved.isNullOrEmpty()) summary ?: "" else saved
     }
 
     private fun populateList() {
-        var initial = File(mCurrentValue)
-        if (!initial.exists() || !initial.isDirectory) {
-            initial = Environment.getExternalStorageDirectory()
-            mCurrentValue = initial.absolutePath
+        val folder = File(mCurrentFolder)
+        if (!folder.exists() || !folder.isDirectory) {
+            mCurrentFolder = Environment.getExternalStorageDirectory().absolutePath
         }
 
-        mValueText?.text = initial.absolutePath
+        val currentVal = getPersistedString("")
+        mValueText?.text = mCurrentFolder +
+            if (currentVal.isNullOrEmpty()) ""
+            else "\nSelected: $currentVal"
 
-        val parent = if (initial.parentFile == null) 0 else 1
+        val parent = if (File(mCurrentFolder).parentFile == null) 0 else 1
 
-        val dirs = initial.listFiles(dirFilter)
-        val length = dirs?.size ?: 0
-        val folders = arrayOfNulls<String>(length + parent)
+        val dirs = File(mCurrentFolder).listFiles(dirFilter)
+
+        val items = mutableListOf<String>()
         if (parent > 0)
-            folders[0] = ".."
-        for (i in 0 until length) {
-            folders[i + parent] = dirs!![i].name
-        }
-        Arrays.sort(folders)
-        val folderAdapter = ArrayAdapter(
+            items.add("📁 ..")
+        dirs?.forEach { items.add("📁 ${it.name}") }
+
+        val adapter = ArrayAdapter(
             context,
             android.R.layout.simple_list_item_1,
             android.R.id.text1,
-            folders.requireNoNulls()
+            items
         )
-        mFolderList?.adapter = folderAdapter
+        mFolderList?.adapter = adapter
     }
 
     override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        val folder = mFolderList?.getItemAtPosition(position) as? String ?: return
-        val newFolder: File? = if (".." == folder) {
-            File(mCurrentValue).parentFile
-        } else {
-            File(mCurrentValue, folder)
-        }
-        newFolder?.let {
-            mCurrentValue = it.absolutePath
-            populateList()
+        val item = mFolderList?.getItemAtPosition(position) as? String ?: return
+
+        when {
+            item == "📁 .." -> {
+                mCurrentFolder = File(mCurrentFolder).parent ?: mCurrentFolder
+                populateList()
+            }
+            item.startsWith("📁 ") -> {
+                val dirName = item.substring(3) // remove "📁 "
+                mCurrentFolder = File(mCurrentFolder, dirName).absolutePath
+                populateList()
+            }
         }
     }
 
