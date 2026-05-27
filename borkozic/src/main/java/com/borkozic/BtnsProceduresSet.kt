@@ -60,9 +60,19 @@ class BtnsProceduresSet : Activity() {
         }
         Log.d(TAG, "prefKey=$prefKey, btnName=$btnName")
 
-        val storedUriStr = prefKey?.let { settings.getString(it, null) }
+        var storedUriStr = prefKey?.let { settings.getString(it, null) }
         val planePath = application.planePath ?: ""
-        Log.d(TAG, "storedUriStr=$storedUriStr planePath=$planePath")
+
+        // Validate legacy stored path — if not a content:// URI and file doesn't exist, fall back
+        if (!storedUriStr.isNullOrEmpty() && !storedUriStr.startsWith("content://")) {
+            val testFile = File(storedUriStr, "$btnName.txt")
+            if (!testFile.exists()) {
+                Log.w(TAG, "Legacy path invalid or incomplete: $storedUriStr -> falling back to planePath")
+                storedUriStr = null
+            }
+        }
+
+        Log.d(TAG, "prefKey=$prefKey, btnName=$btnName storedUriStr=$storedUriStr planePath=$planePath")
 
         var btnsString = ""
         try {
