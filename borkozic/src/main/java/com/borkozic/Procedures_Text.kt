@@ -73,8 +73,9 @@ class Procedures_Text : Activity() {
                         }
                     }
                 }
-                if (fileUri != null) {
-                    htmlString = contentResolver.openInputStream(fileUri)!!.use { readInputStreamAsString(it) }
+                val foundUri = fileUri
+                if (foundUri != null) {
+                    htmlString = contentResolver.openInputStream(foundUri)!!.use { readInputStreamAsString(it) }
                 } else {
                     throw Exception("File $xmlName not found in SAF folder")
                 }
