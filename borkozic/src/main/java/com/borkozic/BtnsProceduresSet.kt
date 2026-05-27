@@ -115,20 +115,33 @@ class BtnsProceduresSet : Activity() {
 
         // Split into buttons
         val splitbtns = btnsString.split(";").filter { it.contains(":") }.toTypedArray()
+        Log.d(TAG, "Parsing ${splitbtns.size} procedure entries from content: ${btnsString.take(200)}...")
 
         for (element in splitbtns) {
             val splitbtnName = element.split(":").toTypedArray()
-            if (splitbtnName.size < 2 || splitbtnName[0].isBlank() || splitbtnName[1].isBlank()) continue
 
             try {
+                if (splitbtnName.size < 2) {
+                    Log.w(TAG, "Skipping invalid line (no colon): '$element'")
+                    continue
+                }
+                val btn_txt = splitbtnName[0].replace("\n", "").replace("\r", "").trim()
+                if (btn_txt.isEmpty()) {
+                    Log.w(TAG, "Skipping line with empty button text")
+                    continue
+                }
+                val btnID = splitbtnName[1].trim().toIntOrNull()
+                if (btnID == null) {
+                    Log.w(TAG, "Skipping line with invalid ID: '${splitbtnName[1]}'")
+                    continue
+                }
+
                 val b = Button(this)
-                val btn_txt = splitbtnName[0].replace(System.getProperty("line.separator") ?: "\n", "")
                 b.text = btn_txt
                 b.layoutParams = LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                val btnID = splitbtnName[1].trim().toInt()
                 b.id = btnID
                 b.setOnClickListener {
                     val btnsIntent = Intent(this@BtnsProceduresSet, Procedures_Text::class.java)
@@ -139,10 +152,8 @@ class BtnsProceduresSet : Activity() {
                 }
                 ll.addView(b)
             } catch (e: Exception) {
-                Toast.makeText(this,
-                    "Грешка при създаване на бутон: ${e.message}",
-                    Toast.LENGTH_LONG).show()
-                finish()
+                Log.e(TAG, "Failed to create button for: $element", e)
+                // skip this button, don't finish
             }
         }
     }
