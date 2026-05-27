@@ -67,12 +67,21 @@ class BtnsProceduresSet : Activity() {
         var btnsString = ""
         try {
             if (!storedUriStr.isNullOrEmpty()) {
-                // Read from SAF tree URI
-                val treeUri = Uri.parse(storedUriStr)
-                val childUri = findChildUri(treeUri, "$btnName.txt")
-                if (childUri != null) {
-                    contentResolver.openInputStream(childUri)?.use { stream ->
-                        btnsString = readInputStreamAsString(stream)
+                val uri = Uri.parse(storedUriStr)
+                if (uri.scheme == "content") {
+                    // Read from SAF tree URI
+                    val childUri = findChildUri(uri, "$btnName.txt")
+                    if (childUri != null) {
+                        contentResolver.openInputStream(childUri)?.use { stream ->
+                            btnsString = readInputStreamAsString(stream)
+                        }
+                    }
+                } else {
+                    // Legacy: raw file path
+                    val file = File(storedUriStr, "$btnName.txt")
+                    Log.d(TAG, "Legacy file read: ${file.absolutePath}, exists=${file.exists()}")
+                    if (file.exists()) {
+                        btnsString = readInputStreamAsString(FileInputStream(file))
                     }
                 }
             }
