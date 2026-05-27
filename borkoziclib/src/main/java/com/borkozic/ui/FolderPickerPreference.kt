@@ -138,7 +138,7 @@ open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : Dial
 
     override fun getSummary(): CharSequence {
         val saved = getPersistedString("")
-        return if (saved.isNullOrEmpty()) summary ?: "" else saved
+        return if (saved.isNullOrEmpty()) super.getSummary() ?: "" else saved
     }
 
     private fun populateList() {
