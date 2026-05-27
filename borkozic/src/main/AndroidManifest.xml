@@ -418,6 +418,10 @@
             android:name=".Procedures_Text"
             android:label="Procedures List"
             android:parentActivityName=".MapActivity" />
+        <activity
+            android:name=".ProceduresFolderPickerActivity"
+            android:label="Select Procedures Folder"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
     </application>
 
 </manifest>

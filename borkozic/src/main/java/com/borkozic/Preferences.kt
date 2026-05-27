@@ -95,6 +95,35 @@ class Preferences : PreferenceActivity() {
             // initialize list summaries
             initSummaries(preferenceScreen)
             preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+            // SAF folder picker for procedures
+            val emerPref = findPreference(getString(R.string.pref_procedures_emer_folder))
+            val normPref = findPreference(getString(R.string.pref_procedures_norm_folder))
+            emerPref?.onPreferenceClickListener = OnPreferenceClickListener {
+                val intent = Intent(this@InnerPreferences, ProceduresFolderPickerActivity::class.java)
+                intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
+                    getString(R.string.pref_procedures_emer_folder))
+                startActivity(intent)
+                true
+            }
+            normPref?.onPreferenceClickListener = OnPreferenceClickListener {
+                val intent = Intent(this@InnerPreferences, ProceduresFolderPickerActivity::class.java)
+                intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
+                    getString(R.string.pref_procedures_norm_folder))
+                startActivity(intent)
+                true
+            }
+
+            // Update summaries with stored URIs
+            updateProceduresSummary(emerPref, getString(R.string.pref_procedures_emer_folder),
+                getString(R.string.pref_procedures_emer_folder_summary))
+            updateProceduresSummary(normPref, getString(R.string.pref_procedures_norm_folder),
+                getString(R.string.pref_procedures_norm_folder_summary))
+        }
+
+        private fun updateProceduresSummary(pref: Preference?, key: String, defaultSummary: String) {
+            val uriStr = preferenceScreen.sharedPreferences.getString(key, null)
+            pref?.summary = if (uriStr.isNullOrEmpty()) defaultSummary else uriStr
         }
 
         override fun onPause() {

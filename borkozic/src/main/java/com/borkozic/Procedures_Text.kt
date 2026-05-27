@@ -2,6 +2,7 @@ package com.borkozic
 
 import android.app.Activity
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.webkit.WebView
 import java.io.BufferedInputStream
@@ -40,13 +41,48 @@ class Procedures_Text : Activity() {
 
         btnName = intent.getStringExtra(BtnsProceduresSet.BTNS_TITLE)
         val proceduresFolder = intent.getStringExtra(BtnsProceduresSet.PROCEDURES_FOLDER)
+        val safUri = intent.getStringExtra("SAF_URI")
         val xmlName = "$btnName.txt"
 
         try {
-            val file = if (proceduresFolder != null) File(proceduresFolder, xmlName)
-                       else File(application?.planePath, xmlName)
-            val stream = FileInputStream(file)
-            val htmlString = readInputStreamAsString(stream)
+            val htmlString: String
+            if (!safUri.isNullOrEmpty()) {
+                // Read from SAF tree URI
+                val treeUri = Uri.parse(safUri)
+                val documentId = android.provider.DocumentsContract.getTreeDocumentId(treeUri)
+                val childrenUri = android.provider.DocumentsContract.buildChildDocumentsUriUsingTree(
+                    treeUri, documentId
+                )
+                var fileUri: Uri? = null
+                contentResolver.query(
+                    childrenUri,
+                    arrayOf(android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                            android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+                    null, null, null
+                )?.use { cursor ->
+                    while (cursor.moveToNext()) {
+                        val name = cursor.getString(
+                            cursor.getColumnIndexOrThrow(android.provider.DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                        )
+                        if (name == xmlName) {
+                            val childDocId = cursor.getString(
+                                cursor.getColumnIndexOrThrow(android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID)
+                            )
+                            fileUri = android.provider.DocumentsContract.buildDocumentUriUsingTree(treeUri, childDocId)
+                            break
+                        }
+                    }
+                }
+                if (fileUri != null) {
+                    htmlString = contentResolver.openInputStream(fileUri)!!.use { readInputStreamAsString(it) }
+                } else {
+                    throw Exception("File $xmlName not found in SAF folder")
+                }
+            } else {
+                // Read from file path
+                val file = File(proceduresFolder ?: application?.planePath, xmlName)
+                htmlString = readInputStreamAsString(FileInputStream(file))
+            }
             webView.loadDataWithBaseURL(null, htmlString, "text/html", "utf-8", null)
         } catch (e: Exception) {
             // TODO Show user what is wrong

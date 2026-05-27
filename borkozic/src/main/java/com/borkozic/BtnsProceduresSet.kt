@@ -3,11 +3,9 @@ package com.borkozic
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.os.Environment
 import android.preference.PreferenceManager
-import android.provider.Settings
+import android.provider.DocumentsContract
 import android.util.Log
 import android.view.View
 import android.widget.Button
@@ -44,25 +42,16 @@ class BtnsProceduresSet : Activity() {
     private lateinit var btnName: String
     private lateinit var application: Borkozic
 
-    /* Идея:
-        изпращам информация чрез бутона кой xml файл трябва да зареди за да се покаже
-        на стартираното активити.
-         Всеки бутон трябва да съдържа тази информация.(как?)
-         Цел първа е как да заредя бутоните от файл без да ги
-         описвам програмно, като във този файл трябва да има за всеки бутон
-         отпратка към съответния файл който трябва да зареди
-         */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_btn_procedures)
 
         application = getApplication() as Borkozic
         val ll = findViewById<LinearLayout>(R.id.linearLayotSet)
-        btnName = intent.getStringExtra(MapActivity.BTN_TITLE)!! // Receive btn Number
+        btnName = intent.getStringExtra(MapActivity.BTN_TITLE)!!
         setTitle("$btnName Procedures List")
         Log.d(TAG, "ReceiveBtn: $btnName")
 
-        // Read procedures folder from preferences
         val settings = PreferenceManager.getDefaultSharedPreferences(this)
         val prefKey = when (btnName) {
             getString(R.string.buttonEP) -> getString(R.string.pref_procedures_emer_folder)
@@ -70,50 +59,57 @@ class BtnsProceduresSet : Activity() {
             else -> null
         }
         Log.d(TAG, "prefKey=$prefKey, btnName=$btnName")
-        val storedFolder = prefKey?.let { settings.getString(it, null) }
-        val planePath = application.planePath ?: ""
-        val baseFolder = if (storedFolder.isNullOrEmpty()) planePath else storedFolder
-        val proceduresFile = File(baseFolder, "$btnName.txt").absolutePath
-        Log.d(TAG, "baseFolder=$baseFolder storedFolder=$storedFolder planePath=$planePath file=$proceduresFile")
 
-        // Check MANAGE_EXTERNAL_STORAGE for Android 11+ when using non-app folders
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val appDataPath = application.getExternalFilesDir(null)?.absolutePath ?: ""
-            if (!Environment.isExternalStorageManager() && !baseFolder.startsWith(appDataPath)) {
-                Toast.makeText(this, "Моля, разрешете достъп до всички файлове в Настройки", Toast.LENGTH_LONG).show()
-                val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION)
-                intent.data = Uri.parse("package:$packageName")
-                startActivity(intent)
-                finish()
-                return
-            }
-        }
+        val storedUriStr = prefKey?.let { settings.getString(it, null) }
+        val planePath = application.planePath ?: ""
+        Log.d(TAG, "storedUriStr=$storedUriStr planePath=$planePath")
 
         var btnsString = ""
         try {
-            val file = File(proceduresFile)
-            Log.d(TAG, "Reading file: $proceduresFile, exists=${file.exists()}")
-            val infilestream = FileInputStream(file)
-            btnsString = readInputStreamAsString(infilestream)
+            if (!storedUriStr.isNullOrEmpty()) {
+                // Read from SAF tree URI
+                val treeUri = Uri.parse(storedUriStr)
+                val childUri = findChildUri(treeUri, "$btnName.txt")
+                if (childUri != null) {
+                    contentResolver.openInputStream(childUri)?.use { stream ->
+                        btnsString = readInputStreamAsString(stream)
+                    }
+                }
+            }
+            // Fallback to planePath
+            if (btnsString.isEmpty()) {
+                val file = File(planePath, "$btnName.txt")
+                Log.d(TAG, "Fallback reading: ${file.absolutePath}, exists=${file.exists()}")
+                if (file.exists()) {
+                    btnsString = readInputStreamAsString(FileInputStream(file))
+                }
+            }
         } catch (e: Exception) {
-            Log.e(TAG, "Failed to read procedures file: $proceduresFile", e)
-            Toast.makeText(
-                this@BtnsProceduresSet,
-                "Не може да се прочете: $proceduresFile",
-                Toast.LENGTH_LONG
-            ).show()
+            Log.e(TAG, "Failed to read procedures file", e)
+            Toast.makeText(this,
+                if (!storedUriStr.isNullOrEmpty()) "Не може да се прочете от избраната папка: $storedUriStr"
+                else "Няма избрана папка и няма процедури в $planePath",
+                Toast.LENGTH_LONG).show()
             finish()
             return
         }
 
-        //Следва код който да разделя на отделни бутони
+        if (btnsString.isEmpty()) {
+            Toast.makeText(this, "Файлът $btnName.txt е празен или не съществува", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
+
+        // Determine proceduresFolder for sub-procedure files
+        val proceduresFolderUri = storedUriStr
+        val proceduresFolderPath = if (proceduresFolderUri.isNullOrEmpty()) planePath else null
+
+        // Split into buttons
         val splitbtns = btnsString.split(";").toTypedArray()
-        val proceduresFolder = File(proceduresFile).parent ?: application.planePath
 
         for (element in splitbtns) {
             val splitbtnName = element.split(":").toTypedArray()
 
-            // add buttons
             try {
                 val b = Button(this)
                 val btn_txt = splitbtnName[0].replace(System.getProperty("line.separator") ?: "\n", "")
@@ -127,18 +123,46 @@ class BtnsProceduresSet : Activity() {
                 b.setOnClickListener {
                     val btnsIntent = Intent(this@BtnsProceduresSet, Procedures_Text::class.java)
                     btnsIntent.putExtra(BTNS_TITLE, btnID.toString())
-                    btnsIntent.putExtra(PROCEDURES_FOLDER, proceduresFolder)
+                    btnsIntent.putExtra(PROCEDURES_FOLDER, proceduresFolderPath)
+                    btnsIntent.putExtra("SAF_URI", proceduresFolderUri)
                     startActivity(btnsIntent)
                 }
                 ll.addView(b)
             } catch (e: Exception) {
-                Toast.makeText(
-                    this@BtnsProceduresSet,
-                    "Избраната папка е: ${application.planePath}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Toast.makeText(this,
+                    "Грешка при създаване на бутон: ${e.message}",
+                    Toast.LENGTH_LONG).show()
                 finish()
             }
         }
+    }
+
+    /**
+     * Find a child file by name under a SAF tree URI using DocumentsContract.
+     */
+    private fun findChildUri(treeUri: Uri, fileName: String): Uri? {
+        val documentId = DocumentsContract.getTreeDocumentId(treeUri)
+        val childrenUri = DocumentsContract.buildChildDocumentsUriUsingTree(
+            treeUri, documentId
+        )
+        contentResolver.query(
+            childrenUri,
+            arrayOf(DocumentsContract.Document.COLUMN_DOCUMENT_ID,
+                    DocumentsContract.Document.COLUMN_DISPLAY_NAME),
+            null, null, null
+        )?.use { cursor ->
+            while (cursor.moveToNext()) {
+                val name = cursor.getString(
+                    cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DISPLAY_NAME)
+                )
+                if (name == fileName) {
+                    val childDocId = cursor.getString(
+                        cursor.getColumnIndexOrThrow(DocumentsContract.Document.COLUMN_DOCUMENT_ID)
+                    )
+                    return DocumentsContract.buildDocumentUriUsingTree(treeUri, childDocId)
+                }
+            }
+        }
+        return null
     }
 }

@@ -59,16 +59,12 @@
         android:key="pref_procedures"
         android:title="@string/pref_procedures_title" >
 
-        <com.borkozic.ui.FolderPickerPreference
-            android:defaultValue=""
-            android:dialogMessage="@string/pref_procedures_emer_folder_dialog"
-            android:key="@string/pref_procedures_emer_folder"
+        <Preference
+            android:key="pref_procedures_emer_folder"
             android:summary="@string/pref_procedures_emer_folder_summary"
             android:title="@string/pref_procedures_emer_folder_title" />
-        <com.borkozic.ui.FolderPickerPreference
-            android:defaultValue=""
-            android:dialogMessage="@string/pref_procedures_norm_folder_dialog"
-            android:key="@string/pref_procedures_norm_folder"
+        <Preference
+            android:key="pref_procedures_norm_folder"
             android:summary="@string/pref_procedures_norm_folder_summary"
             android:title="@string/pref_procedures_norm_folder_title" />
 
