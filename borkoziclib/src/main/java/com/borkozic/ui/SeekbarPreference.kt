@@ -10,13 +10,14 @@ package com.borkozic.ui
 
 import android.content.Context
 import android.content.res.TypedArray
-import android.preference.DialogPreference
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
+import androidx.preference.DialogPreference
+import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
 import java.text.DecimalFormat
 
@@ -63,7 +64,7 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         // max and default values are in private namespace because values from integer resource where
         // incorrectly processed when specified in android namespace
         val sattrs: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.SeekbarPreference)
-        mDefault = sattrs.getInt(R.styleable.SeekbarPreference_defaultValue, 0)
+        mDefault = sattrs.getInt(R.styleable.SeekbarPreference_svp_default, 0)
         mMin = sattrs.getInt(R.styleable.SeekbarPreference_min, 0)
         mMax = sattrs.getInt(R.styleable.SeekbarPreference_max, 100)
         mStep = sattrs.getInt(R.styleable.SeekbarPreference_step, 1)
@@ -75,8 +76,8 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         sattrs.recycle()
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
         getValue()
     }
 

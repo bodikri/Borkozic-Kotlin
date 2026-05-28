@@ -14,7 +14,7 @@
         android:summary="@string/pref_maprenderinterval_summary"
         android:text=" ms"
         android:title="@string/pref_maprenderinterval_title"
-        androzic:defaultValue="@integer/def_maprenderinterval"
+        androzic:svp_default="@integer/def_maprenderinterval"
         androzic:format="0"
         androzic:max="50"
         androzic:min="2"
@@ -32,7 +32,7 @@
         android:summary="@string/pref_mapbestinterval_summary"
         android:text=" seconds"
         android:title="@string/pref_mapbestinterval_title"
-        androzic:defaultValue="@integer/def_mapbestinterval"
+        androzic:svp_default="@integer/def_mapbestinterval"
         androzic:max="30"
         androzic:min="3" />
 
@@ -69,7 +69,7 @@
             android:key="@string/pref_onlinemapscale"
             android:summary="@string/pref_onlinemapscale_summary"
             android:title="@string/pref_onlinemapscale_title"
-            androzic:defaultValue="@integer/def_onlinemapscale"
+            androzic:svp_default="@integer/def_onlinemapscale"
             androzic:format="0"
             androzic:max="18"
             androzic:min="1" />

@@ -21,7 +21,7 @@
         android:summary="@string/pref_route_linewidth_summary"
         android:text=" pixels"
         android:title="@string/pref_route_linewidth_title"
-        androzic:defaultValue="@integer/def_route_linewidth"
+        androzic:svp_default="@integer/def_route_linewidth"
         androzic:max="12"
         androzic:min="1" />
     <com.borkozic.ui.preference.HelpfulSeekbarPreference
@@ -29,7 +29,7 @@
         android:summary="@string/pref_route_pointwidth_summary"
         android:text=" pixels"
         android:title="@string/pref_route_pointwidth_title"
-        androzic:defaultValue="@integer/def_route_pointwidth"
+        androzic:svp_default="@integer/def_route_pointwidth"
         androzic:max="33"
         androzic:min="12" />
 

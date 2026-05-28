@@ -88,7 +88,7 @@
             android:key="@string/pref_cursorvectormlpr"
             android:summary="@string/pref_cursorvectormlpr_summary"
             android:title="@string/pref_cursorvectormlpr_title"
-            androzic:defaultValue="@integer/def_cursorvectormlpr"
+            androzic:svp_default="@integer/def_cursorvectormlpr"
             androzic:format="0"
             androzic:max="20"
             androzic:min="1" />
@@ -97,7 +97,7 @@
             android:summary="@string/pref_lookahead_summary"
             android:text=" %"
             android:title="@string/pref_lookahead_title"
-            androzic:defaultValue="@integer/def_lookahead"
+            androzic:svp_default="@integer/def_lookahead"
             androzic:max="100" />
     </PreferenceCategory>
 

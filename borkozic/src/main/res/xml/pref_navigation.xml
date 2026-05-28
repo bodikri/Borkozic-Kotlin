@@ -34,7 +34,7 @@
         android:summary="@string/pref_navigation_linewidth_summary"
         android:text=" pixels"
         android:title="@string/pref_navigation_linewidth_title"
-        androzic:defaultValue="@integer/def_navigation_linewidth"
+        androzic:svp_default="@integer/def_navigation_linewidth"
         androzic:max="10"
         androzic:min="1" />
 

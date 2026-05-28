@@ -21,13 +21,14 @@
 package com.borkozic.ui.preference
 
 import android.content.Context
-import android.preference.ListPreference
 import android.util.AttributeSet
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.preference.ListPreference
+import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
 import com.borkozic.ui.QuickView
 
@@ -41,8 +42,9 @@ class HelpfulListPreference(context: Context, attrs: AttributeSet) : ListPrefere
         setSummary(null as CharSequence?)
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        val view = holder.itemView
         if (summary != null) {
             helpView = QuickView(context)
             helpView?.setText(summary)

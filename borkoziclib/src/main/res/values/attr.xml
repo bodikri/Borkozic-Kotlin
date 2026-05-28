@@ -5,7 +5,7 @@
         <attr name="min" format="integer" />
         <attr name="max" format="integer" />
         <attr name="step" format="integer" />
-        <attr name="defaultValue" format="integer" />
+        <attr name="svp_default" format="integer" />
         <attr name="multiplier" format="float" />
         <attr name="format" format="string" />
     </declare-styleable>

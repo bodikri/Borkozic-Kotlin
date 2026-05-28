@@ -27,6 +27,7 @@ import android.view.View.OnClickListener
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
 import com.borkozic.ui.QuickView
 import com.borkozic.ui.SeekbarPreference
@@ -41,15 +42,15 @@ class HelpfulSeekbarPreference : SeekbarPreference {
         setSummary(null)
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        val view = holder.itemView
         if (summary != null) {
             helpView = QuickView(context)
             helpView?.setText(summary)
 
             val helpImage = ImageView(context)
-            val widgetFrameView = view.findViewById<View>(android.R.id.widget_frame) as ViewGroup?
-            if (widgetFrameView == null) return
+            val widgetFrameView = view.findViewById<View>(android.R.id.widget_frame) as ViewGroup? ?: return
 
             widgetFrameView.visibility = View.VISIBLE
             val rightPaddingDip = if (android.os.Build.VERSION.SDK_INT < 14) 8 else 5

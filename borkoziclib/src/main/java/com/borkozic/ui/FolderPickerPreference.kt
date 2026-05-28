@@ -22,7 +22,6 @@ package com.borkozic.ui
 import android.content.Context
 import android.content.res.TypedArray
 import android.os.Environment
-import android.preference.DialogPreference
 import android.util.AttributeSet
 import android.view.View
 import android.widget.AdapterView
@@ -31,6 +30,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import androidx.preference.DialogPreference
 import java.io.File
 import java.io.FileFilter
 

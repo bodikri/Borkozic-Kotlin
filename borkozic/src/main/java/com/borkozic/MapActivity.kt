@@ -2191,7 +2191,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
 
             R.id.menuPreferences -> {
-                startActivity(Intent(this, PreferencesHC::class.java))
+                startActivity(Intent(this, Preferences::class.java))
                 return true
             }
         }

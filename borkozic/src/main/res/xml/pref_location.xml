@@ -16,7 +16,7 @@
         android:summary="@string/pref_loc_gpstimeout_summary"
         android:text=" seconds"
         android:title="@string/pref_loc_gpstimeout_title"
-        androzic:defaultValue="@integer/def_loc_gpstimeout"
+        androzic:svp_default="@integer/def_loc_gpstimeout"
         androzic:max="300"
         androzic:min="30" />
 

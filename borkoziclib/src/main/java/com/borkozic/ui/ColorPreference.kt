@@ -24,7 +24,6 @@ package com.borkozic.ui
  * Fixes and enhancements by Andrey Novikov, 2010.
  */
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.TypedArray
@@ -33,11 +32,12 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Rect
 import android.graphics.drawable.Drawable
-import android.preference.DialogPreference
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.preference.DialogPreference
+import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
 
 class ColorPreference : DialogPreference {
@@ -67,9 +67,9 @@ class ColorPreference : DialogPreference {
         onColorChanged(color)
     }
 
-    override fun onBindView(view: View) {
-        super.onBindView(view)
-        mView = view
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        mView = holder.itemView
         setPreviewColor()
     }
 
@@ -151,9 +151,7 @@ class ColorPreference : DialogPreference {
         }
     }
 
-    override fun onPrepareDialogBuilder(builder: AlertDialog.Builder) {
-        super.onPrepareDialogBuilder(builder)
-
+    override fun onCreateDialogView(): View? {
         val l = object : OnColorChangedListener {
             override fun colorChanged(color: Int) {
                 onDialogClosed(true)
@@ -166,6 +164,6 @@ class ColorPreference : DialogPreference {
         mAlpha = initialColor or 0x00FFFFFF.toInt()
         initialColor = initialColor or 0xFF000000.toInt()
         mCPView = ColorPickerView(context, l, initialColor)
-        builder.setView(mCPView)
+        return mCPView
     }
 }

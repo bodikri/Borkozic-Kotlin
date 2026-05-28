@@ -11,7 +11,7 @@
         android:summary="@string/pref_waypoint_visible_summary" />
 
     <com.borkozic.ui.preference.HelpfulSeekbarPreference
-        androzic:defaultValue="@integer/def_waypoint_width"
+        androzic:svp_default="@integer/def_waypoint_width"
         android:key="@string/pref_waypoint_width"
         androzic:max="20"
         androzic:min="5"

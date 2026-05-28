@@ -34,7 +34,7 @@
         android:key="@string/pref_mapdimvalue"
         android:text=" %"
         android:title="@string/pref_mapdimvalue_title"
-        borkozic:defaultValue="@integer/def_mapdimvalue"
+        borkozic:svp_default="@integer/def_mapdimvalue"
         borkozic:max="100"
         borkozic:min="10" />
 
@@ -50,7 +50,7 @@
         android:key="@string/pref_planelogosize"
         android:text=" %"
         android:title="@string/pref_panelogosize_title"
-        borkozic:defaultValue="@integer/def_planelogosize"
+        borkozic:svp_default="@integer/def_planelogosize"
         borkozic:max="160"
         borkozic:min="60"
         borkozic:step="20"/>

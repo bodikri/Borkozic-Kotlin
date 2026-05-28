@@ -9,7 +9,7 @@
         android:summary="@string/pref_tracking_linewidth_summary"
         android:text=" pixels"
         android:title="@string/pref_tracking_linewidth_title"
-        androzic:defaultValue="@integer/def_track_linewidth"
+        androzic:svp_default="@integer/def_track_linewidth"
         androzic:max="30"
         androzic:min="1" />
 
