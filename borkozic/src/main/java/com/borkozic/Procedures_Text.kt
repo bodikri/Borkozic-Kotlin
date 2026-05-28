@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.webkit.WebView
 import java.io.BufferedInputStream
 import java.io.ByteArrayOutputStream
@@ -17,6 +18,7 @@ class Procedures_Text : Activity() {
     protected var application: Borkozic? = null
 
     companion object {
+        private const val TAG = "Procedures_Text"
         @Throws(IOException::class)
         fun readInputStreamAsString(`in`: InputStream): String {
             val bis = BufferedInputStream(`in`)
@@ -46,6 +48,7 @@ class Procedures_Text : Activity() {
 
         try {
             val htmlString: String
+            Log.d(TAG, "safUri=$safUri, proceduresFolder=$proceduresFolder, planePath=${application?.planePath}")
             if (!safUri.isNullOrEmpty()) {
                 // Read from SAF tree URI
                 val treeUri = Uri.parse(safUri)
@@ -54,6 +57,7 @@ class Procedures_Text : Activity() {
                     treeUri, documentId
                 )
                 var fileUri: Uri? = null
+                Log.d(TAG, "Querying SAF for $xmlName in tree: $treeUri")
                 contentResolver.query(
                     childrenUri,
                     arrayOf(android.provider.DocumentsContract.Document.COLUMN_DOCUMENT_ID,
@@ -74,19 +78,42 @@ class Procedures_Text : Activity() {
                     }
                 }
                 val foundUri = fileUri
+                Log.d(TAG, "SAF query result for $xmlName: foundUri=$foundUri")
                 if (foundUri != null) {
                     htmlString = contentResolver.openInputStream(foundUri)!!.use { readInputStreamAsString(it) }
+                    Log.d(TAG, "Read ${htmlString.length} chars from SAF: ${htmlString.take(100)}...")
                 } else {
-                    throw Exception("File $xmlName not found in SAF folder")
+                    val msg = "File $xmlName not found in SAF folder $safUri"
+                    Log.e(TAG, msg)
+                    throw Exception(msg)
                 }
             } else {
                 // Read from file path
-                val file = File(proceduresFolder ?: application?.planePath, xmlName)
+                val folder = proceduresFolder ?: application?.planePath
+                Log.d(TAG, "Reading from file path: folder=$folder, file=$xmlName")
+                val file = File(folder, xmlName)
+                Log.d(TAG, "File exists=${file.exists()}, path=${file.absolutePath}")
+                if (!file.exists()) {
+                    val msg = "File ${file.absolutePath} does not exist"
+                    Log.e(TAG, msg)
+                    throw Exception(msg)
+                }
                 htmlString = readInputStreamAsString(FileInputStream(file))
+                Log.d(TAG, "Read ${htmlString.length} chars from file: ${htmlString.take(100)}...")
             }
+            Log.d(TAG, "Loading HTML into WebView, length=${htmlString.length}")
             webView.loadDataWithBaseURL(null, htmlString, "text/html", "utf-8", null)
+            Log.d(TAG, "WebView loaded successfully")
         } catch (e: Exception) {
-            // TODO Show user what is wrong
+            Log.e(TAG, "Failed to load procedure", e)
+            // Show error in WebView
+            webView.loadDataWithBaseURL(null,
+                "<html><body style='padding:20px;color:red;font-size:16px'>" +
+                "<h3>Error loading procedure</h3>" +
+                "<p>${e.message}</p>" +
+                "<p>File: $xmlName</p>" +
+                "</body></html>",
+                "text/html", "utf-8", null)
         }
     }
 }

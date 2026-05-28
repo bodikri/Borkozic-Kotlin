@@ -286,6 +286,18 @@ class Preferences : AppCompatActivity() {
                 startActivity(intent)
                 true
             }
+            updateAllProceduresSummaries()
+        }
+
+        override fun onResume() {
+            super.onResume()
+            Log.d("Preferences", "InnerProceduresFragment: onResume — refreshing summaries")
+            updateAllProceduresSummaries()
+        }
+
+        private fun updateAllProceduresSummaries() {
+            val emerPref = findPreference<Preference>(getString(R.string.pref_procedures_emer_folder))
+            val normPref = findPreference<Preference>(getString(R.string.pref_procedures_norm_folder))
             updateProceduresSummary(emerPref, getString(R.string.pref_procedures_emer_folder),
                 getString(R.string.pref_procedures_emer_folder_summary))
             updateProceduresSummary(normPref, getString(R.string.pref_procedures_norm_folder),
