@@ -26,7 +26,7 @@ import com.borkozic.Borkozic
 import com.borkozic.R
 import com.borkozic.data.MapObject
 import com.borkozic.data.Situation
-import com.borkozic.location.LocationService
+import com.borkozic.location.BaseLocationService
 import com.borkozic.util.Geo
 import com.borkozic.util.StringFormatter
 import org.json.JSONArray
@@ -61,7 +61,6 @@ class SharingService : Service(), SharedPreferences.OnSharedPreferenceChangeList
     var sharingEnabled = false
         private set
     var isSuspended = false
-        private set
     var updateInterval = 10000 // 10 seconds default
         private set
     var timeoutInterval = 600000L // 10 minutes default
@@ -116,7 +115,7 @@ class SharingService : Service(), SharedPreferences.OnSharedPreferenceChangeList
     // Location receiver for periodic checks
     private val broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (LocationService.BROADCAST_LOCATING_STATUS == intent?.action) {
+            if (BaseLocationService.BROADCAST_LOCATING_STATUS == intent?.action) {
                 // Location status changed, no action needed — timer will pick it up
             }
         }
@@ -162,7 +161,7 @@ class SharingService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         textFillPaint.color = resources.getColor(R.color.usertagwithalpha, theme)
 
         prefs.registerOnSharedPreferenceChangeListener(this)
-        registerReceiver(broadcastReceiver, IntentFilter(LocationService.BROADCAST_LOCATING_STATUS))
+        registerReceiver(broadcastReceiver, IntentFilter(BaseLocationService.BROADCAST_LOCATING_STATUS))
 
         sharingEnabled = true
         isSuspended = true
@@ -260,15 +259,20 @@ class SharingService : Service(), SharedPreferences.OnSharedPreferenceChangeList
             val altitude = loc.altitude
 
             val client = AndrozicLocationShareClient()
-            val updated = client.shareAndFetch(
+            val remoteSituations = client.shareAndFetch(
                 session ?: "", user ?: "",
                 lat, lon, speed, track, ftime, altitude,
                 updateInterval, timeoutInterval
             )
 
-            if (updated) {
-                // Refresh map
+            if (remoteSituations.isNotEmpty()) {
+                // Merge new situations
                 synchronized(situations) {
+                    for (s in remoteSituations) {
+                        val name = s.name ?: continue
+                        if (name == user) continue
+                        situations[name] = s
+                    }
                     // Remove stale situations from map
                     val now = System.currentTimeMillis()
                     val stale = mutableListOf<String>()
@@ -364,7 +368,7 @@ class SharingService : Service(), SharedPreferences.OnSharedPreferenceChangeList
     fun createSituationBitmap(situation: Situation): Bitmap {
         val name = situation.name
         val track = StringFormatter.bearingSimpleH(situation.track)
-        val speed = StringFormatter.speedH(situation.speed)
+        val speed = StringFormatter.distanceH(situation.speed, "%.1f")
         val altitude = StringFormatter.elevationH(situation.altitude)
 
         val label = "$name $track $speed $altitude"

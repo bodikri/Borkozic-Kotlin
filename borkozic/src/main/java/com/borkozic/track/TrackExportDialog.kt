@@ -65,7 +65,7 @@ open class TrackExportDialog : DialogFragment(), TextWatcher {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(activity)
+        val prefs = PreferenceManager.getDefaultSharedPreferences(requireActivity())
 
         val view = inflater.inflate(R.layout.dlg_exporttrack, container)
 

@@ -98,22 +98,23 @@ class Preferences : AppCompatActivity() {
 
         override fun onResume() {
             super.onResume()
-            preferenceScreen.sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+            preferenceScreen.sharedPreferences?.registerOnSharedPreferenceChangeListener(this)
             initSummaries(preferenceScreen)
         }
 
         override fun onPause() {
             super.onPause()
-            preferenceScreen.sharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+            preferenceScreen.sharedPreferences?.unregisterOnSharedPreferenceChangeListener(this)
         }
 
-        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
+        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences?, key: String?) {
             if (key == null) return
+            val prefs = sharedPreferences ?: return
 
             when (key) {
                 getString(R.string.pref_folder_root) -> {
                     val application = requireActivity().application as Borkozic
-                    val root = sharedPreferences.getString(
+                    val root = prefs.getString(
                         key,
                         Environment.getExternalStorageDirectory().toString() + File.separator +
                                 getString(R.string.def_folder_prefix)
@@ -124,19 +125,19 @@ class Preferences : AppCompatActivity() {
                     showProgressDialog(getString(R.string.msg_initializingmaps)) {
                         val application = requireActivity().application as Borkozic
                         application.setMapPath(
-                            sharedPreferences.getString(key, resources.getString(R.string.def_folder_map))!!
+                            prefs.getString(key, resources.getString(R.string.def_folder_map))!!
                         )
                     }
                 }
                 getString(R.string.pref_charset) -> {
                     showProgressDialog(getString(R.string.msg_initializingmaps)) {
                         val application = requireActivity().application as Borkozic
-                        application.charset = sharedPreferences.getString(key, "UTF-8")
+                        application.charset = prefs.getString(key, "UTF-8")!!
                         application.resetMaps()
                     }
                 }
                 getString(R.string.pref_onlinemap) -> {
-                    updateOnlineMapSettings(sharedPreferences)
+                    updateOnlineMapSettings(prefs)
                 }
                 getString(R.string.pref_locale) -> {
                     AlertDialog.Builder(requireContext())
@@ -260,7 +261,7 @@ class Preferences : AppCompatActivity() {
         }
 
         private fun updateProceduresSummary(pref: Preference?, key: String, defaultSummary: String) {
-            val uriStr = preferenceScreen.sharedPreferences.getString(key, null)
+            val uriStr = preferenceScreen.sharedPreferences?.getString(key, null)
             pref?.summary = if (uriStr.isNullOrEmpty()) defaultSummary else uriStr
         }
     }
@@ -285,7 +286,7 @@ class Preferences : AppCompatActivity() {
             if (providers.isNotEmpty() && maps != null) {
                 val entries = arrayOfNulls<String>(providers.size)
                 val entryValues = arrayOfNulls<String>(providers.size)
-                val current = preferenceScreen.sharedPreferences.getString(
+                val current = preferenceScreen.sharedPreferences?.getString(
                     getString(R.string.pref_onlinemap),
                     resources.getString(R.string.def_onlinemap)
                 )

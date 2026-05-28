@@ -53,6 +53,14 @@ class SituationListActivity : AppCompatActivity(),
     companion object {
         private const val TAG = "SituationList"
         private const val PERMISSIONS_REQUEST = 1001
+
+        private val BORKOZIC_PERMISSIONS = arrayOf(
+            "com.borkozic.permission.RECEIVE_LOCATION",
+            "com.borkozic.permission.NAVIGATION",
+            "com.borkozic.permission.READ_PREFERENCES",
+            "com.borkozic.permission.READ_MAP_DATA",
+            "com.borkozic.permission.WRITE_MAP_DATA"
+        )
     }
 
     private var listView: ListView? = null
@@ -339,7 +347,7 @@ class SituationListActivity : AppCompatActivity(),
             text = v.findViewById(R.id.track)
             text?.text = StringFormatter.bearingSimpleH(stn.track)
 
-            val speed = StringFormatter.speedH(stn.speed * svc.speedFactor)
+            val speed = StringFormatter.distanceH(stn.speed * svc.speedFactor, "%.1f")
             text = v.findViewById(R.id.speed)
             text?.text = speed
 
@@ -357,36 +365,21 @@ class SituationListActivity : AppCompatActivity(),
 
             // Dim text for silent users
             val alpha = if (stn.silent) 128 else 255
-            v.findViewById<TextView>(R.id.name)?.setTextColor(
-                v.findViewById<TextView>(R.id.name)?.textColors?.withAlpha(alpha) ?: 0
-            )
-            v.findViewById<TextView>(R.id.distance)?.setTextColor(
-                v.findViewById<TextView>(R.id.distance)?.textColors?.withAlpha(alpha) ?: 0
-            )
-            v.findViewById<TextView>(R.id.track)?.setTextColor(
-                v.findViewById<TextView>(R.id.track)?.textColors?.withAlpha(alpha) ?: 0
-            )
-            v.findViewById<TextView>(R.id.speed)?.setTextColor(
-                v.findViewById<TextView>(R.id.speed)?.textColors?.withAlpha(alpha) ?: 0
-            )
-            v.findViewById<TextView>(R.id.altitude)?.setTextColor(
-                v.findViewById<TextView>(R.id.altitude)?.textColors?.withAlpha(alpha) ?: 0
-            )
-            v.findViewById<TextView>(R.id.delay)?.setTextColor(
-                v.findViewById<TextView>(R.id.delay)?.textColors?.withAlpha(alpha) ?: 0
-            )
+            val colorName = v.findViewById<TextView>(R.id.name)?.textColors?.withAlpha(alpha)
+            if (colorName != null) v.findViewById<TextView>(R.id.name)?.setTextColor(colorName)
+            val colorDistance = v.findViewById<TextView>(R.id.distance)?.textColors?.withAlpha(alpha)
+            if (colorDistance != null) v.findViewById<TextView>(R.id.distance)?.setTextColor(colorDistance)
+            val colorTrack = v.findViewById<TextView>(R.id.track)?.textColors?.withAlpha(alpha)
+            if (colorTrack != null) v.findViewById<TextView>(R.id.track)?.setTextColor(colorTrack)
+            val colorSpeed = v.findViewById<TextView>(R.id.speed)?.textColors?.withAlpha(alpha)
+            if (colorSpeed != null) v.findViewById<TextView>(R.id.speed)?.setTextColor(colorSpeed)
+            val colorAltitude = v.findViewById<TextView>(R.id.altitude)?.textColors?.withAlpha(alpha)
+            if (colorAltitude != null) v.findViewById<TextView>(R.id.altitude)?.setTextColor(colorAltitude)
+            val colorDelay = v.findViewById<TextView>(R.id.delay)?.textColors?.withAlpha(alpha)
+            if (colorDelay != null) v.findViewById<TextView>(R.id.delay)?.setTextColor(colorDelay)
 
             return v
         }
     }
 
-    companion object {
-        private val BORKOZIC_PERMISSIONS = arrayOf(
-            "com.borkozic.permission.RECEIVE_LOCATION",
-            "com.borkozic.permission.NAVIGATION",
-            "com.borkozic.permission.READ_PREFERENCES",
-            "com.borkozic.permission.READ_MAP_DATA",
-            "com.borkozic.permission.WRITE_MAP_DATA"
-        )
-    }
 }
