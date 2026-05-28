@@ -249,7 +249,7 @@ class Preferences : AppCompatActivity() {
             setPreferencesFromResource(res, rootKey)
 
             // Handle nested PreferenceScreen for procedures
-            val proceduresScreen = findPreference<Preference>(getString(R.string.pref_procedures))
+            val proceduresScreen = findPreference<Preference>(getString(R.string.pref_procedures_key))
             Log.d("Preferences", "InnerPreferencesFragment: proceduresScreen=$proceduresScreen")
             proceduresScreen?.setOnPreferenceClickListener {
                 Log.d("Preferences", "InnerPreferencesFragment: procedures clicked, opening InnerProceduresFragment")
