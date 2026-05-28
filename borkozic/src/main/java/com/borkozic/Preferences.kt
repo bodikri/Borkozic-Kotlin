@@ -53,7 +53,7 @@ class Preferences : AppCompatActivity() {
         if (savedInstanceState == null) {
             val fragment = when (intent.getStringExtra("pref")) {
                 "pref_behavior" -> OnlineMapPreferencesFragment()
-                "pref_plugins" -> PluginsPreferencesFragment()
+                "pref_sharing" -> LocationSharingPreferencesFragment()
                 "pref_app_about" -> ApplicationPreferencesFragment()
                 else -> MainPreferencesFragment()
             }
@@ -80,7 +80,7 @@ class Preferences : AppCompatActivity() {
         private fun startPreference(key: String?) {
             val fragment = when (key) {
                 "pref_behavior" -> OnlineMapPreferencesFragment()
-                "pref_plugins" -> PluginsPreferencesFragment()
+                "pref_sharing" -> LocationSharingPreferencesFragment()
                 "pref_app_about" -> ApplicationPreferencesFragment()
                 else -> InnerPreferencesFragment().apply {
                     arguments = Bundle().apply { putString("KEY", key) }
@@ -265,22 +265,9 @@ class Preferences : AppCompatActivity() {
         }
     }
 
-    class PluginsPreferencesFragment : PreferenceFragmentCompat() {
+    class LocationSharingPreferencesFragment : BasePreferenceFragment() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
-            val context = preferenceManager.context
-            val screen = preferenceManager.createPreferenceScreen(context)
-            screen.title = getString(R.string.pref_plugins_title)
-            preferenceScreen = screen
-
-            val application = requireActivity().application as Borkozic
-            val plugins = application.getPluginsPreferences()
-
-            for (plugin in plugins.keys) {
-                val preference = Preference(context)
-                preference.title = plugin
-                preference.intent = plugins[plugin]
-                screen.addPreference(preference)
-            }
+            setPreferencesFromResource(R.xml.pref_sharing, rootKey)
         }
     }
 

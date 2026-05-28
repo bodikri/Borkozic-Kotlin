@@ -156,6 +156,10 @@
                 android:id="@+id/menuPasteLocation"
                 android:icon="@drawable/ic_action_paste"
                 android:title="@string/menu_paste" />
+            <item
+                android:id="@+id/menuSituationList"
+                android:icon="@drawable/ic_visibility"
+                android:title="@string/pref_sharing_title" />
         </menu>
     </item>
     <item

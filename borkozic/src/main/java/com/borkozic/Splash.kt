@@ -560,12 +560,11 @@ class Splash : Activity(), OnClickListener {
             msg.data = b
             mHandler.sendMessage(msg)
 
+            // Plugins integrated directly — no need for external plugin enumeration
             msg = mHandler.obtainMessage(MSG_STATUS)
             b.putString("message", getString(R.string.msg_initializingplugins))
             msg.data = b
             mHandler.sendMessage(msg)
-
-            application.initializePlugins()
 
             total += PROGRESS_STEP
             msg = mHandler.obtainMessage(MSG_PROGRESS)

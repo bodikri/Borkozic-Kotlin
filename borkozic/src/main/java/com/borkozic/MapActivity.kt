@@ -1885,16 +1885,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         val inflater = getMenuInflater()
         inflater.inflate(R.menu.options_menu, menu)
 
-        // add plugins
-        val views = menu.findItem(R.id.menuView).getSubMenu()
-        val plugins: MutableMap<String?, Pair<Drawable?, Intent?>?> =
-            application!!.getPluginsViews()
-        for (plugin in plugins.keys) {
-            val item = views!!.add(plugin)
-            item.setIntent(plugins.get(plugin)!!.second)
-            if (plugins.get(plugin)!!.first != null) item.setIcon(plugins.get(plugin)!!.first)
-        }
-
         return true
     }
 
@@ -2192,6 +2182,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     application!!.distanceOverlay!!.setAncor(application!!.getMapCenter())
                     application!!.distanceOverlay!!.setEnabled(true)
                 }
+                return true
+            }
+
+            R.id.menuSituationList -> {
+                startActivity(Intent(this, com.borkozic.location.share.SituationListActivity::class.java))
                 return true
             }
 

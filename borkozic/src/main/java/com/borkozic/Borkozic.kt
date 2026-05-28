@@ -141,11 +141,6 @@ class Borkozic : BaseApplication() {
     internal var editingArea: Area? = null
     internal var areaEditingWaypoints: Stack<Waypoint?>? = null
 
-    // Plugins
-    private val pluginPreferences: AbstractMap<String?, Intent?> = HashMap<String?, Intent?>()
-    private val pluginViews: AbstractMap<String?, android.util.Pair<Drawable?, Intent?>?> =
-        HashMap<String?, android.util.Pair<Drawable?, Intent?>?>()
-
     private var memmsg = false
 
     // FIXME Put overlays in separate class
@@ -266,15 +261,6 @@ class Borkozic : BaseApplication() {
         return overlays
     }
 
-    fun getPluginsPreferences(): MutableMap<String?, Intent?> {
-        return pluginPreferences as MutableMap<String?, Intent?>
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun getPluginsViews(): MutableMap<String?, android.util.Pair<Drawable?, Intent?>?> {
-        return pluginViews as MutableMap<String?, android.util.Pair<Drawable?, Intent?>?>
-    }
-
     fun getZenith(): Zenith {
         return when (sunriseType) {
             0 -> Zenith.OFFICIAL
@@ -337,15 +323,6 @@ class Borkozic : BaseApplication() {
             }
         })
     }
-
-    @get:JvmName("getPluginsPreferencesKt")
-    val pluginsPreferences: MutableMap<String?, Intent?>
-        get() = pluginPreferences
-
-    @Suppress("UNCHECKED_CAST")
-    @get:JvmName("getPluginsViewsKt")
-    val pluginsViews: MutableMap<String?, android.util.Pair<Drawable?, Intent?>?>
-        get() = pluginViews as MutableMap<String?, android.util.Pair<Drawable?, Intent?>?>
 
     val newUID: Long
         get() {
@@ -1412,9 +1389,6 @@ class Borkozic : BaseApplication() {
     }
 
     fun clear() {
-        // send finalization broadcast
-        sendBroadcast(Intent("com.borkozic.plugins.action.FINALIZE"))
-
         clearRoutes()
         clearAreas()
         clearTracks()
@@ -1714,60 +1688,6 @@ class Borkozic : BaseApplication() {
                 out.close()
             } catch (ex: Exception) {
             }
-        }
-    }
-
-    fun initializePlugins() {
-        val packageManager = getPackageManager()
-        var plugins: MutableList<ResolveInfo>?
-        val initializationIntent = Intent("com.borkozic.plugins.action.INITIALIZE")
-
-        // enumerate initializable plugins
-        plugins = packageManager.queryBroadcastReceivers(initializationIntent, 0)
-        for (plugin in plugins) {
-            // send initialization broadcast, we send it directly instead of sending
-            // one broadcast for all plugins to wake up stopped plugins:
-            // http://developer.android.com/about/versions/android-3.1.html#launchcontrols
-            val intent = Intent()
-            intent.setClassName(plugin.activityInfo.packageName, plugin.activityInfo.name)
-            intent.setAction("com.borkozic.plugins.action.INITIALIZE")
-            sendBroadcast(intent)
-        }
-
-
-        // enumerate plugins with preferences
-        plugins =
-            packageManager.queryIntentActivities(Intent("com.borkozic.plugins.preferences"), 0)
-        for (plugin in plugins) {
-            val intent = Intent()
-            intent.setClassName(plugin.activityInfo.packageName, plugin.activityInfo.name)
-            pluginPreferences.put(plugin.activityInfo.loadLabel(packageManager).toString(), intent)
-        }
-
-        // enumerate plugins with views
-        plugins = packageManager.queryIntentActivities(Intent("com.borkozic.plugins.view"), 0)
-        for (plugin in plugins) {
-            // get menu icon
-            var icon: Drawable? = null
-            try {
-                val res =
-                    packageManager.getResourcesForApplication(plugin.activityInfo.applicationInfo)
-                val id =
-                    res.getIdentifier("ic_menu_view", "drawable", plugin.activityInfo.packageName)
-                if (id != 0) icon =
-                    getDependVeDrawable(id, res) //Промяната се налга поради Deprecated metod
-
-                //icon = res.getDrawable(id); //icon = resources.getDrawable(id, Theme);
-            } catch (e: NotFoundException) {
-                e.printStackTrace()
-            } catch (e: PackageManager.NameNotFoundException) {
-                e.printStackTrace()
-            }
-
-            val intent = Intent()
-            intent.setClassName(plugin.activityInfo.packageName, plugin.activityInfo.name)
-            val pair = android.util.Pair<Drawable?, Intent?>(icon, intent)
-            pluginViews.put(plugin.activityInfo.loadLabel(packageManager).toString(), pair)
         }
     }
 

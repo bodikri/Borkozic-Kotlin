@@ -298,6 +298,15 @@
             android:label="@string/areadetails_name"
             android:screenOrientation="portrait"/>
 
+        <activity
+            android:name="com.borkozic.location.share.SituationListActivity"
+            android:label="@string/pref_sharing_title"
+            android:screenOrientation="portrait"/>
+
+        <service
+            android:name="com.borkozic.location.share.SharingService"
+            android:foregroundServiceType="location" />
+
         <!--
         <activity
             android:name="com.borkozic.plugin.locationshare.SituationList"

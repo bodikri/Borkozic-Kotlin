@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:borkozic="http://schemas.android.com/apk/res-auto"
+    android:title="@string/pref_sharing_title">
+
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="@string/pref_sharing_session"
+        android:maxLength="60"
+        android:singleLine="true"
+        android:title="@string/pref_sharing_session_title" />
+    <EditTextPreference
+        android:defaultValue=""
+        android:key="@string/pref_sharing_user"
+        android:maxLength="60"
+        android:singleLine="true"
+        android:title="@string/pref_sharing_user_title" />
+
+    <com.borkozic.ui.SeekbarPreference
+        android:defaultValue="@integer/def_sharing_updateinterval"
+        android:key="@string/pref_sharing_updateinterval"
+        android:title="@string/pref_sharing_updateinterval_title"
+        android:text=" s"
+        borkozic:format="%d s"
+        borkozic:max="300"
+        borkozic:min="3"
+        borkozic:step="3" />
+
+    <com.borkozic.ui.SeekbarPreference
+        android:defaultValue="@integer/def_sharing_timeout"
+        android:key="@string/pref_sharing_timeout"
+        android:title="@string/pref_sharing_timeout_title"
+        android:text=" min"
+        borkozic:format="%d min"
+        borkozic:max="30"
+        borkozic:min="1" />
+
+    <CheckBoxPreference
+        android:defaultValue="@bool/def_notifications"
+        android:key="@string/pref_sharing_notifications"
+        android:title="@string/pref_sharing_notifications_title" />
+
+    <com.borkozic.ui.SeekbarPreference
+        android:defaultValue="@integer/def_sharing_tagsize"
+        android:key="@string/pref_sharing_tagsize"
+        android:title="@string/pref_sharing_tagsize_title"
+        android:text=""
+        borkozic:format="%d"
+        borkozic:max="6"
+        borkozic:min="1" />
+
+    <com.borkozic.ui.ColorPreference
+        android:defaultValue="@color/usertag"
+        android:key="@string/pref_sharing_tagcolor"
+        android:title="@string/pref_sharing_tagcolor_title" />
+
+</PreferenceScreen>
