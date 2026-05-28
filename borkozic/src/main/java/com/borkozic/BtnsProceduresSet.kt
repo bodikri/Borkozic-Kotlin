@@ -75,15 +75,18 @@ class BtnsProceduresSet : Activity() {
         Log.d(TAG, "prefKey=$prefKey, btnName=$btnName storedUriStr=$storedUriStr planePath=$planePath")
 
         var btnsString = ""
+        var readFrom = "none"
         try {
             if (!storedUriStr.isNullOrEmpty()) {
                 val uri = Uri.parse(storedUriStr)
                 if (uri.scheme == "content") {
                     // Read from SAF tree URI
                     val childUri = findChildUri(uri, "$btnName.txt")
+                    Log.d(TAG, "SAF findChildUri for $btnName.txt: childUri=$childUri")
                     if (childUri != null) {
                         contentResolver.openInputStream(childUri)?.use { stream ->
                             btnsString = readInputStreamAsString(stream)
+                            readFrom = "SAF: $storedUriStr"
                         }
                     }
                 } else {
@@ -92,6 +95,7 @@ class BtnsProceduresSet : Activity() {
                     Log.d(TAG, "Legacy file read: ${file.absolutePath}, exists=${file.exists()}")
                     if (file.exists()) {
                         btnsString = readInputStreamAsString(FileInputStream(file))
+                        readFrom = "legacy path: ${file.absolutePath}"
                     }
                 }
             }
@@ -101,8 +105,11 @@ class BtnsProceduresSet : Activity() {
                 Log.d(TAG, "Fallback reading: ${file.absolutePath}, exists=${file.exists()}")
                 if (file.exists()) {
                     btnsString = readInputStreamAsString(FileInputStream(file))
+                    readFrom = "planePath fallback: ${file.absolutePath}"
                 }
             }
+            Log.d(TAG, "READ FROM: $readFrom, length=${btnsString.length}")
+            Log.d(TAG, "Norm.txt content preview: ${btnsString.take(150)}...")
         } catch (e: Exception) {
             Log.e(TAG, "Failed to read procedures file", e)
             Toast.makeText(this,
