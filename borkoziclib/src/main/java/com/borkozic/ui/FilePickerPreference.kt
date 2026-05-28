@@ -38,6 +38,7 @@ import java.io.FilenameFilter
 open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Preference(context, attrs),
     AdapterView.OnItemClickListener {
 
+    private val mDialogMessage: String? = attrs?.getAttributeValue("http://schemas.android.com/apk/res/android", "dialogMessage")
     private var mCurrentValue: String = ""
     private var mCurrentFolder: String = ""
     private var mValueText: TextView? = null
@@ -70,9 +71,9 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Prefer
         layout.orientation = LinearLayout.VERTICAL
         layout.setPadding(6, 6, 6, 6)
 
-        if (dialogMessage != null) {
+        if (mDialogMessage != null) {
             val dialogText = TextView(context)
-            dialogText.text = dialogMessage
+            dialogText.text = mDialogMessage
             dialogText.setPadding(0, 0, 0, 12)
             layout.addView(dialogText)
         }
