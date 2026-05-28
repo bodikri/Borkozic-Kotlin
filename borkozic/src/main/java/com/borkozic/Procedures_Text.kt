@@ -83,9 +83,18 @@ class Procedures_Text : Activity() {
                     htmlString = contentResolver.openInputStream(foundUri)!!.use { readInputStreamAsString(it) }
                     Log.d(TAG, "Read ${htmlString.length} chars from SAF: ${htmlString.take(100)}...")
                 } else {
-                    val msg = "File $xmlName not found in SAF folder $safUri"
-                    Log.e(TAG, msg)
-                    throw Exception(msg)
+                    // Fallback: try planePath if SAF didn't have this file
+                    Log.d(TAG, "Not found in SAF, falling back to planePath")
+                    val folder = proceduresFolder ?: application?.planePath
+                    val file = File(folder, xmlName)
+                    Log.d(TAG, "Fallback file: ${file.absolutePath}, exists=${file.exists()}")
+                    if (!file.exists()) {
+                        val msg = "File $xmlName not found in SAF ($safUri) or planePath (${file.absolutePath})"
+                        Log.e(TAG, msg)
+                        throw Exception(msg)
+                    }
+                    htmlString = readInputStreamAsString(FileInputStream(file))
+                    Log.d(TAG, "Read ${htmlString.length} chars from fallback file")
                 }
             } else {
                 // Read from file path
