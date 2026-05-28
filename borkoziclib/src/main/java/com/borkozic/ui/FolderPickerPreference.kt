@@ -19,6 +19,7 @@
 
 package com.borkozic.ui
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.res.TypedArray
 import android.os.Environment
@@ -30,70 +31,27 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import androidx.preference.DialogPreference
+import androidx.preference.Preference
 import java.io.File
 import java.io.FileFilter
 
-open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs),
+open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : Preference(context, attrs),
     AdapterView.OnItemClickListener {
 
     private var mCurrentValue: String = ""
     private var mCurrentFolder: String = ""
     private var mValueText: TextView? = null
     private var mFolderList: ListView? = null
-    private var mSelectBtn: Button? = null
+    private var mDialog: AlertDialog? = null
 
-    override fun onCreateDialogView(): View {
-        val layout = LinearLayout(context)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.setPadding(6, 6, 6, 6)
-
-        if (dialogMessage != null) {
-            val dialogText = TextView(context)
-            dialogText.text = dialogMessage
-            dialogText.setPadding(0, 0, 0, 12)
-            layout.addView(dialogText)
+    init {
+        setOnPreferenceClickListener {
+            showFolderPickerDialog()
+            true
         }
+    }
 
-        mValueText = TextView(context)
-        mValueText!!.textSize = 16f
-        layout.addView(
-            mValueText, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        mFolderList = ListView(context)
-        layout.addView(
-            mFolderList, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                0,
-                1f
-            )
-        )
-        mFolderList!!.onItemClickListener = this
-
-        // SELECT FOLDER button
-        mSelectBtn = Button(context)
-        mSelectBtn!!.text = "SELECT FOLDER"
-        mSelectBtn!!.setOnClickListener {
-            // Select current folder
-            if (mCurrentFolder.isNotEmpty()) {
-                mCurrentValue = mCurrentFolder
-                dialog?.let { d ->
-                    onClick(d, android.content.DialogInterface.BUTTON_POSITIVE)
-                    d.dismiss()
-                }
-            }
-        }
-        layout.addView(
-            mSelectBtn, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
+    private fun showFolderPickerDialog() {
         if (this.isPersistent)
             mCurrentValue = getPersistedString("")
 
@@ -108,9 +66,65 @@ open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : Dial
             mCurrentFolder = Environment.getExternalStorageDirectory().absolutePath
         }
 
-        populateList()
+        val layout = LinearLayout(context)
+        layout.orientation = LinearLayout.VERTICAL
+        layout.setPadding(6, 6, 6, 6)
 
-        return layout
+        if (dialogMessage != null) {
+            val dialogText = TextView(context)
+            dialogText.text = dialogMessage
+            dialogText.setPadding(0, 0, 0, 12)
+            layout.addView(dialogText)
+        }
+
+        mValueText = TextView(context)
+        mValueText!!.textSize = 16f
+        layout.addView(mValueText, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+
+        mFolderList = ListView(context)
+        layout.addView(mFolderList, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT, 0, 1f
+        ))
+        mFolderList!!.onItemClickListener = this
+
+        // SELECT FOLDER button
+        val selectBtn = Button(context)
+        selectBtn.text = "SELECT FOLDER"
+        selectBtn.setOnClickListener {
+            if (mCurrentFolder.isNotEmpty()) {
+                mCurrentValue = mCurrentFolder
+                onPositiveResult()
+                mDialog?.dismiss()
+            }
+        }
+        layout.addView(selectBtn, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+
+        mDialog = AlertDialog.Builder(context)
+            .setTitle(title)
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                if (mCurrentFolder.isNotEmpty()) {
+                    mCurrentValue = mCurrentFolder
+                    onPositiveResult()
+                }
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        populateList()
+        mDialog?.show()
+    }
+
+    private fun onPositiveResult() {
+        if (callChangeListener(mCurrentValue) && shouldPersist())
+            persistString(mCurrentValue)
+        notifyChanged()
     }
 
     override fun onGetDefaultValue(a: TypedArray, index: Int): Any {
@@ -125,15 +139,6 @@ open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : Dial
 
         if (mCurrentValue.isNullOrEmpty())
             mCurrentValue = ""
-    }
-
-    override fun onDialogClosed(positiveResult: Boolean) {
-        if (!positiveResult)
-            return
-        if (callChangeListener(mCurrentValue) && shouldPersist())
-            persistString(mCurrentValue)
-
-        notifyChanged()
     }
 
     override fun getSummary(): CharSequence {
@@ -161,12 +166,7 @@ open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : Dial
             items.add("📁 ..")
         dirs?.forEach { items.add("📁 ${it.name}") }
 
-        val adapter = ArrayAdapter(
-            context,
-            android.R.layout.simple_list_item_1,
-            android.R.id.text1,
-            items
-        )
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, android.R.id.text1, items)
         mFolderList?.adapter = adapter
     }
 
@@ -179,7 +179,7 @@ open class FolderPickerPreference(context: Context, attrs: AttributeSet?) : Dial
                 populateList()
             }
             item.startsWith("📁 ") -> {
-                val dirName = item.substring(3) // remove "📁 "
+                val dirName = item.substring(3)
                 mCurrentFolder = File(mCurrentFolder, dirName).absolutePath
                 populateList()
             }

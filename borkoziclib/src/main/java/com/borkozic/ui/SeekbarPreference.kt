@@ -8,21 +8,21 @@
 
 package com.borkozic.ui
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.Gravity
-import android.view.View
 import android.widget.LinearLayout
 import android.widget.SeekBar
 import android.widget.TextView
-import androidx.preference.DialogPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
 import java.text.DecimalFormat
 
 /**
- * SeekbarPreference class implements seekbar [android.preference.DialogPreference] edit.
+ * SeekbarPreference class implements seekbar preference edit via manual AlertDialog.
  *
  * Attributes supported:<br/>
  * `android:text` - current value display suffix (not required)<br/>
@@ -31,15 +31,14 @@ import java.text.DecimalFormat
  * Styled attributes supported:<br/>
  * `min` - minimum value, integer, default 0<br/>
  * `max` - maximum value, integer, default 100<br/>
- * `defaultValue` - default value, integer, default 0<br/>
+ * `svp_default` - default value, integer, default 0<br/>
  * `multiplier` - multiplier used for value display (note that it will not affect persisted value), default 1<br/>
- *
  * `format` - format of value display, suitable for [java.text.DecimalFormat], default "0"
  *
  * @author Andrey Novikov
  */
 open class SeekbarPreference(context: Context, attrs: AttributeSet) :
-    DialogPreference(context, attrs), SeekBar.OnSeekBarChangeListener {
+    Preference(context, attrs), SeekBar.OnSeekBarChangeListener {
 
     private val androidns = "http://schemas.android.com/apk/res/android"
 
@@ -61,8 +60,6 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         mDialogMessage = attrs.getAttributeValue(androidns, "dialogMessage")
         mSuffix = attrs.getAttributeValue(androidns, "text")
 
-        // max and default values are in private namespace because values from integer resource where
-        // incorrectly processed when specified in android namespace
         val sattrs: TypedArray = context.obtainStyledAttributes(attrs, R.styleable.SeekbarPreference)
         mDefault = sattrs.getInt(R.styleable.SeekbarPreference_svp_default, 0)
         mMin = sattrs.getInt(R.styleable.SeekbarPreference_min, 0)
@@ -74,15 +71,16 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
             fmt = "0"
         format = DecimalFormat(fmt)
         sattrs.recycle()
+
+        setOnPreferenceClickListener {
+            if (isPersistent)
+                mValue = getPersistedInt(mDefault)
+            showSeekbarDialog()
+            true
+        }
     }
 
-    override fun onBindViewHolder(holder: PreferenceViewHolder) {
-        super.onBindViewHolder(holder)
-        getValue()
-    }
-
-    override fun onCreateDialogView(): View {
-        val params: LinearLayout.LayoutParams
+    private fun showSeekbarDialog() {
         val layout = LinearLayout(context)
         layout.orientation = LinearLayout.VERTICAL
         layout.setPadding(6, 6, 6, 6)
@@ -96,11 +94,10 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         mValueText = TextView(context)
         mValueText!!.gravity = Gravity.CENTER_HORIZONTAL
         mValueText!!.textSize = 26f
-        params = LinearLayout.LayoutParams(
+        layout.addView(mValueText, LinearLayout.LayoutParams(
             LinearLayout.LayoutParams.MATCH_PARENT,
             LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-        layout.addView(mValueText, params)
+        ))
 
         mSeekBar = SeekBar(context)
         layout.addView(mSeekBar, LinearLayout.LayoutParams(
@@ -108,19 +105,25 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
             LinearLayout.LayoutParams.WRAP_CONTENT
         ))
 
-        if (isPersistent)
-            mValue = getPersistedInt(mDefault)
-
         mSeekBar!!.max = mMax - mMin
         setProgress(mValue - mMin)
         mSeekBar!!.setOnSeekBarChangeListener(this)
-        return layout
+
+        AlertDialog.Builder(context)
+            .setTitle(title)
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                if (callChangeListener(mValue) && shouldPersist())
+                    persistInt(mValue)
+                notifyChanged()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
-    override fun onBindDialogView(v: View) {
-        super.onBindDialogView(v)
-        mSeekBar!!.max = mMax - mMin
-        setProgress(mValue - mMin)
+    override fun onBindViewHolder(holder: PreferenceViewHolder) {
+        super.onBindViewHolder(holder)
+        getValue()
     }
 
     override fun onSetInitialValue(restore: Boolean, defaultValue: Any?) {
@@ -134,16 +137,6 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         }
     }
 
-    override fun onDialogClosed(positiveResult: Boolean) {
-        if (positiveResult) {
-            if (callChangeListener(mValue) && shouldPersist())
-                persistInt(mValue)
-        }
-    }
-
-    /**
-     * Called when user changes progress value, stores value in persistent storage if applicable
-     */
     override fun onProgressChanged(seek: SeekBar, value: Int, fromTouch: Boolean) {
         mValue = mStep * ((value + mMin) / mStep)
         mValueText?.text = getText(mValue)
@@ -153,42 +146,18 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
 
     override fun onStopTrackingTouch(seek: SeekBar) {}
 
-    /**
-     * Sets real maximum possible value
-     * @param max new maximum
-     */
     fun setMax(max: Int) {
         mMax = max
     }
 
-    /**
-     * Returns real maximum possible value
-     * @return maximum value
-     */
-    fun getMax(): Int {
-        return mMax
-    }
+    fun getMax(): Int = mMax
 
-    /**
-     * Sets real minimum possible value
-     * @param min new minimum
-     */
     fun setMin(min: Int) {
         mMin = min
     }
 
-    /**
-     * Returns real minimum possible value
-     * @return minimum value
-     */
-    fun getMin(): Int {
-        return mMin
-    }
+    fun getMin(): Int = mMin
 
-    /**
-     * Sets fake progress (for internal use)
-     * @param progress fake progress
-     */
     fun setProgress(progress: Int) {
         val value = progress + mMin
         mSeekBar?.setProgress(progress)
@@ -202,9 +171,7 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         return mValue
     }
 
-    fun getText(): String {
-        return getText(getValue())
-    }
+    fun getText(): String = getText(getValue())
 
     private fun getText(value: Int): String {
         var t = format.format(value * mMultiplier)
@@ -213,11 +180,5 @@ open class SeekbarPreference(context: Context, attrs: AttributeSet) :
         return t
     }
 
-    /**
-     * Returns fake progress for internal use
-     * @return progress
-     */
-    fun getProgress(): Int {
-        return mValue - mMin
-    }
+    fun getProgress(): Int = mValue - mMin
 }

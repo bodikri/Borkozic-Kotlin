@@ -24,8 +24,8 @@ package com.borkozic.ui
  * Fixes and enhancements by Andrey Novikov, 2010.
  */
 
+import android.app.AlertDialog
 import android.content.Context
-import android.content.SharedPreferences
 import android.content.res.TypedArray
 import android.graphics.Bitmap
 import android.graphics.Canvas
@@ -36,17 +36,16 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.preference.DialogPreference
+import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
 
-class ColorPreference : DialogPreference {
+class ColorPreference : Preference {
 
     private var mCurrentColor: Int = 0
     private var mDefaultColor: Int = Color.TRANSPARENT
     private var mAlpha: Int = 0
     private var mDensity: Float = 0f
-    private var mCPView: ColorPickerView? = null
     private var mView: View? = null
 
     @JvmOverloads
@@ -55,6 +54,30 @@ class ColorPreference : DialogPreference {
         mDefaultColor = a.getColor(R.styleable.ColorPreference_defaultColor, Color.TRANSPARENT)
         mDensity = context.resources.displayMetrics.density
         a.recycle()
+
+        setOnPreferenceClickListener {
+            showColorPickerDialog()
+            true
+        }
+    }
+
+    private fun showColorPickerDialog() {
+        val prefs = preferenceManager.sharedPreferences
+        var initialColor = prefs!!.getInt(key, mDefaultColor)
+        mAlpha = initialColor or 0x00FFFFFF.toInt()
+        initialColor = initialColor or 0xFF000000.toInt()
+
+        val l = object : OnColorChangedListener {
+            override fun colorChanged(color: Int) {
+                onColorChanged(color)
+            }
+        }
+
+        val cpView = ColorPickerView(context, l, initialColor)
+        AlertDialog.Builder(context)
+            .setView(cpView)
+            .setNegativeButton(android.R.string.cancel, null)
+            .show()
     }
 
     override fun onGetDefaultValue(a: TypedArray, index: Int): Any {
@@ -85,7 +108,6 @@ class ColorPreference : DialogPreference {
             (mDensity * rightPaddingDip).toInt(),
             widgetFrameView.paddingBottom
         )
-        // remove already created preview images
         val count = widgetFrameView.childCount
         if (count > 0) {
             widgetFrameView.removeViews(0, count)
@@ -96,7 +118,7 @@ class ColorPreference : DialogPreference {
 
     private val previewBitmap: Bitmap
         get() {
-            val d = (mDensity * 31).toInt() // 30dip
+            val d = (mDensity * 31).toInt()
             val color = value
             val bm = Bitmap.createBitmap(d, d, Bitmap.Config.ARGB_8888)
             val w = bm.width
@@ -139,31 +161,10 @@ class ColorPreference : DialogPreference {
             persistInt(c)
         mCurrentColor = c
         setPreviewColor()
+        notifyChanged()
         try {
             onPreferenceChangeListener?.onPreferenceChange(this, c)
         } catch (_: NullPointerException) {
         }
-    }
-
-    override fun onDialogClosed(positiveResult: Boolean) {
-        if (positiveResult) {
-            mCPView?.let { onColorChanged(it.getColor()) }
-        }
-    }
-
-    override fun onCreateDialogView(): View? {
-        val l = object : OnColorChangedListener {
-            override fun colorChanged(color: Int) {
-                onDialogClosed(true)
-                dialog?.dismiss()
-            }
-        }
-
-        val prefs: SharedPreferences = preferenceManager.sharedPreferences
-        var initialColor = prefs.getInt(key, mDefaultColor)
-        mAlpha = initialColor or 0x00FFFFFF.toInt()
-        initialColor = initialColor or 0xFF000000.toInt()
-        mCPView = ColorPickerView(context, l, initialColor)
-        return mCPView
     }
 }

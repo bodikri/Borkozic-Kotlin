@@ -19,6 +19,7 @@
 
 package com.borkozic.ui
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.res.TypedArray
 import android.os.Environment
@@ -29,50 +30,28 @@ import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
-import androidx.preference.DialogPreference
+import androidx.preference.Preference
 import java.io.File
 import java.io.FileFilter
 import java.io.FilenameFilter
-import java.util.Arrays
 
-open class FilePickerPreference(context: Context, attrs: AttributeSet?) : DialogPreference(context, attrs),
+open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Preference(context, attrs),
     AdapterView.OnItemClickListener {
 
     private var mCurrentValue: String = ""
     private var mCurrentFolder: String = ""
     private var mValueText: TextView? = null
     private var mFolderList: ListView? = null
+    private var mDialog: AlertDialog? = null
 
-    override fun onCreateDialogView(): View {
-        val layout = LinearLayout(context)
-        layout.orientation = LinearLayout.VERTICAL
-        layout.setPadding(6, 6, 6, 6)
-
-        if (dialogMessage != null) {
-            val dialogText = TextView(context)
-            dialogText.text = dialogMessage
-            dialogText.setPadding(0, 0, 0, 12)
-            layout.addView(dialogText)
+    init {
+        setOnPreferenceClickListener {
+            showFilePickerDialog()
+            true
         }
+    }
 
-        mValueText = TextView(context)
-        mValueText!!.textSize = 16f
-        layout.addView(
-            mValueText, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-        )
-
-        mFolderList = ListView(context)
-        layout.addView(
-            mFolderList, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-        )
-        mFolderList!!.onItemClickListener = this
-
+    private fun showFilePickerDialog() {
         if (this.isPersistent)
             mCurrentValue = getPersistedString("")
 
@@ -87,9 +66,48 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Dialog
             mCurrentFolder = Environment.getExternalStorageDirectory().absolutePath
         }
 
-        populateList()
+        val layout = LinearLayout(context)
+        layout.orientation = LinearLayout.VERTICAL
+        layout.setPadding(6, 6, 6, 6)
 
-        return layout
+        if (dialogMessage != null) {
+            val dialogText = TextView(context)
+            dialogText.text = dialogMessage
+            dialogText.setPadding(0, 0, 0, 12)
+            layout.addView(dialogText)
+        }
+
+        mValueText = TextView(context)
+        mValueText!!.textSize = 16f
+        layout.addView(mValueText, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.WRAP_CONTENT
+        ))
+
+        mFolderList = ListView(context)
+        layout.addView(mFolderList, LinearLayout.LayoutParams(
+            LinearLayout.LayoutParams.MATCH_PARENT,
+            LinearLayout.LayoutParams.MATCH_PARENT
+        ))
+        mFolderList!!.onItemClickListener = this
+
+        mDialog = AlertDialog.Builder(context)
+            .setTitle(title)
+            .setView(layout)
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                onPositiveResult()
+            }
+            .setNegativeButton(android.R.string.cancel, null)
+            .create()
+
+        populateList()
+        mDialog?.show()
+    }
+
+    private fun onPositiveResult() {
+        if (callChangeListener(mCurrentValue) && shouldPersist())
+            persistString(mCurrentValue)
+        notifyChanged()
     }
 
     override fun onGetDefaultValue(a: TypedArray, index: Int): Any {
@@ -106,15 +124,6 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Dialog
             mCurrentValue = ""
     }
 
-    override fun onDialogClosed(positiveResult: Boolean) {
-        if (!positiveResult)
-            return
-        if (callChangeListener(mCurrentValue) && shouldPersist())
-            persistString(mCurrentValue)
-
-        notifyChanged()
-    }
-
     override fun getSummary(): CharSequence {
         val summary = super.getSummary()
         return summary?.toString() ?: getPersistedString(mCurrentValue)
@@ -126,7 +135,8 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Dialog
             mCurrentFolder = Environment.getExternalStorageDirectory().absolutePath
         }
 
-        mValueText?.text = mCurrentFolder + if (mCurrentValue.isNotEmpty()) "\nSelected: ${File(mCurrentValue).name}" else ""
+        mValueText?.text = mCurrentFolder +
+            if (mCurrentValue.isNotEmpty()) "\nSelected: ${File(mCurrentValue).name}" else ""
 
         val parent = if (File(mCurrentFolder).parentFile == null) 0 else 1
 
@@ -139,12 +149,7 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Dialog
         dirs?.forEach { items.add("📁 ${it.name}") }
         txtFiles?.forEach { items.add("📄 ${it.name}") }
 
-        val adapter = ArrayAdapter(
-            context,
-            android.R.layout.simple_list_item_1,
-            android.R.id.text1,
-            items
-        )
+        val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, android.R.id.text1, items)
         mFolderList?.adapter = adapter
     }
 
@@ -158,20 +163,18 @@ open class FilePickerPreference(context: Context, attrs: AttributeSet?) : Dialog
                 populateList()
             }
             item.startsWith("📁 ") -> {
-                val dirName = item.substring(3) // remove "📁 "
+                val dirName = item.substring(3)
                 mCurrentFolder = File(mCurrentFolder, dirName).absolutePath
                 mCurrentValue = ""
                 populateList()
             }
             item.startsWith("📄 ") -> {
-                val fileName = item.substring(3) // remove "📄 "
+                val fileName = item.substring(3)
                 mCurrentValue = File(mCurrentFolder, fileName).absolutePath
                 populateList()
-                // Auto-confirm selection: close dialog with positive result
-                dialog?.let { d ->
-                    onClick(d, android.content.DialogInterface.BUTTON_POSITIVE)
-                    d.dismiss()
-                }
+                // Auto-confirm: call positive result directly
+                onPositiveResult()
+                mDialog?.dismiss()
             }
         }
     }
