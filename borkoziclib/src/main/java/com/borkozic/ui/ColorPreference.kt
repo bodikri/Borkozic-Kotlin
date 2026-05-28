@@ -66,7 +66,7 @@ class ColorPreference : Preference {
         val prefs = preferenceManager.sharedPreferences
         var initialColor = prefs!!.getInt(key, mDefaultColor)
         mAlpha = initialColor or 0x00FFFFFF
-        initialColor = initialColor or 0xFF000000
+        initialColor = initialColor or 0xFF000000.toInt()
 
         val l = object : OnColorChangedListener {
             override fun colorChanged(color: Int) {

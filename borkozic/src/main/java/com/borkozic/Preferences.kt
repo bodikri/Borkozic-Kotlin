@@ -20,6 +20,7 @@
 
 package com.borkozic
 
+import android.util.Log
 import android.app.AlertDialog
 import android.app.backup.BackupManager
 import android.content.Intent
@@ -46,6 +47,10 @@ import java.io.File
 
 class Preferences : AppCompatActivity() {
 
+    companion object {
+        private const val TAG = "Preferences"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -64,12 +69,15 @@ class Preferences : AppCompatActivity() {
 
     class MainPreferencesFragment : PreferenceFragmentCompat() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            Log.d("Preferences", "MainPreferencesFragment: onCreatePreferences rootKey=$rootKey")
             setPreferencesFromResource(R.xml.preferences, rootKey)
 
             for (i in 0 until preferenceScreen.preferenceCount) {
                 val pref = preferenceScreen.getPreference(i)
                 val key = pref.key
+                Log.d("Preferences", "MainPreferencesFragment: pref[$i] key=$key class=${pref.javaClass.simpleName}")
                 pref.setOnPreferenceClickListener {
+                    Log.d("Preferences", "MainPreferencesFragment: clicked key=$key")
                     startPreference(key)
                     true
                 }
@@ -77,6 +85,7 @@ class Preferences : AppCompatActivity() {
         }
 
         private fun startPreference(key: String?) {
+            Log.d("Preferences", "startPreference: key=$key")
             val fragment = when (key) {
                 "pref_behavior" -> OnlineMapPreferencesFragment()
                 "pref_sharing" -> LocationSharingPreferencesFragment()
@@ -234,12 +243,15 @@ class Preferences : AppCompatActivity() {
         @Suppress("DEPRECATION")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             val key = arguments?.getString("KEY") ?: return
+            Log.d("Preferences", "InnerPreferencesFragment: key=$key rootKey=$rootKey")
             val res = resources.getIdentifier(key, "xml", requireActivity().packageName)
+            Log.d("Preferences", "InnerPreferencesFragment: resId=$res")
             setPreferencesFromResource(res, rootKey)
 
             // SAF folder picker for procedures
             val emerPref = findPreference<Preference>(getString(R.string.pref_procedures_emer_folder))
             val normPref = findPreference<Preference>(getString(R.string.pref_procedures_norm_folder))
+            Log.d("Preferences", "InnerPreferencesFragment: emerPref=$emerPref normPref=$normPref")
             emerPref?.setOnPreferenceClickListener {
                 val intent = Intent(requireActivity(), ProceduresFolderPickerActivity::class.java)
                 intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,
@@ -268,6 +280,7 @@ class Preferences : AppCompatActivity() {
 
     class LocationSharingPreferencesFragment : BasePreferenceFragment() {
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            Log.d("Preferences", "LocationSharingPreferencesFragment: onCreatePreferences")
             setPreferencesFromResource(R.xml.pref_sharing, rootKey)
         }
     }
@@ -326,6 +339,7 @@ class Preferences : AppCompatActivity() {
                     "unable to retreive version"
                 }
                 val fmt = getString(R.string.version)
+                @Suppress("StringFormatInvalid")
                 versionLabel.text = String.format(fmt, versionName)
                 AlertDialog.Builder(requireContext())
                     .setIcon(R.drawable.icon)
