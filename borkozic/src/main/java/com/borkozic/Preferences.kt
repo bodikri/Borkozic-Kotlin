@@ -26,7 +26,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
 import android.content.pm.PackageManager.NameNotFoundException
-import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.view.LayoutInflater
@@ -34,13 +33,13 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.preference.CheckBoxPreference
+import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
-import androidx.preference.PreferenceScreen
 import com.borkozic.map.online.TileProvider
 import com.borkozic.ui.SeekbarPreference
 import java.io.File
@@ -177,14 +176,14 @@ class Preferences : AppCompatActivity() {
                     resources.getInteger(R.integer.def_onlinemapscale)
                 )
                 if (zoom < curProvider.minZoom) {
-                    sharedPreferences.edit()
-                        .putInt(getString(R.string.pref_onlinemapscale), curProvider.minZoom.toInt())
-                        .apply()
+                    sharedPreferences.edit {
+                        putInt(getString(R.string.pref_onlinemapscale), curProvider.minZoom.toInt())
+                    }
                 }
                 if (zoom > curProvider.maxZoom) {
-                    sharedPreferences.edit()
-                        .putInt(getString(R.string.pref_onlinemapscale), curProvider.maxZoom.toInt())
-                        .apply()
+                    sharedPreferences.edit {
+                        putInt(getString(R.string.pref_onlinemapscale), curProvider.maxZoom.toInt())
+                    }
                 }
             }
         }
@@ -224,14 +223,15 @@ class Preferences : AppCompatActivity() {
                 val pref = preference.getPreference(i)
                 setPrefSummary(pref)
 
-                if (pref is PreferenceGroup || pref is PreferenceScreen) {
-                    initSummaries(pref as PreferenceGroup)
+                if (pref is PreferenceGroup) {
+                    initSummaries(pref)
                 }
             }
         }
     }
 
     class InnerPreferencesFragment : BasePreferenceFragment() {
+        @Suppress("DEPRECATION")
         override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
             val key = arguments?.getString("KEY") ?: return
             val res = resources.getIdentifier(key, "xml", requireActivity().packageName)
@@ -291,13 +291,11 @@ class Preferences : AppCompatActivity() {
                     resources.getString(R.string.def_onlinemap)
                 )
                 var curProvider: TileProvider? = null
-                var i = 0
-                for (provider in providers) {
+                for ((i, provider) in providers.withIndex()) {
                     entries[i] = provider.name
                     entryValues[i] = provider.code
                     if (current == provider.code)
                         curProvider = provider
-                    i++
                 }
                 maps.entries = entries
                 maps.entryValues = entryValues
@@ -324,10 +322,11 @@ class Preferences : AppCompatActivity() {
                     requireActivity().packageManager.getPackageInfo(
                         requireActivity().packageName, 0
                     ).versionName
-                } catch (ex: NameNotFoundException) {
+                } catch (_: NameNotFoundException) {
                     "unable to retreive version"
                 }
-                versionLabel.text = getString(R.string.version, versionName)
+                val fmt = getString(R.string.version)
+                versionLabel.text = String.format(fmt, versionName)
                 AlertDialog.Builder(requireContext())
                     .setIcon(R.drawable.icon)
                     .setTitle(R.string.app_name)
@@ -339,14 +338,14 @@ class Preferences : AppCompatActivity() {
 
             val prefDonateGoogle = findPreference<Preference>(getString(R.string.pref_donategoogle))
             prefDonateGoogle?.setOnPreferenceClickListener {
-                val marketIntent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=com.borkozic.donate"))
+                val marketIntent = Intent(Intent.ACTION_VIEW, "market://details?id=com.borkozic.donate".toUri())
                 startActivity(marketIntent)
                 true
             }
 
             val prefDonatePaypal = findPreference<Preference>(getString(R.string.pref_donatepaypal))
             prefDonatePaypal?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.paypaluri))))
+                startActivity(Intent(Intent.ACTION_VIEW).setData(getString(R.string.paypaluri).toUri()))
                 true
             }
 
@@ -358,31 +357,31 @@ class Preferences : AppCompatActivity() {
 
             val prefGooglePlus = findPreference<Preference>(getString(R.string.pref_googleplus))
             prefGooglePlus?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.googleplusuri))))
+                startActivity(Intent(Intent.ACTION_VIEW).setData(getString(R.string.googleplusuri).toUri()))
                 true
             }
 
             val prefFacebook = findPreference<Preference>(getString(R.string.pref_facebook))
             prefFacebook?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.facebookuri))))
+                startActivity(Intent(Intent.ACTION_VIEW).setData(getString(R.string.facebookuri).toUri()))
                 true
             }
 
             val prefTwitter = findPreference<Preference>(getString(R.string.pref_twitter))
             prefTwitter?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.twitteruri))))
+                startActivity(Intent(Intent.ACTION_VIEW).setData(getString(R.string.twitteruri).toUri()))
                 true
             }
 
             val prefFaq = findPreference<Preference>(getString(R.string.pref_faq))
             prefFaq?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.faquri))))
+                startActivity(Intent(Intent.ACTION_VIEW).setData(getString(R.string.faquri).toUri()))
                 true
             }
 
             val prefFeature = findPreference<Preference>(getString(R.string.pref_feature))
             prefFeature?.setOnPreferenceClickListener {
-                startActivity(Intent(Intent.ACTION_VIEW).setData(Uri.parse(getString(R.string.featureuri))))
+                startActivity(Intent(Intent.ACTION_VIEW).setData(getString(R.string.featureuri).toUri()))
                 true
             }
 

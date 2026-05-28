@@ -36,6 +36,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.graphics.set
 import androidx.preference.Preference
 import androidx.preference.PreferenceViewHolder
 import com.borkozic.library.R
@@ -64,8 +65,8 @@ class ColorPreference : Preference {
     private fun showColorPickerDialog() {
         val prefs = preferenceManager.sharedPreferences
         var initialColor = prefs!!.getInt(key, mDefaultColor)
-        mAlpha = initialColor or 0x00FFFFFF.toInt()
-        initialColor = initialColor or 0xFF000000.toInt()
+        mAlpha = initialColor or 0x00FFFFFF
+        initialColor = initialColor or 0xFF000000
 
         val l = object : OnColorChangedListener {
             override fun colorChanged(color: Int) {
@@ -86,7 +87,7 @@ class ColorPreference : Preference {
 
     override fun onSetInitialValue(restoreValue: Boolean, defaultValue: Any?) {
         val color = if (restoreValue) value else (defaultValue as Int)
-        mAlpha = color or 0x00FFFFFF.toInt()
+        mAlpha = color or 0x00FFFFFF
         onColorChanged(color)
     }
 
@@ -101,11 +102,10 @@ class ColorPreference : Preference {
         val iView = ImageView(context)
         val widgetFrameView = view.findViewById<ViewGroup>(android.R.id.widget_frame) ?: return
         widgetFrameView.visibility = View.VISIBLE
-        val rightPaddingDip = if (android.os.Build.VERSION.SDK_INT < 14) 8 else 5
         widgetFrameView.setPadding(
             widgetFrameView.paddingLeft,
             widgetFrameView.paddingTop,
-            (mDensity * rightPaddingDip).toInt(),
+            (mDensity * 5).toInt(),
             widgetFrameView.paddingBottom
         )
         val count = widgetFrameView.childCount
@@ -126,9 +126,9 @@ class ColorPreference : Preference {
             for (i in 0 until w) {
                 for (j in i until h) {
                     val c = if (i <= 1 || j <= 1 || i >= w - 2 || j >= h - 2) Color.GRAY else color
-                    bm.setPixel(i, j, c)
+                    bm[i, j] = c
                     if (i != j) {
-                        bm.setPixel(j, i, c)
+                        bm[j, i] = c
                     }
                 }
             }
@@ -149,7 +149,7 @@ class ColorPreference : Preference {
                 if (isPersistent) {
                     mCurrentColor = getPersistedInt(mDefaultColor)
                 }
-            } catch (e: ClassCastException) {
+            } catch (_: ClassCastException) {
                 mCurrentColor = mDefaultColor
             }
             return mCurrentColor
