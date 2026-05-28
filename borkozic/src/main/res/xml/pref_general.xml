@@ -56,7 +56,7 @@
         borkozic:step="20"/>
 
     <PreferenceScreen
-        android:key="pref_procedures"
+        android:key="@string/pref_procedures_key"
         android:title="@string/pref_procedures_title" >
 
         <Preference

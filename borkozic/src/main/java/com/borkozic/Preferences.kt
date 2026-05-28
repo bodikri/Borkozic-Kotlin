@@ -248,10 +248,30 @@ class Preferences : AppCompatActivity() {
             Log.d("Preferences", "InnerPreferencesFragment: resId=$res")
             setPreferencesFromResource(res, rootKey)
 
+            // Handle nested PreferenceScreen for procedures
+            val proceduresScreen = findPreference<Preference>(getString(R.string.pref_procedures))
+            Log.d("Preferences", "InnerPreferencesFragment: proceduresScreen=$proceduresScreen")
+            proceduresScreen?.setOnPreferenceClickListener {
+                Log.d("Preferences", "InnerPreferencesFragment: procedures clicked, opening InnerProceduresFragment")
+                val fragment = InnerProceduresFragment()
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(android.R.id.content, fragment)
+                    .addToBackStack(null)
+                    .commit()
+                true
+            }
+        }
+    }
+
+    class InnerProceduresFragment : BasePreferenceFragment() {
+        override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
+            Log.d("Preferences", "InnerProceduresFragment: onCreatePreferences")
+            setPreferencesFromResource(R.xml.pref_procedures, rootKey)
+
             // SAF folder picker for procedures
             val emerPref = findPreference<Preference>(getString(R.string.pref_procedures_emer_folder))
             val normPref = findPreference<Preference>(getString(R.string.pref_procedures_norm_folder))
-            Log.d("Preferences", "InnerPreferencesFragment: emerPref=$emerPref normPref=$normPref")
+            Log.d("Preferences", "InnerProceduresFragment: emerPref=$emerPref normPref=$normPref")
             emerPref?.setOnPreferenceClickListener {
                 val intent = Intent(requireActivity(), ProceduresFolderPickerActivity::class.java)
                 intent.putExtra(ProceduresFolderPickerActivity.EXTRA_PREF_KEY,

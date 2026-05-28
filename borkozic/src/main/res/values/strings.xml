@@ -99,6 +99,7 @@
 
     <string name="buttonEP">Emer</string>
     <string name="buttonNP">Norm</string>
+    <string name="pref_procedures_key">pref_procedures</string>
     <string name="pref_procedures_title">Procedures</string>
     <string name="pref_procedures_emer_folder_title">Emergency procedures folder</string>
     <string name="pref_procedures_emer_folder_summary">Select folder with emergency procedure files</string>
