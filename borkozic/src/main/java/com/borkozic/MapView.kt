@@ -306,8 +306,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         val cy = height / 2
 
         // Rotation — bearing is in DEGREES now, canvas.rotate() expects degrees
-        val rotBearingDeg = if (isTrackUp && !isFollowing) bearing else 0f
-        if (rotBearingDeg != 0f && !isFollowing) {
+        val rotBearingDeg = if (isTrackUp) bearing else 0f
+        if (rotBearingDeg != 0f) {
             canvas.rotate(rotBearingDeg, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
         }
         // drawMap needs bearing in RADIANS for coordinate transforms
@@ -333,7 +333,9 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 (-mapCenterXY[1] + currentLocationXY[1]).toFloat()
             )
             if (isMoving) {
-                canvas.rotate(bearing, 0f, 0f)
+                if (!isTrackUp) {
+                    canvas.rotate(bearing, 0f, 0f)
+                }
                 if (isFixed) {
                     canvas.drawLine(0f, 0f, 0f, -vectorLength.toFloat(), pointerPaint!!)
                 }
