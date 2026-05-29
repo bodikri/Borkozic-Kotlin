@@ -322,15 +322,16 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
 
         // draw cursor (it is always topmost)
         if (!scaled && currentLocation != null) {
-            canvas.save()
-            if (isTrackUp) {
-                // Counter-rotate to cancel map rotation — compass and cursor stay North-oriented
-                canvas.rotate(-bearing)
-            }
+            // Compass needle — drawn in the rotated canvas, rotates with map
             if (isTrackUp) {
                 canvas.translate(0f, -compassAhead.toFloat())
                 compasNeedl?.draw(canvas)
                 canvas.translate(0f, compassAhead.toFloat())
+            }
+            // Cursor — save/restore with counter-rotation so it stays fixed, pointing up
+            canvas.save()
+            if (isTrackUp) {
+                canvas.rotate(-bearing)
             }
             canvas.translate(
                 (-mapCenterXY[0] + currentLocationXY[0]).toFloat(),
