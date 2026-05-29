@@ -381,7 +381,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
 
     fun setLocation(loc: Location) {
         synchronized(lock) {
-            bearing = loc.bearing
             speed = loc.speed
 
             if (currentLocation == null) {
@@ -391,11 +390,12 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             currentLocation!![1] = loc.longitude
             currentLocationXY = application?.getXYbyLatLon(currentLocation!![0], currentLocation!![1]) ?: intArrayOf(0, 0)
 
-            lookAheadB = (bearing / 10).toInt() * 10f
-
             val lastLocationMillis = loc.time
 
             if (isFollowing) {
+                bearing = loc.bearing
+                lookAheadB = (bearing / 10).toInt() * 10f
+
                 var newMap = false
                 if (bestMapEnabled && bestMapInterval > 0 && lastLocationMillis - lastBestMap >= bestMapInterval) {
                     application?.let { app ->
