@@ -324,6 +324,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         if (!scaled && currentLocation != null) {
             canvas.save()
             if (isTrackUp) {
+                // Counter-rotate to cancel map rotation — compass and cursor stay North-oriented
+                canvas.rotate(-bearing)
+            }
+            if (isTrackUp) {
                 canvas.translate(0f, -compassAhead.toFloat())
                 compasNeedl?.draw(canvas)
                 canvas.translate(0f, compassAhead.toFloat())
