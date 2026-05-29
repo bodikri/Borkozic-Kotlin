@@ -128,7 +128,26 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     private var lookAheadB = 0f
     private var smoothB = 0f
     private var smoothBS = 0f
+    // ── Rotation & Display State ──────────────────────────────────────
+    /**
+     * Map rotation angle in DEGREES (0–360).
+     * - North Up:  bearing is the heading — cursor rotates, map stays fixed.
+     * - Track Up:  bearing is the heading — map rotates, cursor stays fixed.
+     * - Manual:    set by 2-finger pinch-rotate gesture when not following.
+     * - GPS:       set from Location.bearing when isFollowing == true.
+     */
     var bearing = 0f
+    /**
+     * Track Up mode: when true (Settings → Display → Map Rotation → Track Up),
+     * the map canvas rotates to keep the heading direction "up" on screen.
+     * When false (North Up), the map stays fixed and only the cursor rotates.
+     */
+    var isTrackUp = true
+    /**
+     * True when map scrolls automatically to keep the current GPS location centered.
+     * Toggled via double-tap on map.
+     */
+    private var isFollowing = false
     private var speed = 0f
     private var mpp = 0.0
     private var vectorLength = 0
@@ -148,9 +167,17 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     private val lock = Any()
 
     // ── Gesture state machine ────────────────────────────────────────────
+    /**
+     * Current gesture: NOTHING(0)/DRAG(1)/PINCH(2).
+     * NOTHING → idle, awaiting touch. DRAG → single-finger pan.
+     * PINCH → two-finger zoom + rotate.
+     */
     private var gestureMode = GESTURE_NOTHING
+    /** Distance between two fingers at pinch start (zoom baseline). */
     private var gestureStartPinchDist = 0f
+    /** Angle between two fingers at pinch start (rotation baseline). */
     private var gestureStartAngle = 0f
+    /** Map bearing at pinch start — anchor for absolute rotation (no drift). */
     private var gestureStartBearing = 0f
     private var gestureStartScale = 1f
     private var gestureStartMapX = 0
@@ -290,6 +317,23 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Main drawing routine — called by DrawingThread ~10x/sec.
+     *
+     * Rendering order (bottom → top):
+     * 1. White background fill.
+     * 2. Map rotation (Track Up only): canvas.rotate(+bearing) around screen center.
+     *    - North Up (isTrackUp=false):  rotBearingDeg=0, canvas NOT rotated.
+     *    - Track Up (isTrackUp=true):   canvas rotated so heading direction is "up" on screen.
+     * 3. Map tiles: Borkozic.drawMap() with bearing in radians for coordinate transforms.
+     * 4. Overlays (routes, tracks, etc.) — drawn in rotated canvas.
+     * 5. Compass needle (Track Up): drawn in rotated canvas → rotates with map, always points
+     *    to true North on the map.
+     * 6. Plane cursor: save/restore block with canvas.rotate(-bearing) to counter-rotate
+     *    so the cursor always points straight up (heading direction).
+     *    - North Up: cursor.rotate(+bearing) rotates the plane to the heading angle.
+     * 7. Crosshair (when !isFollowing): centered, drawn in rotated canvas.
+     */
     protected fun doDraw(canvas: Canvas) {
         val scaled = scale > 1.1f || scale < 0.9f
         if (scaled) {
