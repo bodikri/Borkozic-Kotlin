@@ -125,6 +125,8 @@ open class RouteEdit : ListActivity(), DropListener, OnClickListener, RemoveList
 
     override fun onDestroy() {
         super.onDestroy()
-        route = null!!
+        // lateinit var route cannot be set to null in Kotlin;
+        // garbage collector handles cleanup automatically.
+        // Original Java: route = null — broken Kotlin conversion produced null!!
     }
 }
