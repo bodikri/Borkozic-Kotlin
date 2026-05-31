@@ -53,6 +53,25 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+/**
+ * Core map rendering surface — the heart of Borkozic's navigation display.
+ *
+ * ## Architecture
+ * - **DrawingThread**: renders ~10fps (33fps during animations) on a SurfaceView canvas.
+ * - **Gesture state machine**: single tap, double tap, drag, pinch-zoom, pinch-rotate.
+ * - **Animation engine** (calculateLookAhead): three-layer smooth animation system
+ *   for bearing changes, center transitions, and lookAhead shifting.
+ *
+ * ## Display Modes
+ * - **North Up** (isTrackUp=false): map fixed, cursor rotates with heading.
+ * - **Track Up** (isTrackUp=true): map rotates, cursor fixed, compass shows North.
+ *
+ * ## Following
+ * - Toggled via double-tap. When active, map auto-centers on GPS and bearing
+ *   tracks heading. Smooth animations prevent jarring transitions.
+ *
+ * @see docs/components/map-rotation.md for detailed documentation
+ */
 open class MapView : SurfaceView, SurfaceHolder.Callback {
     companion object {
         private const val TAG = "MapView"
@@ -113,29 +132,35 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     private var bestMapEnabled = true
 
     private var tapHandler: GestureHandler? = null
-    private var firstTapTime: Long = 0
-    private var wasDoubleTap = false
-    private var upEvent: MotionEvent? = null
+    private var firstTapTime: Long = 0  // timestamp of first tap (double-tap detection)
+    private var wasDoubleTap = false    // last gesture was a double-tap
+    private var upEvent: MotionEvent? = null  // cached ACTION_UP event for overlay dispatch
     private var penX = 0
     private var penY = 0
-    private var penOX = 0
-    private var penOY = 0
+    private var penOX = 0  // pen-down origin X (for tap location tracking)
+    private var penOY = 0  // pen-down origin Y
+    /** Pixel offset from screen center to the lookahead cursor position. */
     var lookAheadXY = intArrayOf(0, 0)
 
     private var lookAhead = 0
-    private var lookAheadC = 0f
-    private var lookAheadS = 0f
-    private var lookAheadSS = 0f
-    private var lookAheadPst = 0
+    private var lookAheadC = 0f   // target lookahead distance
+    private var lookAheadS = 0f   // current (smoothed) lookahead distance
+    private var lookAheadSS = 0f  // lookahead smoothing velocity
+    private var lookAheadPst = 0  // persisted lookahead percentage setting
+    /** Viewport area for overlay clipping (set externally). */
     var viewArea = Rect()
 
+    /** Current map center in geographic coordinates [lat, lon]. */
     var mapCenter = doubleArrayOf(0.0, 0.0)
+    /** Current map center in pixel coordinates (based on current map projection). */
     var mapCenterXY = intArrayOf(0, 0)
+    /** Current GPS location [lat, lon] (null when no fix). */
     var currentLocation: DoubleArray? = null
+    /** Current GPS location in pixel coordinates. */
     var currentLocationXY = intArrayOf(0, 0)
-    private var lookAheadB = 0f
-    private var smoothB = 0f
-    private var smoothBS = 0f
+    private var lookAheadB = 0f   // target bearing (rounded to nearest 10°)
+    private var smoothB = 0f      // current smoothed bearing (Layer 3)
+    private var smoothBS = 0f     // bearing smoothing velocity (Layer 3)
     // ── Rotation & Display State ──────────────────────────────────────
     /**
      * Map rotation angle in DEGREES (0–360).
@@ -180,17 +205,21 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     private var smoothCenterProgress = 0.0
     /** Progress velocity — accelerates then decelerates. */
     private var smoothCenterSpeed = 0.0
+    /** Current GPS speed (m/s) from latest location update. */
     private var speed = 0f
+    /** Meters per pixel at current map zoom — used for vector length calculation. */
     private var mpp = 0.0
+    /** Cached directional vector line length in pixels. */
     private var vectorLength = 0
+    /** Proximity value (meters) for vector Type 1 calculation. */
     private var proximity = 0
 
-    private var movingCursor: Drawable? = null
-    private var compasNeedl: Drawable? = null
-    private var compassAhead = 0
-    private var crossPaint: Paint? = null
-    private var pointerPaint: Paint? = null
-    private var active: PorterDuffColorFilter? = null
+    private var movingCursor: Drawable? = null  // plane icon drawable
+    private var compasNeedl: Drawable? = null   // compass needle drawable
+    private var compassAhead = 0                // compass offset from center (pixels)
+    private var crossPaint: Paint? = null       // crosshair paint
+    private var pointerPaint: Paint? = null     // directional vector + off-screen arrow paint
+    private var active: PorterDuffColorFilter? = null  // color filter for fixed (valid) cursor
 
     private var application: Borkozic? = null
 
@@ -396,7 +425,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 ?.forEach { mo -> mo.onManagedDraw(canvas, this, cx, cy) }
         }
 
-        // draw cursor (it is always topmost)
+        // ── Cursor rendering (always topmost) ─────────────────────
         if (!scaled && currentLocation != null) {
             // Compass needle — drawn in the rotated canvas, rotates with map
             if (isTrackUp) {
@@ -432,6 +461,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             }
             canvas.restore()
 
+            // Off-screen pointer arrow — visible when cursor is outside viewport
+            // Points toward the GPS location from the edge of the screen
             val sx = currentLocationXY[0] - mapCenterXY[0] + cx
             val sy = currentLocationXY[1] - mapCenterXY[1] + cy
 
@@ -534,7 +565,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     }
 
     /**
-     * Clears current location from map.
+     * Clears current location and resets map state.
+     * Called when GPS fix is lost or user disconnects location source.
      */
     fun clearLocation() {
         setFollowingThroughContext(false)
@@ -546,6 +578,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         calculateVectorLength()
     }
 
+    /**
+     * Updates local map metadata after a map change.
+     * Resets zoom scale, recalculates meters-per-pixel (mpp),
+     * notifies overlays and updates file info display.
+     */
     fun updateMapInfo() {
         synchronized(lock) {
             scale = 1f
@@ -740,6 +777,12 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         return recalculated
     }
 
+    /**
+     * Calculates the length of the directional vector line drawn ahead of
+     * the plane cursor. The length depends on:
+     * - vectorType: 0=fixed(7px), 1=proximity-based, 2=speed-based
+     * - vectorMultiplier: user-configurable scale factor
+     */
     private fun calculateVectorLength() {
         synchronized(lock) {
             if (mpp == 0.0) {
@@ -756,6 +799,12 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Updates the plane cursor size variant. Called when user changes
+     * cursor settings in Preferences.
+     *
+     * @param planeLogoSize Pixel size variant code (60, 80, 100, 120, 140, 160)
+     */
     fun setMovingCursorSize(planeLogoSize: Int) {
         when (planeLogo) {
             "MiG29" -> {
@@ -784,7 +833,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         val mc = movingCursor
         if (mc != null) {
             mc.setBounds(-mc.intrinsicWidth / 2, 0, mc.intrinsicWidth / 2, mc.intrinsicHeight)
-            mc.colorFilter = if (isFixed) active else null
+            mc.colorFilter = if (isFixed) active else null  // dimmed when no GPS fix
         }
     }
 
@@ -836,6 +885,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Toggles follow mode via MapActivity context.
+     * Used internally from gesture/key handlers — routes through
+     * the activity to ensure proper state propagation.
+     */
     private fun setFollowingThroughContext(follow: Boolean) {
         if (isFollowing != follow) {
             try {
@@ -873,6 +927,13 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         bestMapInterval = best
     }
 
+    /**
+     * Sets the lookahead percentage — how far ahead of the GPS position
+     * the cursor is displayed (0–100%). Higher values shift the cursor
+     * further ahead in the direction of travel, optimizing visible space.
+     *
+     * @param ahead Percentage value (0–100). 0 = no offset, cursor at GPS position.
+     */
     fun setLookAhead(ahead: Int) {
         synchronized(lock) {
             lookAheadPst = ahead
@@ -883,6 +944,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Sets Track Up display mode from Settings.
+     *
+     * @param isTrUp Preference string: "0" = North Up, "1" = Track Up
+     */
     fun setTrackUp(isTrUp: String) {
         synchronized(lock) {
             isTrackUp = isTrUp == "1"
@@ -909,6 +975,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         viewArea.set(area)
     }
 
+    /**
+     * Synchronizes local mapCenter/mapCenterXY and currentLocationXY
+     * from the Borkozic application state. Called after external state
+     * changes (map scroll, location update, screen rotation restore).
+     */
     fun update() {
         synchronized(lock) {
             val mc = application?.getMapCenter()
@@ -927,6 +998,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Scrolls the map by delta pixels in screen space.
+     * Called after a single-finger drag gesture completes.
+     * Triggers map info refresh if the map changed.
+     */
     private fun onDragFinished(deltaX: Int, deltaY: Int) {
         synchronized(lock) {
             // Always drag in screen space — finger direction = map movement direction
@@ -937,6 +1013,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Handles a single tap on the map.
+     * Converts screen coordinates to map coordinates, accounting for
+     * Track Up rotation, then dispatches to overlays for hit testing.
+     */
     private fun onSingleTap(x: Int, y: Int) {
         synchronized(lock) {
             val mapTapX: Int
@@ -979,6 +1060,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Gesture detection helper — schedules single-tap vs double-tap
+     * resolution on the main looper.
+     */
     @SuppressLint("HandlerLeak")
     private inner class GestureHandler(view: MapView) : Handler(Looper.getMainLooper()) {
         private val target = WeakReference(view)
@@ -1008,6 +1093,20 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         firstTapTime = 0
     }
 
+    // ── Touch event handling ───────────────────────────────────────────
+    /**
+     * Gesture state machine for map interaction.
+     *
+     * Supports:
+     * - Single tap → overlay hit testing via onSingleTap()
+     * - Double tap → toggle auto-follow mode
+     * - Single finger drag → pan the map (rotation-compensated when !isFollowing)
+     * - Pinch (2 fingers) → zoom + rotate
+     *
+     * Double-tap detection: first tap arms a delayed TAP handler (via
+     * doubleTapTimeout). If a second DOWN arrives within the timeout window,
+     * onDoubleTap() fires. Otherwise, the delayed TAP fires a regular tap.
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
         val action = event.actionMasked
@@ -1171,6 +1270,12 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         return ((deg % 360f) + 360f) % 360f
     }
 
+    // ── Key/trackball input ───────────────────────────────────────────
+    /**
+     * D-pad and hardware key input for map navigation.
+     * - Center button → toggle follow
+     * - Arrow keys → pan by 10px (disables follow if strictUnfollow enabled)
+     */
     override fun onKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         when (keyCode) {
             KeyEvent.KEYCODE_DPAD_CENTER -> {
@@ -1203,6 +1308,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         return super.onKeyUp(keyCode, event)
     }
 
+    /**
+     * Trackball events: click toggles follow, scroll pans the map.
+     * Legacy hardware support for devices with optical trackpads.
+     */
     override fun onTrackballEvent(event: MotionEvent): Boolean {
         when (event.action) {
             MotionEvent.ACTION_UP -> {
