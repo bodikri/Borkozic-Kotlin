@@ -55,6 +55,7 @@ import android.widget.TextView
 import com.borkozic.data.Area
 import com.borkozic.data.Route
 import com.borkozic.data.Track
+import com.borkozic.data.WaypointSet
 import com.borkozic.overlay.AreaOverlay
 import com.borkozic.overlay.CurrentTrackOverlay
 import com.borkozic.overlay.RouteOverlay
@@ -438,6 +439,19 @@ class Splash : Activity(), OnClickListener {
             if (wptFile.exists() && wptFile.canRead()) {
                 try {
                     application.addWaypoints(OziExplorerFiles.loadWaypointsFromFile(wptFile, application.charset ?: "").toMutableList())
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            // read RouteWaypoints — waypoints created during route editing for reuse
+            val rwWptFile = File(application.dataPath, "RouteWaypoints.wpt")
+            if (rwWptFile.exists() && rwWptFile.canRead()) {
+                try {
+                    val routeWpts = OziExplorerFiles.loadWaypointsFromFile(rwWptFile, application.charset ?: "").toMutableList()
+                    val rwSet = WaypointSet(rwWptFile)
+                    application.addWaypointSet(rwSet)
+                    application.addWaypoints(routeWpts, rwSet)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
