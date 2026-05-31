@@ -61,6 +61,7 @@ import com.borkozic.data.Route
 import com.borkozic.data.Track
 import com.borkozic.data.Track.TrackPoint
 import com.borkozic.data.Waypoint
+import com.borkozic.data.WaypointSet
 import com.borkozic.location.BaseLocationService
 import com.borkozic.location.ILocationListener
 import com.borkozic.location.ILocationService
@@ -155,6 +156,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     protected var showDistance: Int = 0
     protected var showAccuracy: Boolean = false
     protected var followOnLocation: Boolean = false
+    /** WaypointSet that collects all waypoints added to a route during editing for reuse across routes. */
+    private var routeWaypointSet: WaypointSet? = null
     protected var exitConfirmation: Int = 0
     private var secondBack = false
     private var backToast: Toast? = null
@@ -1664,6 +1667,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         application!!.editingRoute = route
         application!!.editingRoute!!.editing = true
 
+        // ── Ensure RouteWaypoints waypoint set exists for sharing points across routes ──
+        ensureRouteWaypointSet()
+
         // Center map on first waypoint if route has points
         val firstWp = application!!.editingRoute!!.waypoints.firstOrNull()
         if (firstWp != null) {
@@ -2205,14 +2211,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                 when (actionId) {
                     qaAddWaypointToRoute -> {
-                        application!!.routeEditingWaypoints!!.push(
-                            application!!.editingRoute!!.addWaypoint(
-                                wpt.name,
-                                wpt.latitude,
-                                wpt.longitude,
-                                wpt.altitude
-                            )
+                        val wpt = application!!.editingRoute!!.addWaypoint(
+                            wpt.name,
+                            wpt.latitude,
+                            wpt.longitude,
+                            wpt.altitude
                         )
+                        application!!.routeEditingWaypoints!!.push(wpt)
+                        addToRouteWaypointSet(wpt)
                         map!!.invalidate()
                     }
 
@@ -2476,13 +2482,17 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 )
             } else {
                 val aloc: DoubleArray = application!!.getMapCenter()
-                application!!.routeEditingWaypoints!!.push(
-                    application!!.editingRoute!!.addWaypoint(
-                        "RWPT" + application!!.editingRoute!!.length(),
-                        aloc[0],
-                        aloc[1]
-                    )
+                // Use current GPS elevation if available, otherwise 0
+                val alt = lastElevation
+                val wpt = application!!.editingRoute!!.addWaypoint(
+                    "RWPT" + application!!.editingRoute!!.length(),
+                    aloc[0],
+                    aloc[1],
+                    alt
                 )
+                application!!.routeEditingWaypoints!!.push(wpt)
+                // Also add to RouteWaypoints set for reuse
+                addToRouteWaypointSet(wpt)
             }
 
             R.id.insertpoint -> if (application!!.editingArea != null) {
@@ -2496,13 +2506,15 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 )
             } else {
                 val iloc: DoubleArray = application!!.getMapCenter()
-                application!!.routeEditingWaypoints!!.push(
-                    application!!.editingRoute!!.insertWaypoint(
-                        "RWPT" + application!!.editingRoute!!.length(),
-                        iloc[0],
-                        iloc[1]
-                    )
+                val alt = lastElevation
+                val wpt = application!!.editingRoute!!.insertWaypoint(
+                    "RWPT" + application!!.editingRoute!!.length(),
+                    iloc[0],
+                    iloc[1],
+                    alt
                 )
+                application!!.routeEditingWaypoints!!.push(wpt)
+                addToRouteWaypointSet(wpt)
             }
 
             R.id.removepoint -> if (application!!.editingArea != null) {
@@ -2853,6 +2865,39 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 mapActivity.waitBar!!.setText("")
             }
         }
+    }
+
+    /**
+     * Finds or creates a "RouteWaypoints" WaypointSet so that waypoints
+     * added during route editing are also available in the waypoint list
+     * for reuse across routes.
+     */
+    private fun ensureRouteWaypointSet() {
+        if (routeWaypointSet != null) return
+        // Look for existing set
+        for (wptset in application!!.waypointSets) {
+            if ("RouteWaypoints" == wptset.name) {
+                routeWaypointSet = wptset
+                return
+            }
+        }
+        // Create new set
+        val path = application!!.dataPath + File.separator + "RouteWaypoints.wpt"
+        routeWaypointSet = WaypointSet(path, "RouteWaypoints")
+        application!!.addWaypointSet(routeWaypointSet)
+    }
+
+    /**
+     * Adds a waypoint to the RouteWaypoints set so it can be reused across routes.
+     * Called every time a waypoint is added to the editing route.
+     * Borkozic.addWaypoint() assigns wpt.set = defWaypointSet by default;
+     * we override it to point to the RouteWaypoints set for proper grouping.
+     */
+    private fun addToRouteWaypointSet(wpt: Waypoint) {
+        ensureRouteWaypointSet()
+        application!!.addWaypoint(wpt)
+        wpt.set = routeWaypointSet  // override defWaypointSet assignment
+        application!!.saveWaypoints(routeWaypointSet!!)
     }
 
     companion object {
