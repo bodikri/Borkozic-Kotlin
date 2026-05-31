@@ -1168,7 +1168,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                                 gestureDragY = rawY
 
                                 if (!isFollowing) {
-                                    val rad = Math.toRadians(-bearing.toDouble())
+                                    // Track Up: canvas is already rotated by +bearing → apply
+                                    // forward rotation to convert screen delta to map delta.
+                                    // North Up: canvas NOT rotated → need inverse rotation.
+                                    val rad = Math.toRadians((if (isTrackUp) bearing else -bearing).toDouble())
                                     val mapDx = (dx * cos(rad) + dy * sin(rad)).toInt()
                                     val mapDy = (-dx * sin(rad) + dy * cos(rad)).toInt()
                                     onDragFinished(mapDx, mapDy)
