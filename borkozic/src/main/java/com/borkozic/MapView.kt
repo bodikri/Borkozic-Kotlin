@@ -605,6 +605,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 if (abs(diff) < SMOOTH_CENTER_INC * 1.5) {
                     // Animation complete — snap to target and transition to Phase 2
                     application?.setMapCenter(targetLat, targetLon, true, false)
+                    // Sync local state so renderer sees the correct position
+                    mapCenter[0] = targetLat
+                    mapCenter[1] = targetLon
+                    mapCenterXY = application?.getXYbyLatLon(targetLat, targetLon) ?: intArrayOf(0, 0)
                     updateMapInfo()
                     smoothCenterActive = false
                     smoothCenterProgress = 1.0
@@ -622,7 +626,15 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     val p = smoothCenterProgress
                     val interpLat = smoothCenterStartLat + (targetLat - smoothCenterStartLat) * p
                     val interpLon = smoothCenterStartLon + (targetLon - smoothCenterStartLon) * p
-                    application?.setMapCenter(interpLat, interpLon, false, false)
+                    // Directly update Borkozic.mapCenter to avoid setMapCenter() overhead per frame
+                    // (setMapCenter calls updateLocationMaps which does map coverage checks)
+                    application?.let { app ->
+                        app.setMapCenter(interpLat, interpLon, false, false)
+                    }
+                    // Sync local copies — doDraw() reads these, not Borkozic's copies
+                    mapCenter[0] = interpLat
+                    mapCenter[1] = interpLon
+                    mapCenterXY = application?.getXYbyLatLon(interpLat, interpLon) ?: intArrayOf(0, 0)
 
                     // ── Staggered bearing: converge proportionally ──
                     val deltaB = ((targetB - smoothCenterStartBearing) % 360f + 540f) % 360f - 180f
