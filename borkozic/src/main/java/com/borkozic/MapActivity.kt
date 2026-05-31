@@ -158,6 +158,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     protected var followOnLocation: Boolean = false
     /** WaypointSet that collects all waypoints added to a route during editing for reuse across routes. */
     private var routeWaypointSet: WaypointSet? = null
+    /** Global counter for unique waypoint names across all routes in this session. */
+    private var routeWaypointNameCounter = 0
     protected var exitConfirmation: Int = 0
     private var secondBack = false
     private var backToast: Toast? = null
@@ -202,6 +204,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     protected var wptQuickActionAddToRoute: QuickAction3D? =
         null //активира действие при натискане за добавяне на точка към маршрут
     protected var wptQuickActionAddToArea: QuickAction3D? = null
+    /** Quick action shown when tapping a waypoint outside editing mode (Edit/Navigate). */
+    protected var wptQuickAction: QuickAction3D? = null
     protected var rteQuickAction: QuickAction3D? = null
     protected var mobQuickAction: QuickAction3D? = null
     private var dimView: ViewGroup? = null
@@ -379,6 +383,17 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             )
         )
         wptQuickActionAddToArea!!.setOnActionItemClickListener(waypointActionItemClickListener) //resources.getDrawable(R.drawable.ic_action_add)));
+
+        // Quick action for tapping a waypoint outside editing mode — Edit/Navigate
+        wptQuickAction = QuickAction3D(this, QuickAction3D.VERTICAL)
+        wptQuickAction!!.addActionItem(
+            ActionItem(
+                qaEditWaypoint,
+                getString(R.string.menu_edit),
+                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_edit, null)
+            )
+        )
+        wptQuickAction!!.setOnActionItemClickListener(waypointActionItemClickListener)
 
         rteQuickAction = QuickAction3D(this, QuickAction3D.VERTICAL)
         rteQuickAction!!.addActionItem(
@@ -1783,16 +1798,10 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 wptQuickActionAddToArea!!.show(map, x, y)
                 return true
             } else {
-                val loc: Location = application!!.getLocationAsLocation()
-                val fm = getSupportFragmentManager()
-                var waypointInfo = fm.findFragmentByTag("waypoint_info") as WaypointInfo?
-                if (waypointInfo == null) waypointInfo = WaypointInfo()
-                waypointInfo.setWaypoint(waypoint)
-                val args = Bundle()
-                args.putDouble("lat", loc.getLatitude())
-                args.putDouble("lon", loc.getLongitude())
-                waypointInfo.setArguments(args)
-                waypointInfo.show(fm, "waypoint_info")
+                // Outside editing mode — show Edit/Navigate quick action
+                waypointSelected = application!!.getWaypointIndex(waypoint)
+                wptQuickAction!!.show(map, x, y)
+                Log.d(TAG, "waypointTapped: show wptQuickAction for waypoint=${waypoint.name}")
                 return true
             }
         } catch (e: Exception) {
@@ -1824,8 +1833,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     index
                 ).putExtra("ROUTE", route + 1), RESULT_EDIT_ROUTE
             )
-            Log.e(TAG, "startActivityForResult_WaypointProperties:" + "putExtra_INDEX" + index)
+            Log.e(TAG, "routeWaypointTapped: open WaypointProperties for route=$route index=$index")
             return true
+        } else if (application!!.editingRoute != null) {
+            // Another route is being edited — offer to add this waypoint to it
+            val rte = application!!.getRoute(route) ?: return false
+            val wpt = rte.waypoints[index]
+            Log.d(TAG, "routeWaypointTapped: redirect to waypointTapped for 'Add to Route' rte=${rte.name} wpt=${wpt.name}")
+            return waypointTapped(wpt, x, y)
         } else if (navigationService != null && navigationService!!.navRoute == application!!.getRoute(
                 route
             )
@@ -1837,7 +1852,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             return true
         } else {
             startActivity(Intent(this, RouteDetails::class.java).putExtra("index", route))
-            //Log.e(TAG, "startActivity:" + "RouteDetails_putExtra_INDEX" + route);
             return true
         }
     }
@@ -2484,8 +2498,10 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 val aloc: DoubleArray = application!!.getMapCenter()
                 // Use current GPS elevation if available, otherwise 0
                 val alt = lastElevation
+                // Global counter ensures unique names across all routes in this session
+                val name = "RWPT" + routeWaypointNameCounter++
                 val wpt = application!!.editingRoute!!.addWaypoint(
-                    "RWPT" + application!!.editingRoute!!.length(),
+                    name,
                     aloc[0],
                     aloc[1],
                     alt
@@ -2493,6 +2509,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 application!!.routeEditingWaypoints!!.push(wpt)
                 // Also add to RouteWaypoints set for reuse
                 addToRouteWaypointSet(wpt)
+                Log.d(TAG, "addpoint: $name lat=${aloc[0]} lon=${aloc[1]} alt=$alt editingRoute=${application!!.editingRoute!!.name}")
             }
 
             R.id.insertpoint -> if (application!!.editingArea != null) {
@@ -2507,14 +2524,17 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             } else {
                 val iloc: DoubleArray = application!!.getMapCenter()
                 val alt = lastElevation
+                // Global counter ensures unique names across all routes in this session
+                val name = "RWPT" + routeWaypointNameCounter++
                 val wpt = application!!.editingRoute!!.insertWaypoint(
-                    "RWPT" + application!!.editingRoute!!.length(),
+                    name,
                     iloc[0],
                     iloc[1],
                     alt
                 )
                 application!!.routeEditingWaypoints!!.push(wpt)
                 addToRouteWaypointSet(wpt)
+                Log.d(TAG, "insertpoint: $name lat=${iloc[0]} lon=${iloc[1]} alt=$alt editingRoute=${application!!.editingRoute!!.name}")
             }
 
             R.id.removepoint -> if (application!!.editingArea != null) {
@@ -2921,6 +2941,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         private const val qaNavigateToMapObject = 2
 
         private const val qaAddWaypointToArea = 3
+        private const val qaEditWaypoint = 4
 
         private val SCREEN_ORIENTATION_PORTRAIT = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
