@@ -31,10 +31,12 @@ class WaypointsOverlay(mapActivity: Activity) : MapObjectsOverlay(mapActivity) {
                 val wpt = waypoints[i]
                 val pointXY = application.getXYbyLatLon(wpt.latitude, wpt.longitude)
                 if (mapTap.contains(pointXY[0], pointXY[1]) && context is MapActivity) {
+                    android.util.Log.d("WaypointsOverlay", "onSingleTap: hit wpt=${wpt.name} at x=${e.x} y=${e.y}, editingRoute=${application.editingRoute != null}")
                     return (context as MapActivity).waypointTapped(wpt, e.x.toInt(), e.y.toInt())
                 }
             }
         }
+        android.util.Log.d("WaypointsOverlay", "onSingleTap: no hit")
         return false
     }
 
