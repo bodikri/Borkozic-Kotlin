@@ -349,6 +349,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             runFlag = run
         }
 
+        /**
+         * Drawing loop — renders map frames continuously.
+         * Wrapped in try-catch to prevent uncaught exceptions from killing
+         * the process. Exceptions are logged so they can be diagnosed.
+         */
         override fun run() {
             var canvas: Canvas?
             while (runFlag) {
@@ -366,12 +371,23 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     synchronized(lock) {
                         drawPeriod = 1000000L * if (mapView.calculateLookAhead()) 30 else 100
                         if (canvas != null) {
-                            mapView.doDraw(canvas)
+                            try {
+                                mapView.doDraw(canvas)
+                            } catch (e: Exception) {
+                                Log.e(TAG, "doDraw crashed", e)
+                                // Stop drawing on unrecoverable error
+                                runFlag = false
+                            }
                         }
                     }
+                } catch (e: Exception) {
+                    Log.e(TAG, "DrawingThread lockCanvas error", e)
                 } finally {
                     if (canvas != null) {
-                        surfaceHolder.unlockCanvasAndPost(canvas)
+                        try {
+                            surfaceHolder.unlockCanvasAndPost(canvas)
+                        } catch (_: Exception) {
+                        }
                     }
                 }
             }
