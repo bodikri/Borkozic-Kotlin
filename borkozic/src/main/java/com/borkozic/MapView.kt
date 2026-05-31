@@ -61,6 +61,22 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         private const val MAX_SHIFT_SPEED = 20f
         private const val INC_SHIFT_SPEED = 2f
 
+        // ── Smooth Bearing Animation constants ──────────────────────────────
+        /** Minimum bearing change (degrees) to trigger smooth animation instead of instant snap. */
+        private const val SMOOTH_BEAR_THRESHOLD = 5f
+        /** Maximum angular velocity during smooth bearing animation (°/frame). */
+        private const val SMOOTH_BEAR_MAX_SPEED = 15f
+        /** Angular acceleration increment (°/frame²). */
+        private const val SMOOTH_BEAR_INC = 0.3f
+
+        // ── Smooth Center Transition constants ───────────────────────────────
+        /** Maximum progress velocity during center transition animation (progress/frame). */
+        private const val SMOOTH_CENTER_MAX_SPEED = 0.08
+        /** Progress acceleration increment per frame. */
+        private const val SMOOTH_CENTER_INC = 0.004
+        /** Bearing change threshold (degrees) for staggered bearing rotation during center animation. */
+        private const val STAGGERED_BEAR_THRESHOLD = 10f
+
         private const val TAP = 1
         private const val CANCEL = 2
 
@@ -90,14 +106,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
      * True when there is a valid bearing
      */
     private var isMoving = false
-    /**
-     * True when map moves with location cursor
-     */
-    private var isFollowing = false
-    /**
-     * True when map rotation set track up
-     */
-    var isTrackUp = true
     @JvmField
     var planeLogo: String? = null
     private var plLogSize = 0
@@ -148,6 +156,30 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
      * Toggled via double-tap on map.
      */
     private var isFollowing = false
+
+    // ── Smooth Bearing Animation State ─────────────────────────────────
+    /** Target GPS bearing for smooth animation (set from setLocation when following). */
+    private var smoothBearTarget = 0f
+    /** Current animated bearing value — replaces `bearing` during smooth transition. */
+    private var smoothBearCurrent = 0f
+    /** Angular velocity (°/frame) — accelerates then decelerates toward target. */
+    private var smoothBearSpeed = 0f
+    /** True when smooth bearing animation is active (triggered on bearing jump > SMOOTH_BEAR_THRESHOLD). */
+    private var smoothBearActive = false
+
+    // ── Smooth Center Transition Animation State ───────────────────────
+    /** True when map center smoothly animates to GPS position (activated on double-tap follow ON). */
+    private var smoothCenterActive = false
+    /** Starting map center latitude for the center transition animation. */
+    private var smoothCenterStartLat = 0.0
+    /** Starting map center longitude for the center transition animation. */
+    private var smoothCenterStartLon = 0.0
+    /** Bearing at the start of center transition — anchor for staggered bearing rotation. */
+    private var smoothCenterStartBearing = 0f
+    /** Current progress (0.0 → 1.0) of the center transition animation. */
+    private var smoothCenterProgress = 0.0
+    /** Progress velocity — accelerates then decelerates. */
+    private var smoothCenterSpeed = 0.0
     private var speed = 0f
     private var mpp = 0.0
     private var vectorLength = 0
@@ -430,6 +462,15 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Updates map position and bearing from GPS location.
+     *
+     * When isFollowing:
+     * - GPS bearing becomes the target for smooth bearing animation if the absolute
+     *   change exceeds SMOOTH_BEAR_THRESHOLD (5°). The animation accelerates then
+     *   decelerates toward the target, replacing instant snap.
+     * - Map center is updated from GPS (unless smoothCenterActive handles it).
+     */
     fun setLocation(loc: Location) {
         synchronized(lock) {
             speed = loc.speed
@@ -444,22 +485,49 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             val lastLocationMillis = loc.time
 
             if (isFollowing) {
-                bearing = loc.bearing
-                lookAheadB = (bearing / 10).toInt() * 10f
+                val gpsBearing = loc.bearing
 
-                var newMap = false
-                if (bestMapEnabled && bestMapInterval > 0 && lastLocationMillis - lastBestMap >= bestMapInterval) {
-                    application?.let { app ->
-                        newMap = app.setMapCenter(currentLocation!![0], currentLocation!![1], false, loadBestMap)
-                    }
-                    lastBestMap = lastLocationMillis
+                // ── Smooth bearing: animate if jump > threshold ────────
+                if (smoothCenterActive) {
+                    // During smooth center animation, stash the target —
+                    // staggered bearing will converge toward it in calculateLookAhead
+                    smoothBearTarget = (gpsBearing / 10).toInt() * 10f
                 } else {
-                    application?.let { app ->
-                        newMap = app.setMapCenter(currentLocation!![0], currentLocation!![1], false, false)
+                    val targetB = (gpsBearing / 10).toInt() * 10f
+                    val deltaB = ((targetB - bearing) % 360f + 540f) % 360f - 180f
+
+                    if (abs(deltaB) > SMOOTH_BEAR_THRESHOLD) {
+                        smoothBearTarget = targetB
+                        smoothBearCurrent = bearing
+                        smoothBearSpeed = 0f
+                        smoothBearActive = true
+                        // Don't overwrite bearing — animation handles it
+                    } else {
+                        bearing = gpsBearing
+                        smoothBearActive = false
                     }
-                    if (newMap) loadBestMap = bestMapEnabled
                 }
-                if (newMap) updateMapInfo()
+                // Update lookAheadB for calculateLookAhead to use (only when center is done)
+                if (!smoothCenterActive && !smoothBearActive) {
+                    lookAheadB = (bearing / 10).toInt() * 10f
+                }
+
+                // ── Map center update: skip if smooth center animation is active ──
+                if (!smoothCenterActive) {
+                    var newMap = false
+                    if (bestMapEnabled && bestMapInterval > 0 && lastLocationMillis - lastBestMap >= bestMapInterval) {
+                        application?.let { app ->
+                            newMap = app.setMapCenter(currentLocation!![0], currentLocation!![1], false, loadBestMap)
+                        }
+                        lastBestMap = lastLocationMillis
+                    } else {
+                        application?.let { app ->
+                            newMap = app.setMapCenter(currentLocation!![0], currentLocation!![1], false, false)
+                        }
+                        if (newMap) loadBestMap = bestMapEnabled
+                    }
+                    if (newMap) updateMapInfo()
+                }
             }
         }
         calculateVectorLength()
@@ -494,13 +562,112 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     }
 
     /**
-     * При промяна на курса с цел да оптимизира разполагаем екран
-     * когато не се върти картата премества самолетчето
-     * @return True if look ahead position was recalculated
+     * Per-frame animation tick for smooth transitions.
+     *
+     * Handles three animation layers (in priority order):
+     * 1. **Smooth Center Transition** — interpolates mapCenter from start position
+     *    toward GPS location with accelerate/decelerate. When |Δbearing| >
+     *    STAGGERED_BEAR_THRESHOLD, bearing converges proportionally to center
+     *    progress so the map starts orienting while it "flies" toward the target.
+     *    When complete → transitions to Phase 2 via setMapCenter call.
+     * 2. **Smooth Bearing** — accelerates/decelerates bearing toward target when
+     *    GPS heading change exceeds SMOOTH_BEAR_THRESHOLD. Same pattern as
+     *    lookAhead shift animation.
+     * 3. **LookAhead** — smooth positional offset and bearing smoothing during
+     *    normal following (existing behavior, unchanged).
+     *
+     * @return True if any animation was recalculated (triggers faster redraw ~33fps).
      */
     private fun calculateLookAhead(): Boolean {
         var recalculated = false
         synchronized(lock) {
+            // ── Layer 1: Smooth Center Transition ────────────────────
+            if (smoothCenterActive) {
+                val targetLat = currentLocation?.get(0) ?: return false
+                val targetLon = currentLocation?.get(1) ?: return false
+                val targetB = smoothBearTarget
+
+                val progress = smoothCenterProgress
+                val diff = 1.0 - progress
+
+                // Accelerate/decelerate progress (same pattern as lookAhead shift)
+                if (abs(diff) > abs(smoothCenterSpeed) * (SMOOTH_CENTER_MAX_SPEED / SMOOTH_CENTER_INC)) {
+                    smoothCenterSpeed += kotlin.math.sign(diff) * SMOOTH_CENTER_INC
+                    if (abs(smoothCenterSpeed) > SMOOTH_CENTER_MAX_SPEED) {
+                        smoothCenterSpeed = kotlin.math.sign(smoothCenterSpeed) * SMOOTH_CENTER_MAX_SPEED
+                    }
+                } else if (kotlin.math.sign(diff) != kotlin.math.sign(smoothCenterSpeed)) {
+                    smoothCenterSpeed += kotlin.math.sign(diff) * SMOOTH_CENTER_INC * 2
+                } else if (abs(smoothCenterSpeed) > SMOOTH_CENTER_INC) {
+                    smoothCenterSpeed -= kotlin.math.sign(diff) * SMOOTH_CENTER_INC * 0.5
+                }
+
+                if (abs(diff) < SMOOTH_CENTER_INC * 1.5) {
+                    // Animation complete — snap to target and transition to Phase 2
+                    application?.setMapCenter(targetLat, targetLon, true, false)
+                    updateMapInfo()
+                    smoothCenterActive = false
+                    smoothCenterProgress = 1.0
+                    smoothCenterSpeed = 0.0
+                    // Hand over to normal following
+                    bearing = targetB
+                    lookAheadB = (targetB / 10).toInt() * 10f
+                    smoothBearActive = false
+                    recalculated = true
+                } else {
+                    smoothCenterProgress = progress + smoothCenterSpeed
+                    if (smoothCenterProgress > 1.0) smoothCenterProgress = 1.0
+                    if (smoothCenterProgress < 0.0) smoothCenterProgress = 0.0
+
+                    val p = smoothCenterProgress
+                    val interpLat = smoothCenterStartLat + (targetLat - smoothCenterStartLat) * p
+                    val interpLon = smoothCenterStartLon + (targetLon - smoothCenterStartLon) * p
+                    application?.setMapCenter(interpLat, interpLon, false, false)
+
+                    // ── Staggered bearing: converge proportionally ──
+                    val deltaB = ((targetB - smoothCenterStartBearing) % 360f + 540f) % 360f - 180f
+                    if (abs(deltaB) > STAGGERED_BEAR_THRESHOLD) {
+                        bearing = smoothCenterStartBearing + deltaB * p.toFloat()
+                        bearing = ((bearing % 360f) + 360f) % 360f
+                    }
+                    recalculated = true
+                }
+            }
+
+            // ── Layer 2: Smooth Bearing Animation ────────────────────
+            if (smoothBearActive && !smoothCenterActive) {
+                var turn = smoothBearTarget - smoothBearCurrent
+                if (abs(turn) > 180) {
+                    turn -= kotlin.math.sign(turn) * 360f
+                }
+
+                if (abs(turn) > abs(smoothBearSpeed) * (SMOOTH_BEAR_MAX_SPEED / SMOOTH_BEAR_INC)) {
+                    smoothBearSpeed += kotlin.math.sign(turn) * SMOOTH_BEAR_INC
+                    if (abs(smoothBearSpeed) > SMOOTH_BEAR_MAX_SPEED) {
+                        smoothBearSpeed = kotlin.math.sign(smoothBearSpeed) * SMOOTH_BEAR_MAX_SPEED
+                    }
+                } else if (kotlin.math.sign(turn) != kotlin.math.sign(smoothBearSpeed)) {
+                    smoothBearSpeed += kotlin.math.sign(turn) * SMOOTH_BEAR_INC * 2
+                } else if (abs(smoothBearSpeed) > SMOOTH_BEAR_INC) {
+                    smoothBearSpeed -= kotlin.math.sign(turn) * SMOOTH_BEAR_INC * 0.5f
+                }
+
+                if (abs(turn) < SMOOTH_BEAR_INC) {
+                    bearing = smoothBearTarget
+                    smoothBearCurrent = smoothBearTarget
+                    smoothBearSpeed = 0f
+                    smoothBearActive = false
+                    lookAheadB = (bearing / 10).toInt() * 10f
+                } else {
+                    smoothBearCurrent += smoothBearSpeed
+                    if (smoothBearCurrent >= 360f) smoothBearCurrent -= 360f
+                    if (smoothBearCurrent < 0f) smoothBearCurrent += 360f
+                    bearing = smoothBearCurrent
+                }
+                recalculated = true
+            }
+
+            // ── Layer 3: LookAhead position & bearing smoothing ──────
             if (lookAheadC != lookAheadS) {
                 recalculated = true
 
@@ -522,7 +689,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     lookAheadS += lookAheadSS
                 }
             }
-            if (lookAheadB != smoothB) {
+            if (lookAheadB != smoothB && !smoothCenterActive && !smoothBearActive) {
                 recalculated = true
 
                 var turn = lookAheadB - smoothB
@@ -615,6 +782,20 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
 
     fun isMoving(): Boolean = isMoving
 
+    /**
+     * Toggles auto-follow mode.
+     *
+     * When follow is enabled:
+     * - Initiates a smooth center transition animation from the current map center
+     *   to the GPS location (accelerate → decelerate).
+     * - If the bearing change exceeds SMOOTH_BEAR_THRESHOLD, a smooth bearing
+     *   animation is also started (handled in setLocation).
+     * - The map center animation has two phases:
+     *   Phase 1: Center interpolates toward GPS. If |Δbearing| > STAGGERED_BEAR_THRESHOLD,
+     *            bearing starts converging proportionally to center progress.
+     *   Phase 2 (after center reaches target): Bearing final alignment + lookAhead
+     *            taken over by calculateLookAhead().
+     */
     fun setFollowing(follow: Boolean) {
         if (currentLocation == null) return
 
@@ -622,10 +803,20 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             synchronized(lock) {
                 if (follow) {
                     Toast.makeText(context, R.string.following_enabled, Toast.LENGTH_SHORT).show()
-                    val newMap = application?.setMapCenter(currentLocation!![0], currentLocation!![1], true, false) ?: false
-                    if (newMap) updateMapInfo()
+
+                    // ── Initiate smooth center transition ──────────────
+                    smoothCenterStartLat = mapCenter[0]
+                    smoothCenterStartLon = mapCenter[1]
+                    smoothCenterStartBearing = bearing
+                    smoothCenterProgress = 0.0
+                    smoothCenterSpeed = 0.0
+                    smoothCenterActive = true
+                    // smoothBearTarget will be set by the next setLocation() call
+                    // Don't call setMapCenter yet — animation handles it frame by frame
                 } else {
                     Toast.makeText(context, R.string.following_disabled, Toast.LENGTH_SHORT).show()
+                    smoothCenterActive = false
+                    smoothBearActive = false
                 }
                 isFollowing = follow
             }
@@ -761,11 +952,18 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         }
     }
 
+    /**
+     * Toggles auto-follow mode.
+     * - Follow ON:  initiates smooth center + bearing transition animation.
+     * - Follow OFF: resets bearing to 0 (North = up), cancels any running animations.
+     */
     private fun onDoubleTap(x: Int, y: Int) {
         setFollowingThroughContext(!isFollowing)
-        // Zero bearing when snapping to North — prevents stale rotation on next drag
-        synchronized(lock) {
-            bearing = 0f
+        // Zero bearing when exiting follow — snap back to North
+        if (!isFollowing) {
+            synchronized(lock) {
+                bearing = 0f
+            }
         }
     }
 
@@ -1048,6 +1246,17 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             smoothB = state.getFloat("smoothB")
             smoothBS = state.getFloat("smoothBS")
 
+            smoothBearTarget = state.getFloat("smoothBearTarget")
+            smoothBearCurrent = state.getFloat("smoothBearCurrent")
+            smoothBearSpeed = state.getFloat("smoothBearSpeed")
+            smoothBearActive = state.getBoolean("smoothBearActive")
+            smoothCenterActive = state.getBoolean("smoothCenterActive")
+            smoothCenterStartLat = state.getDouble("smoothCenterStartLat")
+            smoothCenterStartLon = state.getDouble("smoothCenterStartLon")
+            smoothCenterStartBearing = state.getFloat("smoothCenterStartBearing")
+            smoothCenterProgress = state.getDouble("smoothCenterProgress")
+            smoothCenterSpeed = state.getDouble("smoothCenterSpeed")
+
             mapCenter = state.getDoubleArray("mapCenter") ?: doubleArrayOf(0.0, 0.0)
             currentLocation = state.getDoubleArray("currentLocation")
             mapCenterXY = state.getIntArray("mapCenterXY") ?: intArrayOf(0, 0)
@@ -1093,6 +1302,17 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         bundle.putFloat("lookAheadB", lookAheadB)
         bundle.putFloat("smoothB", smoothB)
         bundle.putFloat("smoothBS", smoothBS)
+
+        bundle.putFloat("smoothBearTarget", smoothBearTarget)
+        bundle.putFloat("smoothBearCurrent", smoothBearCurrent)
+        bundle.putFloat("smoothBearSpeed", smoothBearSpeed)
+        bundle.putBoolean("smoothBearActive", smoothBearActive)
+        bundle.putBoolean("smoothCenterActive", smoothCenterActive)
+        bundle.putDouble("smoothCenterStartLat", smoothCenterStartLat)
+        bundle.putDouble("smoothCenterStartLon", smoothCenterStartLon)
+        bundle.putFloat("smoothCenterStartBearing", smoothCenterStartBearing)
+        bundle.putDouble("smoothCenterProgress", smoothCenterProgress)
+        bundle.putDouble("smoothCenterSpeed", smoothCenterSpeed)
 
         bundle.putDoubleArray("mapCenter", mapCenter)
         bundle.putDoubleArray("currentLocation", currentLocation)
