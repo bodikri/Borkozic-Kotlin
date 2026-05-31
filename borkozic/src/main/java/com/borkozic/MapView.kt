@@ -433,15 +433,18 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 compasNeedl?.draw(canvas)
                 canvas.translate(0f, compassAhead.toFloat())
             }
-            // Cursor — save/restore with counter-rotation so it stays fixed, pointing up
+            // Cursor — save/restore block for isolated transform
+            // First translate to cursor position in ROTATED canvas space
+            // (matches how drawMap renders tiles), then counter-rotate so the
+            // cursor icon always points straight up (heading direction).
             canvas.save()
-            if (isTrackUp) {
-                canvas.rotate(-bearing)
-            }
             canvas.translate(
                 (-mapCenterXY[0] + currentLocationXY[0]).toFloat(),
                 (-mapCenterXY[1] + currentLocationXY[1]).toFloat()
             )
+            if (isTrackUp) {
+                canvas.rotate(-bearing)
+            }
             if (isMoving) {
                 if (!isTrackUp) {
                     canvas.rotate(bearing, 0f, 0f)
