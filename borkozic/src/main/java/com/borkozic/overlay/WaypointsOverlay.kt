@@ -25,18 +25,25 @@ class WaypointsOverlay(mapActivity: Activity) : MapObjectsOverlay(mapActivity) {
 
     override fun onSingleTap(e: MotionEvent, mapTap: Rect, mapView: MapView): Boolean {
         val application: Borkozic = BaseApplication.getApplication<Borkozic>()!!
+        val cxy = mapView.mapCenterXY
 
+        val hitTolerance = 48  // пиксела — по-голямо тап петно за по-лесно улучване
         synchronized(waypoints) {
+            android.util.Log.d("WaypointsOverlay", "onSingleTap: waypoints.size=${waypoints.size} mapTap=$mapTap centerXY=(${cxy[0]},${cxy[1]}) hitTolerance=$hitTolerance")
             for (i in waypoints.indices.reversed()) {
                 val wpt = waypoints[i]
                 val pointXY = application.getXYbyLatLon(wpt.latitude, wpt.longitude)
-                if (mapTap.contains(pointXY[0], pointXY[1]) && context is MapActivity) {
-                    android.util.Log.d("WaypointsOverlay", "onSingleTap: hit wpt=${wpt.name} at x=${e.x} y=${e.y}, editingRoute=${application.editingRoute != null}")
+                val hitRect = Rect(mapTap.left - hitTolerance, mapTap.top - hitTolerance,
+                                   mapTap.right + hitTolerance, mapTap.bottom + hitTolerance)
+                val hit = hitRect.contains(pointXY[0], pointXY[1])
+                if (i < 3) android.util.Log.d("WaypointsOverlay", "  wpt[$i]=${wpt.name} lat=${wpt.latitude} lon=${wpt.longitude} xy=(${pointXY[0]},${pointXY[1]}) hit=$hit")
+                if (hit && context is MapActivity) {
+                    android.util.Log.d("WaypointsOverlay", "onSingleTap: HIT wpt=${wpt.name}")
                     return (context as MapActivity).waypointTapped(wpt, e.x.toInt(), e.y.toInt())
                 }
             }
         }
-        android.util.Log.d("WaypointsOverlay", "onSingleTap: no hit")
+        android.util.Log.d("WaypointsOverlay", "onSingleTap: no hit after checking ${waypoints.size} waypoints")
         return false
     }
 
