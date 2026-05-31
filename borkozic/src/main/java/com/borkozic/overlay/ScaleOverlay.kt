@@ -78,9 +78,12 @@ class ScaleOverlay(activity: Activity) : MapOverlay(activity) {
         val cy = -mapView.lookAheadXY[1] - centerY + mapView.viewArea.bottom - 30
         val cty = -10
 
+        // Overlays are drawn in the already-rotated canvas (doDraw applies +bearing
+        // in Track Up mode). Counter-rotate to keep the scale bar fixed and horizontal
+        // at the bottom, regardless of map rotation.
         if (mapView.isTrackUp) {
             c.save()
-            c.rotate(mapView.bearing)
+            c.rotate(-mapView.bearing)
             drawScaleBar(c, cx, cy, x, x2, x3, xd2, xd4, cty, m)
             c.restore()
         } else {
