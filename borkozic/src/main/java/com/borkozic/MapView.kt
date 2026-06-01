@@ -1148,8 +1148,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     firstTapTime = event.downTime
                 }
 
-                penOX = event.rawX.toInt()
-                penOY = event.rawY.toInt()
+                penOX = event.x.toInt()
+                penOY = event.y.toInt()
                 penX = penOX
                 penY = penOY
                 gestureDragX = penOX
@@ -1174,14 +1174,14 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 when (gestureMode) {
                     GESTURE_DRAG -> {
                         if (!isFollowing || !strictUnfollow) {
-                            val rawX = event.rawX.toInt()
-                            val rawY = event.rawY.toInt()
-                            val dx = -(gestureDragX - rawX)
-                            val dy = -(gestureDragY - rawY)
+                            val currentX = event.x.toInt()
+                            val currentY = event.y.toInt()
+                            val dx = -(gestureDragX - currentX)
+                            val dy = -(gestureDragY - currentY)
 
                             if (abs(dx) > 0 || abs(dy) > 0) {
-                                gestureDragX = rawX
-                                gestureDragY = rawY
+                                gestureDragX = currentX
+                                gestureDragY = currentY
 
                                 if (!isFollowing) {
                                     // Track Up: canvas is already rotated by +bearing → apply
@@ -1232,8 +1232,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     }
                     scale = 1f
                     gestureMode = GESTURE_DRAG
-                    gestureDragX = event.rawX.toInt()
-                    gestureDragY = event.rawY.toInt()
+                    gestureDragX = event.x.toInt()
+                    gestureDragY = event.y.toInt()
                 }
             }
 
@@ -1250,8 +1250,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     scale = 1f
                 }
 
-                val dx = -(penOX - event.rawX.toInt())
-                val dy = -(penOY - event.rawY.toInt())
+                val dx = -(penOX - event.x.toInt())
+                val dy = -(penOY - event.y.toInt())
                 if (gestureMode == GESTURE_DRAG && !wasMultitouch && !wasDoubleTap &&
                     abs(dx) < gestureThresholdDp && abs(dy) < gestureThresholdDp
                 ) {
