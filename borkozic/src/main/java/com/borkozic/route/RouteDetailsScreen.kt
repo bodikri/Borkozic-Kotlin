@@ -71,6 +71,7 @@ fun RouteDetailsScreen(
     var waypointList by remember(route) { mutableStateOf(waypoints.toMutableList()) }
 
     var draggedIndex by remember { mutableStateOf<Int?>(null) }
+    var draggedOverIndex by remember { mutableStateOf<Int?>(null) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     var showActionMenu by remember { mutableStateOf<Int?>(null) }
 
@@ -160,35 +161,55 @@ fun RouteDetailsScreen(
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { offset ->
                                         draggedIndex = index
+                                        draggedOverIndex = index
                                         dragOffset = Offset.Zero
                                     },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
-                                        dragOffset += dragAmount
+                                        val totalDragY = dragOffset.y + dragAmount.y
+                                        dragOffset = Offset(0f, totalDragY)
+                                        // Calculate which item we're hovering over based on cumulative offset
+                                        val itemHeightPx = 64.dp.toPx()
+                                        val hoverOffset = (totalDragY / itemHeightPx).roundToInt()
+                                        val newOverIndex = (index + hoverOffset).coerceIn(0, waypointList.size - 1)
+                                        if (draggedOverIndex != newOverIndex && newOverIndex != index) {
+                                            // Swap items in the visual list during drag
+                                            val newList = waypointList.toMutableList()
+                                            // Remove from old position, insert at new position
+                                            val item = newList.removeAt(index)
+                                            val insertAt = if (newOverIndex > index) newOverIndex - 1 else newOverIndex
+                                            newList.add(insertAt, item)
+                                            waypointList = newList
+                                            draggedIndex = insertAt
+                                            dragOffset = Offset.Zero
+                                            draggedOverIndex = insertAt
+                                        } else {
+                                            draggedOverIndex = newOverIndex
+                                        }
                                     },
                                     onDragEnd = {
+                                        // Commit the final order to the route model
                                         val dragged = draggedIndex
                                         draggedIndex = null
+                                        draggedOverIndex = null
                                         dragOffset = Offset.Zero
-                                        if (dragged != null) {
-                                            // Calculate target position from offset
-                                            val itemHeight = 64  // approximate item height in dp
-                                            val moved = (dragOffset.y / itemHeight.dp.toPx()).roundToInt()
-                                            val targetIndex = (dragged + moved).coerceIn(0, waypointList.size - 1)
-
-                                            if (dragged != targetIndex) {
-                                                val newList = waypointList.toMutableList()
-                                                // Use Route.moveWaypoint for validation
-                                                if (route.moveWaypoint(dragged, targetIndex)) {
-                                                    // Refresh list from route
-                                                    waypointList = route.waypoints.toMutableList()
-                                                }
-                                            }
+                                        // Sync from route — the visual list was reordered during drag,
+                                        // now we apply the same to Route via moveWaypoint for each swap
+                                        // Since itemsIndexed re-lays out, just ensure list matches route
+                                        route.waypoints.clear()
+                                        route.waypoints.addAll(waypointList)
+                                        // Recalculate distance after full reorder
+                                        if (route.length() > 1) {
+                                            route.distance = route.distanceBetween(0, route.length() - 1)
                                         }
+                                        waypointList = route.waypoints.toMutableList()
                                     },
                                     onDragCancel = {
                                         draggedIndex = null
+                                        draggedOverIndex = null
                                         dragOffset = Offset.Zero
+                                        // Restore original list from route
+                                        waypointList = route.waypoints.toMutableList()
                                     }
                                 )
                             }
