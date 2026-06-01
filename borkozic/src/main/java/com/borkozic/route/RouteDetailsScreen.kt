@@ -1,6 +1,5 @@
 package com.borkozic.route
 
-import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,8 +31,6 @@ import com.borkozic.data.Route
 import com.borkozic.data.Waypoint
 import com.borkozic.util.StringFormatter
 import kotlin.math.roundToInt
-
-private const val TAG = "RouteDetailsScreen"
 
 /**
  * Mode for the RouteDetails screen.
@@ -173,17 +170,14 @@ fun RouteDetailsScreen(
                             .pointerInput(index) {
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { offset ->
-                                        Log.d(TAG, "Drag start index=$index \"${wpt.name}\"")
                                         draggedIndex = index
                                         dragOffset = Offset.Zero
                                     },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
                                         dragOffset = Offset(0f, dragOffset.y + dragAmount.y)
-                                        Log.d(TAG, "Drag index=$index offsetY=${dragOffset.y}")
                                     },
                                     onDragEnd = {
-                                        Log.d(TAG, "Drag end index=$index offsetY=${dragOffset.y}")
                                         val fromIndex = draggedIndex
                                         draggedIndex = -1
                                         val totalOffsetY = dragOffset.y
@@ -193,34 +187,24 @@ fun RouteDetailsScreen(
 
                                         // How many rows did we cross?
                                         val rowsMoved = (totalOffsetY / itemHeightPx).roundToInt()
-                                        Log.d(TAG, "Drag end: from=$fromIndex rowsMoved=$rowsMoved itemHeightPx=$itemHeightPx")
 
                                         if (rowsMoved == 0) return@detectDragGesturesAfterLongPress
 
                                         val targetIndex = (fromIndex + rowsMoved).coerceIn(0, waypointList.size - 1)
                                         if (targetIndex == fromIndex) return@detectDragGesturesAfterLongPress
 
-                                        Log.d(TAG, "Drag end: swap from=$fromIndex to=$targetIndex")
-
-                                        // Perform a single swap using Route.moveWaypoint validation
+                                        // Perform a single swap
                                         val newList = waypointList.toMutableList()
                                         val moved = newList.removeAt(fromIndex)
-                                        if (targetIndex == fromIndex) {
-                                            // consecutive check: can't move right after itself
-                                            Log.d(TAG, "Drag end: would be consecutive duplicate, skipping")
-                                            return@detectDragGesturesAfterLongPress
-                                        }
                                         val insertAt = if (targetIndex > fromIndex) targetIndex - 1 else targetIndex
 
                                         // Check consecutive duplicates at insert position
                                         val before = if (insertAt >= 0) newList[insertAt] else null
                                         val after = if (insertAt + 1 < newList.size) newList[insertAt + 1] else null
                                         if (before != null && before.name == moved.name && before.latitude == moved.latitude) {
-                                            Log.d(TAG, "Drag end: consecutive duplicate with before, skipping")
                                             return@detectDragGesturesAfterLongPress
                                         }
                                         if (after != null && after.name == moved.name && after.latitude == moved.latitude) {
-                                            Log.d(TAG, "Drag end: consecutive duplicate with after, skipping")
                                             return@detectDragGesturesAfterLongPress
                                         }
 
@@ -233,17 +217,14 @@ fun RouteDetailsScreen(
                                             route.distance = route.distanceBetween(0, route.length() - 1)
                                         }
                                         waypointList = route.waypoints.toMutableList()
-                                        Log.d(TAG, "Drag end: DONE. New order: ${waypointList.joinToString { it.name }}")
                                     },
                                     onDragCancel = {
-                                        Log.d(TAG, "Drag cancel index=$index")
                                         draggedIndex = -1
                                         dragOffset = Offset.Zero
                                     }
                                 )
                             }
                             .clickable {
-                                Log.d(TAG, "Tap index=$index \"${wpt.name}\"")
                                 showActionMenu = index
                             }
                             .background(
