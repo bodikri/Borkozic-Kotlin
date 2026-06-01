@@ -499,10 +499,10 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         if (!scaled && !isFollowing) {
             canvas.drawCircle(0f, 0f, 1f, crossPaint!!)
             canvas.drawCircle(0f, 0f, 40f, crossPaint!!)
-            canvas.drawLine(20f, 0f, 120f, 0f, crossPaint!!)
-            canvas.drawLine(-20f, 0f, -120f, 0f, crossPaint!!)
-            canvas.drawLine(0f, 20f, 0f, 120f, crossPaint!!)
-            canvas.drawLine(0f, -20f, 0f, -120f, crossPaint!!)
+            canvas.drawLine(20f, 0f, 60f, 0f, crossPaint!!)
+            canvas.drawLine(-20f, 0f, -60f, 0f, crossPaint!!)
+            canvas.drawLine(0f, 20f, 0f, 60f, crossPaint!!)
+            canvas.drawLine(0f, -20f, 0f, -60f, crossPaint!!)
         }
 
         if (isMoving && isFollowing && isFixed) {
