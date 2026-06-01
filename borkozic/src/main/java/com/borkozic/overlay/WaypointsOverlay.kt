@@ -25,12 +25,21 @@ class WaypointsOverlay(mapActivity: Activity) : MapObjectsOverlay(mapActivity) {
 
     override fun onSingleTap(e: MotionEvent, mapTap: Rect, mapView: MapView): Boolean {
         val application: Borkozic = BaseApplication.getApplication<Borkozic>()!!
+        val cxy = mapView.mapCenterXY
 
         val hitTolerance = 48  // пиксела — по-голямо тап петно за по-лесно улучване
         synchronized(waypoints) {
             val tapCX = (mapTap.left + mapTap.right) / 2
             val tapCY = (mapTap.top + mapTap.bottom) / 2
-            android.util.Log.d("WaypointsOverlay", "onSingleTap: waypoints.size=${waypoints.size} mapTap=(${mapTap.left},${mapTap.top})-(${mapTap.right},${mapTap.bottom}) tapCenter=($tapCX,$tapCY) tolerance=$hitTolerance")
+            android.util.Log.d("WaypointsOverlay", "onSingleTap: waypoints.size=${waypoints.size} tapCenter=($tapCX,$tapCY) mapCenterXY=(${cxy[0]},${cxy[1]}) tolerance=$hitTolerance")
+            // проверка: дали най-новата точка (последно добавена) е близо до центъра
+            if (waypoints.isNotEmpty()) {
+                val lastWpt = waypoints.last()
+                val lastXY = application.getXYbyLatLon(lastWpt.latitude, lastWpt.longitude)
+                val distToCenter = Math.hypot((lastXY[0] - cxy[0]).toDouble(), (lastXY[1] - cxy[1]).toDouble())
+                android.util.Log.d("WaypointsOverlay",
+                    "  LAST wpt=${lastWpt.name} xy=(${lastXY[0]},${lastXY[1]}) centerXY=(${cxy[0]},${cxy[1]}) distToCenter=${"%.0f".format(distToCenter)}px")
+            }
             for (i in waypoints.indices.reversed()) {
                 val wpt = waypoints[i]
                 // pointXY са map координати — mapTap също е в map координати (MapView.onSingleTap изважда lookAheadXY)
