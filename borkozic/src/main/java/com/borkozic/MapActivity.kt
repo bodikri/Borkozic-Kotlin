@@ -2224,6 +2224,15 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 val wpt: Waypoint = application!!.getWaypoint(waypointSelected)!!
 
                 when (actionId) {
+                    qaEditWaypoint -> {
+                        startActivityForResult(
+                            Intent(this@MapActivity, WaypointProperties::class.java)
+                                .putExtra("INDEX", waypointSelected)
+                                .putExtra("ROUTE", 0),
+                            RESULT_SAVE_WAYPOINT
+                        )
+                    }
+
                     qaAddWaypointToRoute -> {
                         val wpt = application!!.editingRoute!!.addWaypoint(
                             wpt.name,
