@@ -1,5 +1,6 @@
 package com.borkozic.route
 
+import android.util.Log
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
@@ -30,6 +32,8 @@ import com.borkozic.data.Route
 import com.borkozic.data.Waypoint
 import com.borkozic.util.StringFormatter
 import kotlin.math.roundToInt
+
+private const val TAG = "RouteDetailsScreen"
 
 /**
  * Mode for the RouteDetails screen.
@@ -63,27 +67,33 @@ fun RouteDetailsScreen(
     navBearing: Double = 0.0,
     navRouteDistanceLeft: ((Int) -> Double)? = null,
     navRouteWaypointETE: ((Int) -> Int)? = null,
-    navDirectionForward: Boolean = true // true = forward, false = reverse
+    navDirectionForward: Boolean = true
 ) {
     val application = BaseApplication.getApplication<Borkozic>()!!
     val waypoints = route.waypoints
 
+    // We use a snapshot state list so that any change (even mid-drag) triggers recomposition.
+    // The drag logic below is intentionally simple: drag only changes a visual *offset*
+    // on the dragged item. On drop we calculate the target index and perform a single swap.
     var waypointList by remember(route) { mutableStateOf(waypoints.toMutableList()) }
 
-    var draggedIndex by remember { mutableStateOf<Int?>(null) }
-    var draggedOverIndex by remember { mutableStateOf<Int?>(null) }
+    var draggedIndex by remember { mutableStateOf(-1) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     var showActionMenu by remember { mutableStateOf<Int?>(null) }
+    val density = LocalDensity.current
 
     // Sync list when route changes externally
-    LaunchedEffect(waypoints.size) {
-        waypointList = waypoints.toMutableList()
+    LaunchedEffect(route.waypoints.size) {
+        waypointList = route.waypoints.toMutableList()
     }
 
     val elevatedElevation by animateDpAsState(
-        targetValue = if (draggedIndex != null) 6.dp else 1.dp,
+        targetValue = if (draggedIndex >= 0) 6.dp else 1.dp,
         label = "dragElevation"
     )
+
+    // Estimate item height in pixels — used to calculate how many rows we crossed
+    val itemHeightPx = with(density) { 64.dp.toPx() }
 
     Scaffold(
         topBar = {
@@ -139,7 +149,7 @@ fun RouteDetailsScreen(
                     .padding(padding),
                 verticalArrangement = Arrangement.spacedBy(1.dp)
             ) {
-                itemsIndexed(waypointList, key = { index, wpt -> "$index-${wpt.hashCode()}" }) { index, wpt ->
+                itemsIndexed(waypointList, key = { idx, _ -> idx }) { index, wpt ->
                     val isDragged = draggedIndex == index
                     val isActive = if (mode == RouteDetailsMode.NAVIGATION) {
                         navCurrentIndex == index
@@ -150,70 +160,90 @@ fun RouteDetailsScreen(
                             .fillMaxWidth()
                             .zIndex(if (isDragged) 1f else 0f)
                             .then(
+                                // Apply visual floating offset to the dragged item
                                 if (isDragged) {
                                     Modifier.graphicsLayer {
-                                        translationX = dragOffset.x
                                         translationY = dragOffset.y
                                     }
                                 } else Modifier
                             )
+                            // IMPORTANT: use a stable key so pointerInput is not re-created
+                            // when we re-assign waypointList.  Using index as key is fine
+                            // because we never mutate indices mid-drag — we only swap on drop.
                             .pointerInput(index) {
                                 detectDragGesturesAfterLongPress(
                                     onDragStart = { offset ->
+                                        Log.d(TAG, "Drag start index=$index \"${wpt.name}\"")
                                         draggedIndex = index
-                                        draggedOverIndex = index
                                         dragOffset = Offset.Zero
                                     },
                                     onDrag = { change, dragAmount ->
                                         change.consume()
-                                        val totalDragY = dragOffset.y + dragAmount.y
-                                        dragOffset = Offset(0f, totalDragY)
-                                        // Calculate which item we're hovering over based on cumulative offset
-                                        val itemHeightPx = 64.dp.toPx()
-                                        val hoverOffset = (totalDragY / itemHeightPx).roundToInt()
-                                        val newOverIndex = (index + hoverOffset).coerceIn(0, waypointList.size - 1)
-                                        if (draggedOverIndex != newOverIndex && newOverIndex != index) {
-                                            // Swap items in the visual list during drag
-                                            val newList = waypointList.toMutableList()
-                                            // Remove from old position, insert at new position
-                                            val item = newList.removeAt(index)
-                                            val insertAt = if (newOverIndex > index) newOverIndex - 1 else newOverIndex
-                                            newList.add(insertAt, item)
-                                            waypointList = newList
-                                            draggedIndex = insertAt
-                                            dragOffset = Offset.Zero
-                                            draggedOverIndex = insertAt
-                                        } else {
-                                            draggedOverIndex = newOverIndex
-                                        }
+                                        dragOffset = Offset(0f, dragOffset.y + dragAmount.y)
+                                        Log.d(TAG, "Drag index=$index offsetY=${dragOffset.y}")
                                     },
                                     onDragEnd = {
-                                        // Commit the final order to the route model
-                                        val dragged = draggedIndex
-                                        draggedIndex = null
-                                        draggedOverIndex = null
+                                        Log.d(TAG, "Drag end index=$index offsetY=${dragOffset.y}")
+                                        val fromIndex = draggedIndex
+                                        draggedIndex = -1
+                                        val totalOffsetY = dragOffset.y
                                         dragOffset = Offset.Zero
-                                        // Sync from route — the visual list was reordered during drag,
-                                        // now we apply the same to Route via moveWaypoint for each swap
-                                        // Since itemsIndexed re-lays out, just ensure list matches route
+
+                                        if (fromIndex < 0) return@detectDragGesturesAfterLongPress
+
+                                        // How many rows did we cross?
+                                        val rowsMoved = (totalOffsetY / itemHeightPx).roundToInt()
+                                        Log.d(TAG, "Drag end: from=$fromIndex rowsMoved=$rowsMoved itemHeightPx=$itemHeightPx")
+
+                                        if (rowsMoved == 0) return@detectDragGesturesAfterLongPress
+
+                                        val targetIndex = (fromIndex + rowsMoved).coerceIn(0, waypointList.size - 1)
+                                        if (targetIndex == fromIndex) return@detectDragGesturesAfterLongPress
+
+                                        Log.d(TAG, "Drag end: swap from=$fromIndex to=$targetIndex")
+
+                                        // Perform a single swap using Route.moveWaypoint validation
+                                        val newList = waypointList.toMutableList()
+                                        val moved = newList.removeAt(fromIndex)
+                                        if (targetIndex == fromIndex) {
+                                            // consecutive check: can't move right after itself
+                                            Log.d(TAG, "Drag end: would be consecutive duplicate, skipping")
+                                            return@detectDragGesturesAfterLongPress
+                                        }
+                                        val insertAt = if (targetIndex > fromIndex) targetIndex - 1 else targetIndex
+
+                                        // Check consecutive duplicates at insert position
+                                        val before = if (insertAt >= 0) newList[insertAt] else null
+                                        val after = if (insertAt + 1 < newList.size) newList[insertAt + 1] else null
+                                        if (before != null && before.name == moved.name && before.latitude == moved.latitude) {
+                                            Log.d(TAG, "Drag end: consecutive duplicate with before, skipping")
+                                            return@detectDragGesturesAfterLongPress
+                                        }
+                                        if (after != null && after.name == moved.name && after.latitude == moved.latitude) {
+                                            Log.d(TAG, "Drag end: consecutive duplicate with after, skipping")
+                                            return@detectDragGesturesAfterLongPress
+                                        }
+
+                                        newList.add(insertAt + 1, moved)
+
+                                        // Apply to route
                                         route.waypoints.clear()
-                                        route.waypoints.addAll(waypointList)
-                                        // Recalculate distance after full reorder
+                                        route.waypoints.addAll(newList)
                                         if (route.length() > 1) {
                                             route.distance = route.distanceBetween(0, route.length() - 1)
                                         }
                                         waypointList = route.waypoints.toMutableList()
+                                        Log.d(TAG, "Drag end: DONE. New order: ${waypointList.joinToString { it.name }}")
                                     },
                                     onDragCancel = {
-                                        draggedIndex = null
-                                        draggedOverIndex = null
+                                        Log.d(TAG, "Drag cancel index=$index")
+                                        draggedIndex = -1
                                         dragOffset = Offset.Zero
-                                        // Restore original list from route
-                                        waypointList = route.waypoints.toMutableList()
                                     }
                                 )
                             }
                             .clickable {
+                                Log.d(TAG, "Tap index=$index \"${wpt.name}\"")
                                 showActionMenu = index
                             }
                             .background(
@@ -347,7 +377,7 @@ private fun RouteWaypointRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     color = if (isActive) MaterialTheme.colorScheme.primary
-                            else MaterialTheme.colorScheme.onSurface
+                    else MaterialTheme.colorScheme.onSurface
                 )
             }
             Text(
@@ -374,15 +404,15 @@ private fun RouteWaypointRow(
             ) {
                 if (index > 0) {
                     val dist = if (progress == 0) navDistance
-                        else route.distanceBetween(index - 1, index)
+                    else route.distanceBetween(index - 1, index)
                     Text(
                         StringFormatter.distanceH(dist),
                         fontSize = 12.sp,
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                     val crs = if (progress == 0) navBearing
-                        else if (navDirectionForward) route.course(index - 1, index)
-                        else route.course(index, index - 1)
+                    else if (navDirectionForward) route.course(index - 1, index)
+                    else route.course(index, index - 1)
                     Text(
                         StringFormatter.bearingH(crs),
                         fontSize = 12.sp,
@@ -400,7 +430,7 @@ private fun RouteWaypointRow(
                         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
                     )
                     val ete = if (progress == 0) navETE
-                        else navRouteWaypointETE?.invoke(index) ?: 0
+                    else navRouteWaypointETE?.invoke(index) ?: 0
                     Text(
                         StringFormatter.timeR(ete),
                         fontSize = 12.sp,
