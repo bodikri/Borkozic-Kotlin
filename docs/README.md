@@ -1,8 +1,8 @@
 # 📖 Borkozic Documentation (Документация)
 
-> **Last updated:** 2026-06-01 (waypoint edit flow, tap fix)
+> **Last updated:** 2026-06-01 (RouteDetails Compose with drag-and-drop)
 > **Kotlin migration:** ~350+ .kt files, 2 Java files remaining (3rd party)
-> **Compose migration:** 2/5 screens migrated (AreaList ✅, RouteList ✅)
+> **Compose migration:** 3/5 screens migrated (AreaList ✅, RouteList ✅, RouteDetails ✅)
 > **Build status:** 0 compilation errors, BUILD SUCCESSFUL ✅
 
 ---
@@ -24,11 +24,14 @@
 | [Map Rotation](components/map-rotation.md) | 🟢 Kotlin | Map display modes, smooth animations, touch coordinate fix (MapView.kt) |
 | Area List | 🟢 Compose | Area list screen (списък с области) |
 | Route List | 🟢 Compose | Route list screen (списък с маршрути) |
+| Route Details | 🟢 Compose | Route waypoints with drag-and-drop reorder (детайли на маршрут с пренареждане) |
+| Route Edit | 🟢 Kotlin | Route editing: add/reorder waypoints, non-consecutive duplicate check (редакция на маршрут) |
 | Track List | 🟡 Java → Compose planned | Track list screen (списък с тракове) |
 | Waypoint List | 🟡 Java → Compose planned | Waypoint list screen (списък с точки) |
 | Waypoint Edit | 🟢 Kotlin | Tap waypoint → Edit popup → WaypointProperties (редакция на точка от картата) |
 | Map Activity | 🟡 Compose planned | Main map screen (главен екран с карта) |
-| Map View | 🟢 Kotlin | Custom map rendering view (изглед за рендиране на карта) |
+| Map View | 🟢 Kotlin | Custom map rendering with touch coordinate fix (MapView.kt — view-local event.x/y) |
+| Waypoint Overlay | 🟢 Kotlin | Waypoint hit testing on map (WaypointsOverlay.kt) |
 | Navigation Service | 🟢 Kotlin | Route navigation service (услуга за навигация по маршрут) |
 | Location Service | 🟢 Kotlin | GPS location service (услуга за GPS локация) |
 
