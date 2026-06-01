@@ -294,7 +294,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     }
 
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        compassAhead = (width / 4.35).toInt()
+        compassAhead = (width / 4.35).toInt() + 40  // +40px (~10mm) extra distance from cursor
         synchronized(lock) {
             setLookAhead(lookAheadPst)
         }
@@ -427,9 +427,11 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         val cy = height / 2
 
         // Rotation — bearing is in DEGREES now, canvas.rotate() expects degrees
+        // Android Canvas.rotate() is clockwise. We need counter-clockwise rotation
+        // so that GPS heading (bearing) points UP on screen in Track Up mode.
         val rotBearingDeg = if (isTrackUp) bearing else 0f
         if (rotBearingDeg != 0f) {
-            canvas.rotate(rotBearingDeg, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
+            canvas.rotate(-rotBearingDeg, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
         }
         // drawMap needs bearing in RADIANS for coordinate transforms
         application?.drawMap(Math.toRadians(bearing.toDouble()).toFloat(), mapCenter, lookAheadXY, loadBestMap, width, height, canvas)
@@ -459,7 +461,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 (-mapCenterXY[1] + currentLocationXY[1]).toFloat()
             )
             if (isTrackUp) {
-                canvas.rotate(-bearing)
+                // Counter-rotate cursor to stay pointing UP (opposite of canvas rotation)
+                canvas.rotate(bearing)
             }
             if (isMoving) {
                 if (!isTrackUp) {
