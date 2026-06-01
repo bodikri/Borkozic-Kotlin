@@ -202,7 +202,16 @@ Track Up / North Up is configured via:
 
 ## Related Files
 
-- `MapView.kt` — gesture handling, rendering, rotation state
+- `MapView.kt` — gesture handling, rendering, rotation state, touch events
 - `Borkozic.kt` — `drawMap()`, `scrollMap()`, `zoomBy()`
 - `MapActivity.kt` — `zoomMap()`, `setFollowing()`, Settings integration
 - `borkoziclib/.../map/Map.kt` — tile rendering with bearing offset
+
+## Touch Coordinate Fix (2026-06-01)
+
+All touch events in `onTouchEvent()` use `event.x`/`event.y` (view-local coordinates)
+instead of `event.rawX`/`event.rawY` (absolute screen coordinates). This fixes a
+~190px vertical offset between tap position and visual crosshair center, caused by
+status bar + toolbar height. The crosshair is drawn at MapView center (`width/2`,
+`height/2`), so touch coordinates must be in the same coordinate system for
+accurate overlay hit testing.

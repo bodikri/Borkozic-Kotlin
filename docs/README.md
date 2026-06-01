@@ -1,9 +1,9 @@
 # 📖 Borkozic Documentation (Документация)
 
-> **Last updated:** 2026-05-22
-> **Kotlin migration:** ~346 .kt files, 35 Java files remaining (3rd party)
+> **Last updated:** 2026-06-01 (waypoint edit flow, tap fix)
+> **Kotlin migration:** ~350+ .kt files, 2 Java files remaining (3rd party)
 > **Compose migration:** 2/5 screens migrated (AreaList ✅, RouteList ✅)
-> **Build status:** 0 compilation errors, BUILD SUCCESSFUL
+> **Build status:** 0 compilation errors, BUILD SUCCESSFUL ✅
 
 ---
 
@@ -21,10 +21,12 @@
 | Document (Документ) | Status (Състояние) | Description (Описание) |
 |---|---|---|
 | [Sliding Right Panel](components/sliding-right-panel.md) | 🔴 Legacy — planned replacement | Side panel with action buttons (страничен панел с бутони за действия) |
+| [Map Rotation](components/map-rotation.md) | 🟢 Kotlin | Map display modes, smooth animations, touch coordinate fix (MapView.kt) |
 | Area List | 🟢 Compose | Area list screen (списък с области) |
 | Route List | 🟢 Compose | Route list screen (списък с маршрути) |
 | Track List | 🟡 Java → Compose planned | Track list screen (списък с тракове) |
 | Waypoint List | 🟡 Java → Compose planned | Waypoint list screen (списък с точки) |
+| Waypoint Edit | 🟢 Kotlin | Tap waypoint → Edit popup → WaypointProperties (редакция на точка от картата) |
 | Map Activity | 🟡 Compose planned | Main map screen (главен екран с карта) |
 | Map View | 🟢 Kotlin | Custom map rendering view (изглед за рендиране на карта) |
 | Navigation Service | 🟢 Kotlin | Route navigation service (услуга за навигация по маршрут) |
