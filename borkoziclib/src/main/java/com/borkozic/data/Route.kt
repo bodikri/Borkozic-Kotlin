@@ -159,6 +159,34 @@ class Route {
             distance = distanceBetween(0, waypoints.size - 1)
         }
     }
+
+    /**
+     * Moves a waypoint from [fromIndex] to [toIndex] and recalculates total distance.
+     * Returns false if the move would place the same waypoint after itself
+     * (consecutive duplicate prevention).
+     */
+    fun moveWaypoint(fromIndex: Int, toIndex: Int): Boolean {
+        val size = waypoints.size
+        if (fromIndex < 0 || fromIndex >= size || toIndex < 0 || toIndex >= size) return false
+        if (fromIndex == toIndex) return true
+
+        // Prevent moving a waypoint right after itself
+        if (toIndex == fromIndex + 1) return false
+
+        val wpt = waypoints.removeAt(fromIndex)
+        // adjust toIndex if we removed before it
+        val insertAt = if (toIndex > fromIndex) toIndex - 1 else toIndex
+
+        // Check consecutive duplicate: wpt at insertAt (the one before insertion point) must differ from wpt
+        if (insertAt >= 0 && waypoints[insertAt] === wpt) return false
+        // Also check the one after insertion point
+        if (insertAt + 1 < waypoints.size && waypoints[insertAt + 1] === wpt) return false
+
+        waypoints.add(insertAt + 1, wpt)
+        lastWaypoint = waypoints[waypoints.size - 1]
+        distance = distanceBetween(0, waypoints.size - 1)
+        return true
+    }
     
     fun getWaypoint(index: Int): Waypoint {
         return waypoints[index]
