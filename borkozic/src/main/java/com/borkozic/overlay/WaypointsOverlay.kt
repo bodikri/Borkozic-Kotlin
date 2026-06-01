@@ -23,42 +23,27 @@ class WaypointsOverlay(mapActivity: Activity) : MapObjectsOverlay(mapActivity) {
         clearBitmapCache()
     }
 
+    /**
+     * Hit-tests a single tap against all route waypoints (in reverse paint order).
+     * mapTap is already in map-space coordinates — MapView.onSingleTap() converts
+     * from screen coordinates by subtracting lookAheadXY and accounting for Track Up rotation.
+     * We use the same coordinate space as RouteOverlay and AreaOverlay: pointXY from
+     * getXYbyLatLon is compared directly against mapTap without any additional offsets.
+     *
+     * @return true if a waypoint was hit (consumes the event), false otherwise
+     */
     override fun onSingleTap(e: MotionEvent, mapTap: Rect, mapView: MapView): Boolean {
         val application: Borkozic = BaseApplication.getApplication<Borkozic>()!!
-        val cxy = mapView.mapCenterXY
 
-        val hitTolerance = 48  // пиксела — по-голямо тап петно за по-лесно улучване
         synchronized(waypoints) {
-            val tapCX = (mapTap.left + mapTap.right) / 2
-            val tapCY = (mapTap.top + mapTap.bottom) / 2
-            android.util.Log.d("WaypointsOverlay", "onSingleTap: waypoints.size=${waypoints.size} tapCenter=($tapCX,$tapCY) mapCenterXY=(${cxy[0]},${cxy[1]}) tolerance=$hitTolerance")
-            // проверка: дали най-новата точка (последно добавена) е близо до центъра
-            if (waypoints.isNotEmpty()) {
-                val lastWpt = waypoints.last()
-                val lastXY = application.getXYbyLatLon(lastWpt.latitude, lastWpt.longitude)
-                val distToCenter = Math.hypot((lastXY[0] - cxy[0]).toDouble(), (lastXY[1] - cxy[1]).toDouble())
-                android.util.Log.d("WaypointsOverlay",
-                    "  LAST wpt=${lastWpt.name} xy=(${lastXY[0]},${lastXY[1]}) centerXY=(${cxy[0]},${cxy[1]}) distToCenter=${"%.0f".format(distToCenter)}px")
-            }
             for (i in waypoints.indices.reversed()) {
                 val wpt = waypoints[i]
-                // pointXY са map координати — mapTap също е в map координати (MapView.onSingleTap изважда lookAheadXY)
                 val pointXY = application.getXYbyLatLon(wpt.latitude, wpt.longitude)
-                val deltaX = pointXY[0] - tapCX
-                val deltaY = pointXY[1] - tapCY
-                val hitRect = Rect(mapTap.left - hitTolerance, mapTap.top - hitTolerance,
-                                   mapTap.right + hitTolerance, mapTap.bottom + hitTolerance)
-                val hit = hitRect.contains(pointXY[0], pointXY[1])
-                // log every waypoint: tap center, point coords, delta — за да видим offset посоката и големината
-                android.util.Log.d("WaypointsOverlay",
-                    "  wpt[$i]=${wpt.name} pointXY=(${pointXY[0]},${pointXY[1]}) delta=($deltaX,$deltaY) hit=$hit")
-                if (hit && context is MapActivity) {
-                    android.util.Log.d("WaypointsOverlay", "onSingleTap: HIT wpt=${wpt.name}")
+                if (mapTap.contains(pointXY[0], pointXY[1]) && context is MapActivity) {
                     return (context as MapActivity).waypointTapped(wpt, e.x.toInt(), e.y.toInt())
                 }
             }
         }
-        android.util.Log.d("WaypointsOverlay", "onSingleTap: no hit after checking ${waypoints.size} waypoints")
         return false
     }
 
