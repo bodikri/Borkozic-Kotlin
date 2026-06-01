@@ -206,6 +206,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     protected var wptQuickActionAddToArea: QuickAction3D? = null
     /** Quick action shown when tapping a waypoint outside editing mode (Edit/Navigate). */
     protected var wptQuickAction: QuickAction3D? = null
+    /** Quick action shown when tapping a route waypoint during route edit (Edit / Add to end). */
+    protected var wptQuickActionRouteEdit: QuickAction3D? = null
     protected var rteQuickAction: QuickAction3D? = null
     protected var mobQuickAction: QuickAction3D? = null
     private var dimView: ViewGroup? = null
@@ -394,6 +396,24 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             )
         )
         wptQuickAction!!.setOnActionItemClickListener(waypointActionItemClickListener)
+
+        // Quick action for tapping a route waypoint during route editing — Edit / Add to end
+        wptQuickActionRouteEdit = QuickAction3D(this, QuickAction3D.VERTICAL)
+        wptQuickActionRouteEdit!!.addActionItem(
+            ActionItem(
+                qaEditRouteWaypoint,
+                getString(R.string.menu_edit),
+                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_edit, null)
+            )
+        )
+        wptQuickActionRouteEdit!!.addActionItem(
+            ActionItem(
+                qaAddRouteWaypointToEnd,
+                getString(R.string.menu_addtoroute),
+                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_add, null)
+            )
+        )
+        wptQuickActionRouteEdit!!.setOnActionItemClickListener(routeWaypointEditActionItemClickListener)
 
         rteQuickAction = QuickAction3D(this, QuickAction3D.VERTICAL)
         rteQuickAction!!.addActionItem(
@@ -1827,13 +1847,23 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 route
             )
         ) {
-            startActivityForResult(
-                Intent(this, WaypointProperties::class.java).putExtra(
-                    "INDEX",
-                    index
-                ).putExtra("ROUTE", route + 1), RESULT_EDIT_ROUTE
-            )
-            Log.e(TAG, "routeWaypointTapped: open WaypointProperties for route=$route index=$index")
+            // Tapped a waypoint inside the route being edited.
+            // If it's the last waypoint → direct edit (can't add the same point consecutively).
+            // Otherwise → show popup with Edit and Add to end.
+            val isLast = index == application!!.editingRoute!!.length() - 1
+            if (isLast) {
+                startActivityForResult(
+                    Intent(this, WaypointProperties::class.java).putExtra(
+                        "INDEX",
+                        index
+                    ).putExtra("ROUTE", route + 1), RESULT_EDIT_ROUTE
+                )
+            } else {
+                routeSelected = route
+                waypointSelected = index
+                wptQuickActionRouteEdit!!.show(map, x, y)
+                Log.d(TAG, "routeWaypointTapped: show RouteEdit popup for route=$route index=$index (not last)")
+            }
             return true
         } else if (application!!.editingRoute != null) {
             // Another route is being edited — offer to add this waypoint to it
@@ -2268,6 +2298,40 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     qaNavigateToWaypoint -> navigationService!!.setRouteWaypoint(waypointSelected)
                 }
                 waypointSelected = -1
+            }
+        }
+
+    /** Handles the route waypoint edit popup shown during route editing (Edit / Add to end). */
+    private val routeWaypointEditActionItemClickListener: QuickAction3D.OnActionItemClickListener =
+        object : QuickAction3D.OnActionItemClickListener {
+            override fun onItemClick(source: QuickAction3D?, pos: Int, actionId: Int) {
+                when (actionId) {
+                    qaEditRouteWaypoint -> {
+                        val routeIdx = routeSelected
+                        val wptIdx = waypointSelected
+                        startActivityForResult(
+                            Intent(this@MapActivity, WaypointProperties::class.java)
+                                .putExtra("INDEX", wptIdx)
+                                .putExtra("ROUTE", routeIdx + 1),
+                            RESULT_EDIT_ROUTE
+                        )
+                    }
+                    qaAddRouteWaypointToEnd -> {
+                        val rte = application!!.getRoute(routeSelected) ?: return
+                        val wpt = rte.waypoints[waypointSelected]
+                        val newWpt = application!!.editingRoute!!.addWaypoint(
+                            wpt.name,
+                            wpt.latitude,
+                            wpt.longitude,
+                            wpt.altitude
+                        )
+                        application!!.routeEditingWaypoints!!.push(newWpt)
+                        addToRouteWaypointSet(newWpt)
+                        map!!.invalidate()
+                    }
+                }
+                waypointSelected = -1
+                routeSelected = -1
             }
         }
 
@@ -2951,6 +3015,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
         private const val qaAddWaypointToArea = 3
         private const val qaEditWaypoint = 4
+        private const val qaEditRouteWaypoint = 5
+        private const val qaAddRouteWaypointToEnd = 6
 
         private val SCREEN_ORIENTATION_PORTRAIT = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
