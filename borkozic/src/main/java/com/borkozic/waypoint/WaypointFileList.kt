@@ -32,7 +32,7 @@ class WaypointFileList : FileListActivity() {
 
         try {
             val wptset = WaypointSet(file)
-            val lc = file.name.toLowerCase()
+            val lc = file.name.lowercase()
             var waypoints: List<Waypoint>? = null
 
             if (lc.endsWith(".wpt")) {

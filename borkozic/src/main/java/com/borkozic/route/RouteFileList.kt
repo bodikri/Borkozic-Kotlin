@@ -30,7 +30,7 @@ class RouteFileList : FileListActivity() {
         var routes: List<Route>
 
         try {
-            val lc = file.name.toLowerCase()
+            val lc = file.name.lowercase()
             if (lc.endsWith(".rt2") || lc.endsWith(".rte")) {
                 routes = OziExplorerFiles.loadRoutesFromFile(file, application.charset!!)
             } else if (lc.endsWith(".kml")) {

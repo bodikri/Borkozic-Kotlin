@@ -25,7 +25,7 @@ class AreaFileList : FileListActivity() {
         val application = application as Borkozic
         var areas: List<Area>
         try {
-            val lc = file.name.toLowerCase()
+            val lc = file.name.lowercase()
             if (lc.endsWith(".art2")) {
                 areas = OziExplorerFiles.loadAreasFromFile(file, application.charset!!)
             } else {
