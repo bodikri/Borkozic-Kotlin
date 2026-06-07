@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'com.borkozic'
-    compileSdk 34
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.borkozic"
         minSdk 21
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0"
     }
@@ -34,7 +34,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = '1.4.8'
+        kotlinCompilerExtensionVersion = '1.5.14'
     }
 
     useLibrary 'org.apache.http.legacy'
@@ -56,7 +56,7 @@ dependencies {
     implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    // Compose versions compatible with Kotlin 1.8.22 + compiler 1.4.8
+    // Compose — compatible with Kotlin 1.9.24 + compiler 1.5.14
     implementation 'androidx.compose.ui:ui:1.4.3'
     implementation 'androidx.compose.material3:material3:1.1.2'
     implementation 'androidx.compose.material:material-icons-extended:1.4.3'
