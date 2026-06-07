@@ -554,6 +554,15 @@ class Borkozic : BaseApplication() {
 
     fun removeTrack(delTrack: Track): Boolean {
         delTrack.removed = true
+        // Delete the file from disk so it doesn't reappear on restart
+        val fp = delTrack.filepath
+        if (fp != null) {
+            val file = File(fp)
+            if (file.exists()) {
+                file.delete()
+                Log.d(TAG, "removeTrack: deleted file $fp")
+            }
+        }
         return tracks.remove(delTrack)
     }
 
@@ -812,6 +821,15 @@ class Borkozic : BaseApplication() {
 
     fun removeRoute(delRoute: Route): Boolean {
         delRoute.removed = true
+        // Delete the file from disk so it doesn't reappear on restart
+        val fp = delRoute.filepath
+        if (fp != null) {
+            val file = File(fp)
+            if (file.exists()) {
+                file.delete()
+                Log.d(TAG, "removeRoute: deleted file $fp")
+            }
+        }
         return routes.remove(delRoute)
     }
 
@@ -854,6 +872,15 @@ class Borkozic : BaseApplication() {
 
     fun removeArea(delArea: Area): Boolean {
         delArea.removed = true
+        // Delete the file from disk so it doesn't reappear on restart
+        val fp = delArea.filepath
+        if (fp != null) {
+            val file = File(fp)
+            if (file.exists()) {
+                file.delete()
+                Log.d(TAG, "removeArea: deleted file $fp")
+            }
+        }
         return areas.remove(delArea)
     }
 
