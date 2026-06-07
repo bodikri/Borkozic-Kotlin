@@ -23,6 +23,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.location.LocationProvider
+import android.location.OnNmeaMessageListener
 import android.os.*
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
@@ -37,7 +38,7 @@ import com.borkozic.Splash
 import com.borkozic.data.Track
 import java.io.File
 
-open class LocationService : BaseLocationService(), LocationListener, NmeaListener, OnSharedPreferenceChangeListener {
+open class LocationService : BaseLocationService(), LocationListener, OnNmeaMessageListener, OnSharedPreferenceChangeListener {
     private val TAG = "Location"
     private val NOTIFICATION_ID = 24161
     private val NOTIFICATION_CHANNEL_ID = "com.borkozic.location"
@@ -266,10 +267,9 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
         try {
             locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
             Log.d(TAG, "Gps provider set")
-            // Register NMEA listener for satellite info
-            @Suppress("DEPRECATION")
-            locationManager!!.addNmeaListener(this)
-            Log.d(TAG, "NmeaListener registered")
+            // Register modern NMEA listener for satellite info (API 24+)
+            locationManager!!.addNmeaListener(this, null)
+            Log.d(TAG, "OnNmeaMessageListener registered")
         } catch (e: IllegalArgumentException) {
             Log.d(TAG, "Cannot set gps provider, likely no gps on device")
         }
@@ -280,7 +280,6 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
     private fun disconnect() {
         if (locationManager != null) {
             locationManager!!.removeUpdates(this)
-            @Suppress("DEPRECATION")
             locationManager!!.removeNmeaListener(this)
             locationManager = null
             stopForeground(true)
@@ -788,7 +787,7 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
         isContinous = fromGps
     }
 
-    override fun onNmeaReceived(timestamp: Long, nmea: String) {
+    override fun onNmeaMessage(nmea: String, timestamp: Long) {
         if (nmea.indexOf('\n') == 0) return
         var nmeaLine = nmea
         if (nmea.indexOf('\n') > 0) {
