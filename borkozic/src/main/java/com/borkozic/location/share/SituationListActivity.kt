@@ -175,7 +175,7 @@ class SituationListActivity : AppCompatActivity(),
         popup.show()
     }
 
-    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+    override fun onCheckedChanged(buttonView: CompoundButton, isChecked: Boolean) {
         if (isChecked && !isServiceRunning()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val missing = mutableListOf<String>()
