@@ -61,6 +61,10 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
     private var gpsStatus = GPS_OFF
     private var gnssStatus = GPS_OFF
 
+    // Satellite counts from NMEA
+    private var fsats = 0  // used in fix (from GGA)
+    private var tsats = 0  // total in view (from GSV + GSA active count)
+
     private val speed = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
     private val speedav = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
     private val speedavex = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
@@ -795,6 +799,17 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
         try {
             when (sentenceId) {
                 "GGA" -> {
+                    // GGA: time,lat,latH,lon,lonH,quality,numSat,hdop,alt,altU,geoid,geoidU,...
+                    if (tokens.size > 7) {
+                        val numSat = tokens[7]
+                        if (numSat.isNotEmpty()) {
+                            val newFsats = numSat.toInt()
+                            if (newFsats != fsats) {
+                                fsats = newFsats
+                                dispatchSatelliteUpdate()
+                            }
+                        }
+                    }
                     if (tokens.size > 11) {
                         val heightOfGeoid = tokens[11]
                         if (heightOfGeoid.isNotEmpty()) {
@@ -803,6 +818,7 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
                     }
                 }
                 "GSA" -> {
+                    // GSA: mode,fixType,sat1..sat12,pdop,hdop,vdop
                     if (tokens.size > 17) {
                         val hdop = tokens[16]
                         val vdop = tokens[17]
@@ -814,12 +830,56 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
                         }
                     }
                 }
+                "GSV" -> {
+                    // GSV: numMsgs,msgNum,svsInView, then 4× (prn,elev,azim,snr)
+                    if (tokens.size > 3) {
+                        val inViewStr = tokens[3]
+                        if (inViewStr.isNotEmpty()) {
+                            val inView = inViewStr.toInt()
+                            if (inView != tsats) {
+                                tsats = inView
+                                dispatchSatelliteUpdate()
+                            }
+                        }
+                    }
+                }
             }
         } catch (e: NumberFormatException) {
             Log.e(TAG, "NFE", e)
         } catch (e: ArrayIndexOutOfBoundsException) {
             Log.e(TAG, "AIOOBE", e)
         }
+    }
+
+    /** Dispatch satellite counts from NMEA to all listeners (local + remote) */
+    private fun dispatchSatelliteUpdate() {
+        // Update GPS status based on satellite counts
+        val newStatus = when {
+            tsats > 0 || fsats > 0 -> GPS_OK
+            else -> GPS_SEARCHING
+        }
+        if (newStatus != gpsStatus) {
+            gpsStatus = newStatus
+            gnssStatus = newStatus
+            updateNotification()
+        }
+
+        // Local callbacks
+        for (callback in locationCallbacks) {
+            callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, gpsStatus, fsats, tsats)
+        }
+
+        // Remote callbacks (other processes / AIDL)
+        val n = locationRemoteCallbacks.beginBroadcast()
+        for (i in 0 until n) {
+            val callback = locationRemoteCallbacks.getBroadcastItem(i)
+            try {
+                callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, gpsStatus, fsats, tsats)
+            } catch (e: RemoteException) {
+                Log.e(TAG, "Satellite update broadcast error", e)
+            }
+        }
+        locationRemoteCallbacks.finishBroadcast()
     }
 
     override fun onProviderDisabled(provider: String) {
