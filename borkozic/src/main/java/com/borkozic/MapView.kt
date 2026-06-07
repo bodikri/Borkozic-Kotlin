@@ -1187,17 +1187,12 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                                 gestureDragY = currentY
 
                                 if (!isFollowing) {
-                                    if (isTrackUp) {
-                                        // Canvas is rotated by -bearing → rad = -bearing
-                                        // converts screen deltas to map space (matches original Java formula).
-                                        val rad = Math.toRadians(-bearing.toDouble())
-                                        val mapDx = (dx * cos(rad) + dy * sin(rad)).toInt()
-                                        val mapDy = (-dx * sin(rad) + dy * cos(rad)).toInt()
-                                        onDragFinished(mapDx, mapDy)
-                                    } else {
-                                        // North Up: no canvas rotation, raw pixel deltas
-                                        onDragFinished(dx, dy)
-                                    }
+                                    // Track Up: canvas rotated -bearing → screen deltas rotate +bearing to map space.
+                                    // North Up: canvas not rotated → inverse rotation for heading compensation.
+                                    val rad = Math.toRadians((if (isTrackUp) bearing else -bearing).toDouble())
+                                    val mapDx = (dx * cos(rad) + dy * sin(rad)).toInt()
+                                    val mapDy = (-dx * sin(rad) + dy * cos(rad)).toInt()
+                                    onDragFinished(mapDx, mapDy)
                                 }
                                 if (!strictUnfollow) setFollowingThroughContext(false)
                             }
