@@ -1873,11 +1873,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 Log.d(TAG, "routeWaypointTapped: show RouteEdit popup for route=$route index=$index (not last)")
             }
             return true
-        } else if (application!!.editingRoute != null) {
-            // Another route is being edited — offer to add this waypoint to it
+        } else if (application!!.editingRoute != null || application!!.editingArea != null) {
+            // Route or Area is being edited — offer to add this waypoint to it
             val rte = application!!.getRoute(route) ?: return false
             val wpt = rte.waypoints[index]
-            Log.d(TAG, "routeWaypointTapped: redirect to waypointTapped for 'Add to Route' rte=${rte.name} wpt=${wpt.name}")
+            Log.d(TAG, "routeWaypointTapped: redirect to waypointTapped for editingRoute=${application!!.editingRoute?.name} editingArea=${application!!.editingArea?.name} wpt=${wpt.name}")
             return waypointTapped(wpt, x, y)
         } else if (navigationService != null && navigationService!!.navRoute == application!!.getRoute(
                 route
@@ -1919,6 +1919,12 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 ).putExtra("AREA", area + 1), RESULT_EDIT_AREA
             )
             return true
+        } else if (application!!.editingRoute != null || application!!.editingArea != null) {
+            // Route or Area is being edited — offer to add this area waypoint to it
+            val are = application!!.getArea(area) ?: return false
+            val wpt = are.waypoints[index]
+            Log.d(TAG, "areaWaypointTapped: redirect to waypointTapped for editingRoute=${application!!.editingRoute?.name} editingArea=${application!!.editingArea?.name} wpt=${wpt.name}")
+            return waypointTapped(wpt, x, y)
         } else if (navigationService != null && navigationService!!.navArea == application!!.getArea(
                 area
             )
