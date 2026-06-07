@@ -1187,13 +1187,17 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                                 gestureDragY = currentY
 
                                 if (!isFollowing) {
-                                    // Track Up: canvas is already rotated by +bearing → apply
-                                    // forward rotation to convert screen delta to map delta.
-                                    // North Up: canvas NOT rotated → need inverse rotation.
-                                    val rad = Math.toRadians((if (isTrackUp) bearing else -bearing).toDouble())
-                                    val mapDx = (dx * cos(rad) + dy * sin(rad)).toInt()
-                                    val mapDy = (-dx * sin(rad) + dy * cos(rad)).toInt()
-                                    onDragFinished(mapDx, mapDy)
+                                    if (isTrackUp) {
+                                        // Canvas is rotated by -bearing → rad = -bearing
+                                        // converts screen deltas to map space (matches original Java formula).
+                                        val rad = Math.toRadians(-bearing.toDouble())
+                                        val mapDx = (dx * cos(rad) + dy * sin(rad)).toInt()
+                                        val mapDy = (-dx * sin(rad) + dy * cos(rad)).toInt()
+                                        onDragFinished(mapDx, mapDy)
+                                    } else {
+                                        // North Up: no canvas rotation, raw pixel deltas
+                                        onDragFinished(dx, dy)
+                                    }
                                 }
                                 if (!strictUnfollow) setFollowingThroughContext(false)
                             }
@@ -1218,7 +1222,8 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                                 var normalized = deltaAngle % 360f
                                 if (normalized > 180f) normalized -= 360f
                                 if (normalized < -180f) normalized += 360f
-                                val newBearing = gestureStartBearing + normalized
+                                // Canvas rotates -bearing → clockwise finger twist = decrease bearing
+                                val newBearing = gestureStartBearing - normalized
                                 bearing = ((newBearing % 360f) + 360f) % 360f
                             }
                         }
