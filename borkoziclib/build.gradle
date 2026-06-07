@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'com.borkozic.library'
-    compileSdk 35
+    compileSdk 36
 
     buildFeatures {
         aidl true
@@ -33,10 +33,10 @@ android {
         jvmTarget = '11'
     }
     lint {
-        targetSdk 35
+        targetSdk 36
     }
     testOptions {
-        targetSdk 35
+        targetSdk 36
     }
 }
 
