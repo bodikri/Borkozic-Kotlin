@@ -112,6 +112,7 @@ class Information : Activity() {
 
     private val locationListener = object : ILocationListener {
         override fun onGpsStatusChanged(provider: String, status: Int, fsats: Int, tsats: Int) {
+            Log.d("Information", "onGpsStatusChanged: provider=$provider status=$status fsats=$fsats tsats=$tsats")
             runOnUiThread {
                 when (status) {
                     BaseLocationService.GPS_OK -> satsValue.text = "$fsats/$tsats"

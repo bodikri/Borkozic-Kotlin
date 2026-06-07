@@ -266,6 +266,10 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
         try {
             locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
             Log.d(TAG, "Gps provider set")
+            // Register NMEA listener for satellite info
+            @Suppress("DEPRECATION")
+            locationManager!!.addNmeaListener(this)
+            Log.d(TAG, "NmeaListener registered")
         } catch (e: IllegalArgumentException) {
             Log.d(TAG, "Cannot set gps provider, likely no gps on device")
         }
@@ -276,6 +280,12 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
     private fun disconnect() {
         if (locationManager != null) {
             locationManager!!.removeUpdates(this)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                locationManager!!.removeNmeaListener(this as OnNmeaMessageListener)
+            } else {
+                @Suppress("DEPRECATION")
+                locationManager!!.removeNmeaListener(this)
+            }
             locationManager = null
             stopForeground(true)
         }
@@ -800,12 +810,15 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
             when (sentenceId) {
                 "GGA" -> {
                     // GGA: time,lat,latH,lon,lonH,quality,numSat,hdop,alt,altU,geoid,geoidU,...
+                    Log.d(TAG, "NMEA GGA: tokens=$tokens")
                     if (tokens.size > 7) {
                         val numSat = tokens[7]
+                        Log.d(TAG, "NMEA GGA numSat=['$numSat'] tokenSize=${tokens.size}")
                         if (numSat.isNotEmpty()) {
                             val newFsats = numSat.toInt()
                             if (newFsats != fsats) {
                                 fsats = newFsats
+                                Log.d(TAG, "NMEA dispatch: fsats=$fsats tsats=$tsats")
                                 dispatchSatelliteUpdate()
                             }
                         }
@@ -832,12 +845,15 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
                 }
                 "GSV" -> {
                     // GSV: numMsgs,msgNum,svsInView, then 4× (prn,elev,azim,snr)
+                    Log.d(TAG, "NMEA GSV: tokens=$tokens")
                     if (tokens.size > 3) {
                         val inViewStr = tokens[3]
+                        Log.d(TAG, "NMEA GSV svsInView=['$inViewStr'] tokenSize=${tokens.size}")
                         if (inViewStr.isNotEmpty()) {
                             val inView = inViewStr.toInt()
                             if (inView != tsats) {
                                 tsats = inView
+                                Log.d(TAG, "NMEA dispatch: fsats=$fsats tsats=$tsats")
                                 dispatchSatelliteUpdate()
                             }
                         }
@@ -853,6 +869,7 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
 
     /** Dispatch satellite counts from NMEA to all listeners (local + remote) */
     private fun dispatchSatelliteUpdate() {
+        Log.d(TAG, "dispatchSatelliteUpdate: fsats=$fsats tsats=$tsats localCallbacks=${locationCallbacks.size} remoteCallbacks=${locationRemoteCallbacks.registeredCallbackCount}")
         // Update GPS status based on satellite counts
         val newStatus = when {
             tsats > 0 || fsats > 0 -> GPS_OK
@@ -862,12 +879,14 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
             gpsStatus = newStatus
             gnssStatus = newStatus
             updateNotification()
+            Log.d(TAG, "dispatchSatelliteUpdate: gpsStatus changed to $gpsStatus")
         }
 
         // Local callbacks
         for (callback in locationCallbacks) {
             callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, gpsStatus, fsats, tsats)
         }
+        Log.d(TAG, "dispatchSatelliteUpdate: dispatched to ${locationCallbacks.size} local callbacks")
 
         // Remote callbacks (other processes / AIDL)
         val n = locationRemoteCallbacks.beginBroadcast()
@@ -880,6 +899,7 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
             }
         }
         locationRemoteCallbacks.finishBroadcast()
+        Log.d(TAG, "dispatchSatelliteUpdate: dispatched to $n remote callbacks")
     }
 
     override fun onProviderDisabled(provider: String) {
