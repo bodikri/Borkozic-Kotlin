@@ -280,12 +280,8 @@ open class LocationService : BaseLocationService(), LocationListener, NmeaListen
     private fun disconnect() {
         if (locationManager != null) {
             locationManager!!.removeUpdates(this)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                locationManager!!.removeNmeaListener(this as OnNmeaMessageListener)
-            } else {
-                @Suppress("DEPRECATION")
-                locationManager!!.removeNmeaListener(this)
-            }
+            @Suppress("DEPRECATION")
+            locationManager!!.removeNmeaListener(this)
             locationManager = null
             stopForeground(true)
         }

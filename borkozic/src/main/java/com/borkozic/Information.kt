@@ -31,6 +31,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.text.format.DateFormat
+import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
