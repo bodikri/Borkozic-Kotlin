@@ -1807,19 +1807,27 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
     fun waypointTapped(waypoint: Waypoint, x: Int, y: Int): Boolean {
         try {
+            // Ensure waypoint exists in global list (old routes may have
+            // waypoints that only exist inside the route, not in global list).
+            var idx = application!!.getWaypointIndex(waypoint)
+            if (idx < 0) {
+                application!!.addWaypoint(waypoint)
+                idx = application!!.getWaypointIndex(waypoint)
+                if (idx < 0) return false
+            }
             if (application!!.editingRoute != null) {
                 routeSelected = -1
-                waypointSelected = application!!.getWaypointIndex(waypoint)
+                waypointSelected = idx
                 wptQuickActionAddToRoute!!.show(map, x, y)
                 return true
             } else if (application!!.editingArea != null) {
                 areaSelected = -1
-                waypointSelected = application!!.getWaypointIndex(waypoint)
+                waypointSelected = idx
                 wptQuickActionAddToArea!!.show(map, x, y)
                 return true
             } else {
                 // Outside editing mode — show Edit/Navigate quick action
-                waypointSelected = application!!.getWaypointIndex(waypoint)
+                waypointSelected = idx
                 wptQuickAction!!.show(map, x, y)
                 Log.d(TAG, "waypointTapped: show wptQuickAction for waypoint=${waypoint.name}")
                 return true
@@ -2251,6 +2259,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private val waypointActionItemClickListener: QuickAction3D.OnActionItemClickListener =
         object : QuickAction3D.OnActionItemClickListener {
             override fun onItemClick(source: QuickAction3D?, pos: Int, actionId: Int) {
+                if (waypointSelected < 0) return  // safety: not found in global list
                 val wpt: Waypoint = application!!.getWaypoint(waypointSelected)!!
 
                 when (actionId) {
