@@ -366,7 +366,7 @@ class Preferences : AppCompatActivity() {
                 val versionName: String = try {
                     requireActivity().packageManager.getPackageInfo(
                         requireActivity().packageName, 0
-                    ).versionName
+                    ).versionName ?: "unable to retreive version"
                 } catch (_: NameNotFoundException) {
                     "unable to retreive version"
                 }
