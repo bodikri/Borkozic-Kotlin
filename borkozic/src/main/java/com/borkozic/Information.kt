@@ -31,7 +31,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.os.IBinder
 import android.text.format.DateFormat
-import android.util.Log
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -112,8 +111,9 @@ class Information : Activity() {
     }
 
     private val locationListener = object : ILocationListener {
+        // Receives GPS satellite status updates dispatched from LocationService.onNmeaMessage()
+        // fsats = satellites used in fix, tsats = total in view
         override fun onGpsStatusChanged(provider: String, status: Int, fsats: Int, tsats: Int) {
-            Log.d("Information", "onGpsStatusChanged: provider=$provider status=$status fsats=$fsats tsats=$tsats")
             runOnUiThread {
                 when (status) {
                     BaseLocationService.GPS_OK -> satsValue.text = "$fsats/$tsats"

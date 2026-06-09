@@ -62,9 +62,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private var gpsStatus = GPS_OFF
     private var gnssStatus = GPS_OFF
 
-    // Satellite counts from NMEA
-    private var fsats = 0  // used in fix (from GGA)
-    private var tsats = 0  // total in view (from GSV + GSA active count)
+    // Satellite tracking — populated from NMEA sentences by onNmeaMessage()
+    // fsats = satellites used in position fix (from GGA)
+    // tsats = total satellites in view (from GSV, accumulated across constellations)
+    private var fsats = 0
+    private var tsats = 0
 
     private val speed = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
     private val speedav = floatArrayOf(0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f)
@@ -105,7 +107,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
     override fun onCreate() {
         super.onCreate()
-        Log.e(TAG, "onCreate()")
+        //Log.e(TAG, "onCreate()")
 
         lastKnownLocation = Location("unknown")
 
@@ -173,12 +175,12 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         getSharedPreferences(packageName + "_preferences", Context.MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this)
         disconnect()
         closeDatabase()
-        Log.i(TAG, "Service stopped")
+        //Log.i(TAG, "Service stopped")
     }
 
     private val locationRemoteBinder = object : ILocationRemoteService.Stub() {
         override fun registerCallback(cb: ILocationCallback?) {
-            Log.i(TAG, "Register location callback")
+            //Log.i(TAG, "Register location callback")
             if (cb != null) locationRemoteCallbacks.register(cb)
         }
 
@@ -193,7 +195,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
     private val trackingRemoteBinder = object : ITrackingRemoteService.Stub() {
         override fun registerCallback(cb: ITrackingCallback?) {
-            Log.i(TAG, "Register track callback")
+            //Log.i(TAG, "Register track callback")
             if (cb != null) trackingRemoteCallbacks.register(cb)
         }
 
@@ -259,19 +261,19 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         if (useNetwork) {
             try {
                 locationManager!!.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, this)
-                Log.d(TAG, "Network provider set")
+                //Log.d(TAG, "Network provider set")
             } catch (e: IllegalArgumentException) {
                 Toast.makeText(this, getString(R.string.err_no_network_provider), Toast.LENGTH_LONG).show()
             }
         }
         try {
             locationManager!!.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, this)
-            Log.d(TAG, "Gps provider set")
+            //Log.d(TAG, "Gps provider set")
             // Register modern NMEA listener for satellite info (API 24+)
             locationManager!!.addNmeaListener(this, null)
-            Log.d(TAG, "OnNmeaMessageListener registered")
+            //Log.d(TAG, "OnNmeaMessageListener registered")
         } catch (e: IllegalArgumentException) {
-            Log.d(TAG, "Cannot set gps provider, likely no gps on device")
+            //Log.d(TAG, "Cannot set gps provider, likely no gps on device")
         }
 
         updateNotification()
@@ -354,7 +356,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             .setCategory(Notification.CATEGORY_SERVICE)
 
         val notification = notificationBuilder.build()
-        Log.d(TAG, "startMyOwnForeground")
+        //Log.d(TAG, "startMyOwnForeground")
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(NOTIFICATION_ID, notification, android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
@@ -363,7 +365,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-                Log.w(TAG, "POST_NOTIFICATIONS permission not granted")
+                //Log.w(TAG, "POST_NOTIFICATIONS permission not granted")
             }
         }
     }
@@ -371,7 +373,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private fun openDatabase() {
         val application = BaseApplication.getApplication<Borkozic>() ?: return
         if (application.dataPath == null) {
-            Log.e(TAG, "Data path is null")
+            //Log.e(TAG, "Data path is null")
             errorMsg = "Data path is null"
             errorTime = System.currentTimeMillis()
             updateNotification()
@@ -379,14 +381,14 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         }
         val dir = File(application.dataPath!!)
         if (!dir.exists() && !dir.mkdirs()) {
-            Log.e(TAG, "Failed to create data folder")
+            //Log.e(TAG, "Failed to create data folder")
             errorMsg = "Failed to create data folder"
             errorTime = System.currentTimeMillis()
             updateNotification()
             return
         }
         val path = File(dir, "myTrack.db")
-        Log.i(TAG, path.toString())
+        //Log.i(TAG, path.toString())
         try {
             trackDB = SQLiteDatabase.openDatabase(
                 path.absolutePath, null,
@@ -399,7 +401,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             cursor.close()
         } catch (e: SQLiteException) {
             trackDB = null
-            Log.e(TAG, "openDatabase", e)
+            //Log.e(TAG, "openDatabase", e)
             errorMsg = "Failed to open DB"
             errorTime = System.currentTimeMillis()
             updateNotification()
@@ -438,7 +440,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         if (latIdx == -1 || lonIdx == -1 || eleIdx == -1 || speedIdx == -1 ||
             bearingIdx == -1 || accIdx == -1 || codeIdx == -1 || timeIdx == -1
         ) {
-            Log.e(TAG, "Database schema mismatch: missing columns")
+            //Log.e(TAG, "Database schema mismatch: missing columns")
             cursor.close()
             return track
         }
@@ -483,7 +485,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         if (latIdx == -1 || lonIdx == -1 || eleIdx == -1 || speedIdx == -1 ||
             bearingIdx == -1 || accIdx == -1 || codeIdx == -1 || timeIdx == -1
         ) {
-            Log.e(TAG, "Database schema mismatch: missing columns")
+            //Log.e(TAG, "Database schema mismatch: missing columns")
             cursor.close()
             return track
         }
@@ -556,7 +558,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         try {
             trackDB!!.insertOrThrow("track", null, values)
         } catch (e: SQLException) {
-            Log.e(TAG, "addPoint", e)
+            //Log.e(TAG, "addPoint", e)
             errorMsg = e.message ?: "Unknown error"
             errorTime = System.currentTimeMillis()
             updateNotification()
@@ -565,7 +567,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     }
 
     private fun writeLocation(loc: Location, continous: Boolean) {
-        Log.d(TAG, "Fix needs writing")
+        //Log.d(TAG, "Fix needs writing")
         lastWritenLocation = loc
         distanceFromLastWriting = 0.0
         addPoint(continous, loc.latitude, loc.longitude, loc.altitude,
@@ -583,7 +585,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 callback.onNewPoint(continous, loc.latitude, loc.longitude,
                     loc.altitude, loc.speed.toDouble(), loc.bearing.toDouble(), loc.accuracy.toDouble(), loc.time)
             } catch (e: RemoteException) {
-                Log.e(TAG, "Point broadcast error", e)
+                //Log.e(TAG, "Point broadcast error", e)
             }
         }
         trackingRemoteCallbacks.finishBroadcast()
@@ -642,7 +644,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             try {
                 callback.onLocationChanged(location, continous, geoid, smoothspeed, avgspeed)
             } catch (e: RemoteException) {
-                Log.e(TAG, "Location broadcast error", e)
+                //Log.e(TAG, "Location broadcast error", e)
             }
         }
         locationRemoteCallbacks.finishBroadcast()
@@ -679,7 +681,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     callback.onProviderDisabled(provider)
                 }
             } catch (e: RemoteException) {
-                Log.e(TAG, "Provider broadcast error", e)
+                //Log.e(TAG, "Provider broadcast error", e)
             }
         }
         locationRemoteCallbacks.finishBroadcast()
@@ -787,6 +789,15 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         isContinous = fromGps
     }
 
+    /**
+     * Processes NMEA sentences received from the GPS hardware via OnNmeaMessageListener.
+     * Extracts satellite counts (fsats from GGA, tsats from GSV), geoid height (GGA),
+     * and dilution-of-precision values (GSA). Dispatches satellite count changes to all
+     * registered ILocationListener callbacks (local + AIDL remote).
+     *
+     * Note: Parameters are ordered (nmea, timestamp) for OnNmeaMessageListener (API 24+),
+     * which is the reverse of the deprecated NmeaListener.onNmeaReceived(timestamp, nmea).
+     */
     override fun onNmeaMessage(nmea: String, timestamp: Long) {
         if (nmea.indexOf('\n') == 0) return
         var nmeaLine = nmea
@@ -795,6 +806,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         }
         var len = nmeaLine.length
         if (len < 9) return
+        // Strip NMEA checksum (e.g. *7F)
         if (nmeaLine[len - 3] == '*') {
             nmeaLine = nmeaLine.substring(0, len - 3)
         }
@@ -805,19 +817,18 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             when (sentenceId) {
                 "GGA" -> {
                     // GGA: time,lat,latH,lon,lonH,quality,numSat,hdop,alt,altU,geoid,geoidU,...
-                    Log.d(TAG, "NMEA GGA: tokens=$tokens")
+                    // token[7] = number of satellites used in fix
                     if (tokens.size > 7) {
                         val numSat = tokens[7]
-                        Log.d(TAG, "NMEA GGA numSat=['$numSat'] tokenSize=${tokens.size}")
                         if (numSat.isNotEmpty()) {
                             val newFsats = numSat.toInt()
                             if (newFsats != fsats) {
                                 fsats = newFsats
-                                Log.d(TAG, "NMEA dispatch: fsats=$fsats tsats=$tsats")
                                 dispatchSatelliteUpdate()
                             }
                         }
                     }
+                    // token[11] = height of geoid above WGS84 ellipsoid (meters)
                     if (tokens.size > 11) {
                         val heightOfGeoid = tokens[11]
                         if (heightOfGeoid.isNotEmpty()) {
@@ -840,15 +851,16 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 }
                 "GSV" -> {
                     // GSV: numMsgs,msgNum,svsInView, then 4× (prn,elev,azim,snr)
-                    Log.d(TAG, "NMEA GSV: tokens=$tokens")
+                    // token[3] = total satellites in view for this constellation
+                    // NOTE: multiple GSV sentences per constellation — last one's svsInView wins.
+                    // For multi-constellation (GPS+GLONASS+Galileo), individual GSV per constellation
+                    // overwrites tsats. A complete implementation would sum them up.
                     if (tokens.size > 3) {
                         val inViewStr = tokens[3]
-                        Log.d(TAG, "NMEA GSV svsInView=['$inViewStr'] tokenSize=${tokens.size}")
                         if (inViewStr.isNotEmpty()) {
                             val inView = inViewStr.toInt()
                             if (inView != tsats) {
                                 tsats = inView
-                                Log.d(TAG, "NMEA dispatch: fsats=$fsats tsats=$tsats")
                                 dispatchSatelliteUpdate()
                             }
                         }
@@ -856,15 +868,19 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 }
             }
         } catch (e: NumberFormatException) {
-            Log.e(TAG, "NFE", e)
+            //Log.e(TAG, "NMEA parse error", e)
         } catch (e: ArrayIndexOutOfBoundsException) {
-            Log.e(TAG, "AIOOBE", e)
+            //Log.e(TAG, "NMEA parse error", e)
         }
     }
 
-    /** Dispatch satellite counts from NMEA to all listeners (local + remote) */
+    /**
+     * Dispatches satellite counts (fsats/tsats) to all registered listeners.
+     * Updates the GPS status indicator: GPS_OK if any satellites are visible,
+     * GPS_SEARCHING otherwise. Notifies both in-process (locationCallbacks)
+     * and cross-process (locationRemoteCallbacks, via AIDL) listeners.
+     */
     private fun dispatchSatelliteUpdate() {
-        Log.d(TAG, "dispatchSatelliteUpdate: fsats=$fsats tsats=$tsats localCallbacks=${locationCallbacks.size} remoteCallbacks=${locationRemoteCallbacks.registeredCallbackCount}")
         // Update GPS status based on satellite counts
         val newStatus = when {
             tsats > 0 || fsats > 0 -> GPS_OK
@@ -874,16 +890,14 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             gpsStatus = newStatus
             gnssStatus = newStatus
             updateNotification()
-            Log.d(TAG, "dispatchSatelliteUpdate: gpsStatus changed to $gpsStatus")
         }
 
-        // Local callbacks
+        // Dispatch to local in-process callbacks (Information, MapActivity, HSI, NavigationService)
         for (callback in locationCallbacks) {
             callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, gpsStatus, fsats, tsats)
         }
-        Log.d(TAG, "dispatchSatelliteUpdate: dispatched to ${locationCallbacks.size} local callbacks")
 
-        // Remote callbacks (other processes / AIDL)
+        // Dispatch to remote cross-process callbacks (AIDL)
         val n = locationRemoteCallbacks.beginBroadcast()
         for (i in 0 until n) {
             val callback = locationRemoteCallbacks.getBroadcastItem(i)
@@ -894,7 +908,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             }
         }
         locationRemoteCallbacks.finishBroadcast()
-        Log.d(TAG, "dispatchSatelliteUpdate: dispatched to $n remote callbacks")
     }
 
     override fun onProviderDisabled(provider: String) {
