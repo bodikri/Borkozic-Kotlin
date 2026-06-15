@@ -301,11 +301,19 @@ fun RouteDetailsScreen(
                             }
                         }
                         RouteDetailsMode.MANAGE -> {
-                            TextButton(onClick = {
-                                onEditWaypoint(idx)
-                                showActionMenu = null
-                            }) {
-                                Text("Edit")
+                            Row {
+                                TextButton(onClick = {
+                                    onNavigateToWaypoint(idx)
+                                    showActionMenu = null
+                                }) {
+                                    Text("Navigate")
+                                }
+                                TextButton(onClick = {
+                                    onEditWaypoint(idx)
+                                    showActionMenu = null
+                                }) {
+                                    Text("Edit")
+                                }
                             }
                         }
                     }

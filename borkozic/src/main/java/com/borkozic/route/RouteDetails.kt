@@ -134,11 +134,25 @@ class RouteDetails : ComponentActivity() {
                         )
                     },
                     onNavigateToWaypoint = { idx ->
-                        val svc = navigationService ?: return@RouteDetailsScreen
-                        var adjusted = idx
-                        if (svc.navDirection == BaseNavigationService.DIRECTION_REVERSE)
-                            adjusted = route.length() - idx - 1
-                        svc.setRouteWaypoint(adjusted)
+                        val svc = navigationService
+                        if (svc != null) {
+                            // Already navigating — just switch target
+                            var adjusted = idx
+                            if (svc.navDirection == BaseNavigationService.DIRECTION_REVERSE)
+                                adjusted = route.length() - idx - 1
+                            svc.setRouteWaypoint(adjusted)
+                        } else {
+                            // Start new navigation via route, jumping to this waypoint
+                            val routeIdx = application.getRouteIndex(route)
+                            val intent = Intent(this, NavigationService::class.java)
+                            intent.action = NavigationService.NAVIGATE_ROUTE
+                            intent.putExtra(NavigationService.EXTRA_ROUTE_INDEX, routeIdx)
+                            intent.putExtra(NavigationService.EXTRA_ROUTE_DIRECTION, BaseNavigationService.DIRECTION_FORWARD)
+                            intent.putExtra(NavigationService.EXTRA_ROUTE_START, idx)
+                            startService(intent)
+                            setResult(RESULT_OK)
+                            finish()
+                        }
                     },
                     onShowWaypoint = { idx ->
                         route.show = true
