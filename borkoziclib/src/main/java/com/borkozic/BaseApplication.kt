@@ -31,6 +31,7 @@ abstract class BaseApplication : Application() {
 
     companion object {
         private var self: BaseApplication? = null
+
         /** Saved locale from attachBaseContext — available before any Activity onCreate. */
         var savedLocale: Locale? = null
             private set
@@ -83,3 +84,4 @@ abstract class BaseApplication : Application() {
         savedLocale = null
         super.attachBaseContext(base)
     }
+}
