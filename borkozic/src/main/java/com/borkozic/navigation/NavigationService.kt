@@ -160,22 +160,20 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_navigation_traverse))
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        // Channel MUST be created before builder.build() — otherwise channel=null in notification
+        // Create notification channel (required for foreground service on Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            if (manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
-                val chan = NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID,
-                    ChannelName,
-                    NotificationManager.IMPORTANCE_LOW  // Minimum for foreground services on Android 14+
-                )
-                chan.lightColor = Color.BLUE
-                chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-                manager.createNotificationChannel(chan)
-            }
+            val chan = NotificationChannel(
+                NOTIFICATION_CHANNEL_ID,
+                ChannelName,
+                NotificationManager.IMPORTANCE_LOW
+            )
+            chan.lightColor = Color.BLUE
+            chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+            manager.createNotificationChannel(chan)
         }
 
-        // Create fallback contentIntent for the notification — required on Android 14+
+        // Build notification using platform Builder (NOT NotificationCompat — it doesn't set channel properly on API 34+)
         val fallbackActivity = Intent(this, MapActivity::class.java).addFlags(
             Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
         )
@@ -186,34 +184,43 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
-        builder.setContentIntent(contentIntent)
-        builder.setSmallIcon(R.drawable.ic_stat_navigation)
-        builder.setWhen(0)
-        builder.setContentTitle(getText(R.string.notif_nav_short))
-        builder.setContentText(getText(R.string.notif_nav_started))
-        notification = builder.build()
+        notification = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.ic_stat_navigation)
+                .setWhen(0)
+                .setContentTitle(getText(R.string.notif_nav_short))
+                .setContentText(getText(R.string.notif_nav_started))
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.ic_stat_navigation)
+                .setWhen(0)
+                .setContentTitle(getText(R.string.notif_nav_short))
+                .setContentText(getText(R.string.notif_nav_started))
+                .build()
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 Log.w(TAG, "POST_NOTIFICATIONS permission not granted")
             }
         }
-        ensureForeground()
-        Log.i(TAG, "Service started")
+        // Do NOT call ensureForeground() here — service goes foreground only when navigation actually starts
+        Log.i(TAG, "Service created")
     }
 
     /**
-     * Ensures notification channel exists (Android 8+) and calls startForeground
-     * with the correct foreground service type (Android 14+).
+     * Calls startForeground with the correct foreground service type (Android 14+).
      * Safe to call multiple times — skips if already foreground.
-     * Call this instead of bare startForeground() everywhere in this service.
      */
     private fun ensureForeground() {
         val notif = notification ?: return
+        if (isForeground) return
 
         // On Android 14+, startForeground with TYPE_LOCATION requires ACCESS_FINE_LOCATION
-        // to be granted at call time. If not granted, skip — service will still run.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 Log.w(TAG, "ensureForeground: ACCESS_FINE_LOCATION not granted, skipping startForeground")
@@ -221,21 +228,8 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
             }
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            if (manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
-                val chan = NotificationChannel(
-                    NOTIFICATION_CHANNEL_ID,
-                    ChannelName,
-                    NotificationManager.IMPORTANCE_LOW  // Minimum for foreground services on Android 14+
-                )
-                chan.lightColor = Color.BLUE
-                chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-                manager.createNotificationChannel(chan)
-            }
-        }
         Log.d(TAG, "ensureForeground")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(NOTIFICATION_ID, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
         } else {
             startForeground(NOTIFICATION_ID, notif)

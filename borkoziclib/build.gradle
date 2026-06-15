@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace 'com.borkozic.library'
-    compileSdk 36
+    compileSdk 34
 
     buildFeatures {
         aidl true
@@ -11,6 +11,7 @@ android {
 
     defaultConfig {
         minSdk 23
+        targetSdk 34
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         ndk {
             moduleName "ozfdecoder"
@@ -33,10 +34,10 @@ android {
         jvmTarget = '11'
     }
     lint {
-        targetSdk 36
+        targetSdk 34
     }
     testOptions {
-        targetSdk 36
+        targetSdk 34
     }
 }
 
