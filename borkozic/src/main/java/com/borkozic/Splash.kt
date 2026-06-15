@@ -450,7 +450,6 @@ class Splash : Activity(), OnClickListener {
                 try {
                     val routeWpts = OziExplorerFiles.loadWaypointsFromFile(rwWptFile, application.charset ?: "").toMutableList()
                     val rwSet = WaypointSet(rwWptFile)
-                    application.addWaypointSet(rwSet)
                     application.addWaypoints(routeWpts, rwSet)
                 } catch (e: Exception) {
                     e.printStackTrace()
