@@ -54,6 +54,10 @@ buildOutputCleanup/
 fileHashes/
 resourceHashesCache.bin
 
+# APK output folders
+borkozic/debug/
+borkozic/release/
+
 # OS generated files
 Thumbs.db
 local.properties.bak
