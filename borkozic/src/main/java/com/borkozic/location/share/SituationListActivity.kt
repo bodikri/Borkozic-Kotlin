@@ -224,7 +224,11 @@ class SituationListActivity : AppCompatActivity(),
 
     private fun connect() {
         bindService(Intent(this, SharingService::class.java), sharingConnection, 0)
-        registerReceiver(sharingReceiver, IntentFilter(SharingService.BROADCAST_SITUATION_CHANGED))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(sharingReceiver, IntentFilter(SharingService.BROADCAST_SITUATION_CHANGED), RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(sharingReceiver, IntentFilter(SharingService.BROADCAST_SITUATION_CHANGED))
+        }
         timer = Timer()
         timer?.scheduleAtFixedRate(UpdateTask(), 1000, 1000)
     }

@@ -28,6 +28,7 @@ import android.content.IntentFilter
 import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import android.view.WindowManager
@@ -78,7 +79,11 @@ class RouteDetails : ComponentActivity() {
     private val navigationConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             navigationService = (service as NavigationService.LocalBinder).getService()
-            registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE), RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE))
+            }
             Log.d(TAG, "Navigation service connected")
         }
 

@@ -50,6 +50,12 @@
 |---|---|
 | [Settings Overview](settings/overview.md) | Preference screens and keys (екрани с настройки и ключове) |
 
+### Fixes (Поправки)
+
+| Document (Документ) | Description (Описание) |
+|---|---|
+| [Fix Batch 2026-06-15](fixes/2026-06-15-fix-batch.md) | 6 fixes: list refresh, duplicate sets, numeric keyboard, text size, locale switching |
+
 ---
 
 ## 📝 Document Format (Формат на документите)

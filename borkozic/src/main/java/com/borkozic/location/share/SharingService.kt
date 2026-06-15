@@ -161,7 +161,11 @@ class SharingService : Service(), SharedPreferences.OnSharedPreferenceChangeList
         textFillPaint.color = resources.getColor(R.color.usertagwithalpha, theme)
 
         prefs.registerOnSharedPreferenceChangeListener(this)
-        registerReceiver(broadcastReceiver, IntentFilter(BaseLocationService.BROADCAST_LOCATING_STATUS))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(broadcastReceiver, IntentFilter(BaseLocationService.BROADCAST_LOCATING_STATUS), RECEIVER_NOT_EXPORTED)
+        } else {
+            registerReceiver(broadcastReceiver, IntentFilter(BaseLocationService.BROADCAST_LOCATING_STATUS))
+        }
 
         sharingEnabled = true
         isSuspended = true
