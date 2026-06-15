@@ -231,14 +231,20 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         // Rebuild notification fresh every time — stale Notification objects cause channel=null on Android 14+
         // Samsung Android 14+ also requires setOngoing(true) for foreground service notifications
         val notif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+            val builder = Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
                 .setContentIntent(contentIntent)
                 .setSmallIcon(R.drawable.ic_stat_navigation)
                 .setWhen(0)
                 .setOngoing(true)
                 .setContentTitle(getText(R.string.notif_nav_short))
                 .setContentText(getText(R.string.notif_nav_started))
-                .build()
+            // Explicitly set channel ID — Samsung Android 14 sometimes loses it from constructor
+            builder.setChannelId(NOTIFICATION_CHANNEL_ID)
+            // FLAG_FOREGROUND_SERVICE is mandatory on Android 14+ for startForeground()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                builder.setFlag(Notification.FLAG_FOREGROUND_SERVICE, true)
+            }
+            builder.build()
         } else {
             @Suppress("DEPRECATION")
             Notification.Builder(this)
