@@ -154,12 +154,17 @@ class Preferences : AppCompatActivity() {
                         .setMessage(getString(R.string.restart_needed_explained))
                         .setCancelable(false)
                         .setPositiveButton(R.string.ok) { _, _ ->
-                            // Full app restart needed — attachBaseContext() only runs once per process
+                            // Force synchronous write of locale pref before killing process
+                            // (apply() is async — process kill would lose the change)
                             val ctx = requireContext()
+                            val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
+                            val lang = prefs.getString("locale", "") ?: ""
+                            prefs.edit().putString("locale", lang).commit()
                             val intent = ctx.packageManager.getLaunchIntentForPackage(ctx.packageName)
                             intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
                             ctx.startActivity(intent)
                             requireActivity().finishAffinity()
+                            android.os.Process.killProcess(android.os.Process.myPid())
                         }
                         .show()
                 }
