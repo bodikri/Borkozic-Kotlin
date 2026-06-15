@@ -52,6 +52,16 @@ class Preferences : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Apply saved locale before super.onCreate() so views use the correct language
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val lang = prefs.getString("locale", "") ?: ""
+        if (lang.isNotEmpty()) {
+            val locale = java.util.Locale(lang)
+            java.util.Locale.setDefault(locale)
+            val config = android.content.res.Configuration(resources.configuration)
+            config.setLocale(locale)
+            applyOverrideConfiguration(config)
+        }
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
@@ -154,14 +164,11 @@ class Preferences : AppCompatActivity() {
                         .setMessage(getString(R.string.restart_needed_explained))
                         .setCancelable(false)
                         .setPositiveButton(R.string.ok) { _, _ ->
-                            // commit() is synchronous — ensures locale is on disk before process dies
-                            val ctx = requireContext()
-                            val prefs = PreferenceManager.getDefaultSharedPreferences(ctx)
+                            // commit() is synchronous — ensures locale is on disk before recreate
+                            val prefs = PreferenceManager.getDefaultSharedPreferences(requireContext())
                             val lang = prefs.getString("locale", "") ?: ""
                             prefs.edit().putString("locale", lang).commit()
-                            // Kill process; Android will auto-restart the foreground app
-                            requireActivity().finishAffinity()
-                            android.os.Process.killProcess(android.os.Process.myPid())
+                            requireActivity().recreate()
                         }
                         .show()
                 }
