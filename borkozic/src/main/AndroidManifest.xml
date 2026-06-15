@@ -172,10 +172,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".waypoint.WaypointInfo"
-            android:theme="@style/Dialog"
-            android:screenOrientation="portrait"/>
+        <!-- WaypointInfo is a DialogFragment, not an Activity — removed from manifest -->
         <activity
             android:name=".waypoint.WaypointProject"
             android:label="@string/waypointproject_name"
