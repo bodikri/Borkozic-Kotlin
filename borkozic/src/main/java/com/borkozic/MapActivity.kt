@@ -395,6 +395,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_edit, null)
             )
         )
+        wptQuickAction!!.addActionItem(
+            ActionItem(
+                qaNavigateToWaypoint,
+                getString(R.string.menu_navigate),
+                ResourcesCompat.getDrawable(getResources(), R.drawable.ic_action_directions, null)
+            )
+        )
         wptQuickAction!!.setOnActionItemClickListener(waypointActionItemClickListener)
 
         // Quick action for tapping a route waypoint during route editing — Edit / Add to end
