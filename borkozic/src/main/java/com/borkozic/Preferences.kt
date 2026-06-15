@@ -52,13 +52,13 @@ class Preferences : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Apply saved locale before super.onCreate() so views use the correct language
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        // Must call applyOverrideConfiguration BEFORE any resource access
+        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
         val lang = prefs.getString("locale", "") ?: ""
         if (lang.isNotEmpty()) {
             val locale = java.util.Locale(lang)
             java.util.Locale.setDefault(locale)
-            val config = android.content.res.Configuration(resources.configuration)
+            val config = android.content.res.Configuration()
             config.setLocale(locale)
             applyOverrideConfiguration(config)
         }
