@@ -248,17 +248,19 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
     /* Called when the activity is first created. */
     @SuppressLint("ShowToast")
-    public override fun onCreate(savedInstanceState: Bundle?) {
-        // Must call applyOverrideConfiguration BEFORE any resource access
-        val prefs = PreferenceManager.getDefaultSharedPreferences(applicationContext)
-        val lang = prefs.getString("locale", "") ?: ""
-        if (lang.isNotEmpty()) {
-            val locale = java.util.Locale(lang)
-            java.util.Locale.setDefault(locale)
-            val config = android.content.res.Configuration()
+    override fun attachBaseContext(newBase: Context) {
+        // Apply saved locale BEFORE resources are accessed — only safe place
+        val locale = BaseApplication.savedLocale
+        if (locale != null) {
+            val config = android.content.res.Configuration(newBase.resources.configuration)
             config.setLocale(locale)
-            applyOverrideConfiguration(config)
+            super.attachBaseContext(newBase.createConfigurationContext(config))
+        } else {
+            super.attachBaseContext(newBase)
         }
+    }
+
+    public override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         Log.e(TAG, "onCreate()")

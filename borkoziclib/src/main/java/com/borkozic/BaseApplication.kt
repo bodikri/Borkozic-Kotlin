@@ -29,28 +29,11 @@ import java.util.Locale
 abstract class BaseApplication : Application() {
     abstract val rootPath: String?
 
-    override fun attachBaseContext(base: Context?) {
-        val prefs = PreferenceManager.getDefaultSharedPreferences(base!!)
-        val lang = prefs.getString("locale", "") ?: ""
-        if (lang.isNotEmpty()) {
-            val locale = Locale(lang)
-            Locale.setDefault(locale)
-            val config = Configuration(base.resources.configuration)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                config.setLocale(locale)
-            } else {
-                @Suppress("DEPRECATION")
-                config.locale = locale
-            }
-            @Suppress("DEPRECATION")
-            super.attachBaseContext(base.createConfigurationContext(config))
-            return
-        }
-        super.attachBaseContext(base)
-    }
-
     companion object {
         private var self: BaseApplication? = null
+        /** Saved locale from attachBaseContext — available before any Activity onCreate. */
+        var savedLocale: Locale? = null
+            private set
 
         @JvmStatic
         fun <T : BaseApplication?> getApplication(): T? {
@@ -64,23 +47,39 @@ abstract class BaseApplication : Application() {
 
         @JvmStatic
         val deviceName: String
-            /**
-             * Returns device name in user-friendly format
-             */
             get() {
                 val manufacturer = Build.MANUFACTURER
                 val model = Build.MODEL
-                if (model.startsWith(manufacturer)) return capitalize(
-                    model
-                )
-                else return capitalize(manufacturer) + " " + model
+                return if (model.startsWith(manufacturer)) capitalize(model)
+                else capitalize(manufacturer) + " " + model
             }
 
         private fun capitalize(s: String?): String {
-            if (s == null || s.length == 0) return ""
-            val first = s.get(0)
-            if (Character.isUpperCase(first)) return s
-            else return first.uppercaseChar().toString() + s.substring(1)
+            if (s.isNullOrEmpty()) return ""
+            val first = s[0]
+            return if (Character.isUpperCase(first)) s
+            else first.uppercaseChar().toString() + s.substring(1)
         }
     }
-}
+
+    override fun attachBaseContext(base: Context?) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(base!!)
+        val lang = prefs.getString("locale", "") ?: ""
+        if (lang.isNotEmpty()) {
+            val locale = Locale(lang)
+            Locale.setDefault(locale)
+            savedLocale = locale  // persist for Activity onCreate without SharedPreferences access
+            val config = Configuration(base.resources.configuration)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocale(locale)
+            } else {
+                @Suppress("DEPRECATION")
+                config.locale = locale
+            }
+            @Suppress("DEPRECATION")
+            super.attachBaseContext(base.createConfigurationContext(config))
+            return
+        }
+        savedLocale = null
+        super.attachBaseContext(base)
+    }
