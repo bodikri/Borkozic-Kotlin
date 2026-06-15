@@ -154,7 +154,12 @@ class Preferences : AppCompatActivity() {
                         .setMessage(getString(R.string.restart_needed_explained))
                         .setCancelable(false)
                         .setPositiveButton(R.string.ok) { _, _ ->
-                            requireActivity().recreate()
+                            // Full app restart needed — attachBaseContext() only runs once per process
+                            val ctx = requireContext()
+                            val intent = ctx.packageManager.getLaunchIntentForPackage(ctx.packageName)
+                            intent?.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                            ctx.startActivity(intent)
+                            requireActivity().finishAffinity()
                         }
                         .show()
                 }
