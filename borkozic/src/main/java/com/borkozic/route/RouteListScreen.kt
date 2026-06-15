@@ -85,6 +85,7 @@ fun RouteListScreen(
     mode: Int,
     onAction: (Route, RouteAction) -> Unit,
     onLoadRoute: () -> Unit = {},
+    contentVersion: Int = 0,
     themeVersion: Int = 0,
     onThemeChanged: () -> Unit = {}
 ) {
@@ -285,7 +286,7 @@ fun RouteListScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(1.dp)
             ) {
-                itemsIndexed(routes, key = { _, route -> route.hashCode() }) { index, route ->
+                itemsIndexed(routes, key = { _, route -> "cv$contentVersion-${route.hashCode()}" }) { index, route ->
                     val isSelected = selectedItemIndex == index
                     val isMultiSelected = index in multiSelectedIndices
 

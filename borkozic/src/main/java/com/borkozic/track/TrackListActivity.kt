@@ -25,6 +25,9 @@ class TrackListActivity : ComponentActivity(), OnTrackActionListener {
 
     private lateinit var application: Borkozic
 
+    // Force recomposition when returning from sub-activities (e.g. Properties rename)
+    private var contentVersion by mutableStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -38,6 +41,7 @@ class TrackListActivity : ComponentActivity(), OnTrackActionListener {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     TrackListScreen(
                         mode = mode,
+                        contentVersion = contentVersion,
                         themeVersion = themeVersion,
                         onThemeChanged = { themeVersion++ },
                         onAction = { track, action ->
@@ -53,6 +57,12 @@ class TrackListActivity : ComponentActivity(), OnTrackActionListener {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Trigger recomposition so renamed items appear immediately
+        contentVersion++
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

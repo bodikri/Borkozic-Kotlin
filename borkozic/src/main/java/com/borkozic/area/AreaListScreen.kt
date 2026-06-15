@@ -97,6 +97,7 @@ fun AreaListScreen(
     mode: Int,
     onAction: (Area, AreaAction) -> Unit,
     onLoadArea: () -> Unit = {},
+    contentVersion: Int = 0,
     themeVersion: Int = 0,
     onThemeChanged: () -> Unit = {}
 ) {
@@ -303,7 +304,7 @@ fun AreaListScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(1.dp)
             ) {
-                itemsIndexed(areas, key = { _, area -> area.hashCode() }) { index, area ->
+                itemsIndexed(areas, key = { _, area -> "cv$contentVersion-${area.hashCode()}" }) { index, area ->
                     val isSelected = selectedItemIndex == index
                     val isMultiSelected = index in multiSelectedIndices
 

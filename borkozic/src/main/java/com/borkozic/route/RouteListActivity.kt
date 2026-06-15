@@ -27,6 +27,9 @@ class RouteListActivity : ComponentActivity(), OnRouteActionListener {
 
     private lateinit var application: Borkozic
 
+    // Force recomposition when returning from sub-activities (e.g. Properties rename)
+    private var contentVersion by mutableStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -40,6 +43,7 @@ class RouteListActivity : ComponentActivity(), OnRouteActionListener {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     RouteListScreen(
                         mode = mode,
+                        contentVersion = contentVersion,
                         themeVersion = themeVersion,
                         onThemeChanged = { themeVersion++ },
                         onAction = { route, action ->
@@ -55,6 +59,12 @@ class RouteListActivity : ComponentActivity(), OnRouteActionListener {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Trigger recomposition so renamed items appear immediately
+        contentVersion++
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

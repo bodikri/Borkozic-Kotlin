@@ -31,6 +31,9 @@ class WaypointListActivity : ComponentActivity(), OnWaypointActionListener {
 
     private lateinit var application: Borkozic
 
+    // Force recomposition when returning from sub-activities (e.g. Properties rename)
+    private var contentVersion by mutableStateOf(0)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -45,6 +48,7 @@ class WaypointListActivity : ComponentActivity(), OnWaypointActionListener {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     WaypointListScreen(
                         mode = mode,
+                        contentVersion = contentVersion,
                         themeVersion = themeVersion,
                         onThemeChanged = { themeVersion++ },
                         onWaypointAction = { waypoint, action ->
@@ -77,6 +81,12 @@ class WaypointListActivity : ComponentActivity(), OnWaypointActionListener {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Trigger recomposition so renamed items appear immediately
+        contentVersion++
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

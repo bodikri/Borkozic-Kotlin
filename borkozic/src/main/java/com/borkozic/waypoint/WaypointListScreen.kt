@@ -147,6 +147,7 @@ fun WaypointListScreen(
     onNewWaypoint: () -> Unit = {},
     onNewWaypointSet: (String) -> Unit = {},
     onProjectWaypoint: () -> Unit = {},
+    contentVersion: Int = 0,
     themeVersion: Int = 0,
     onThemeChanged: () -> Unit = {}
 ) {
@@ -367,8 +368,8 @@ fun WaypointListScreen(
                 verticalArrangement = Arrangement.spacedBy(1.dp)) {
                 itemsIndexed(flatItems, key = { idx, item ->
                     when (item) {
-                        is FlatItem.GroupHeader -> "G${item.setIdx}_${item.set.hashCode()}"
-                        is FlatItem.ChildItem -> "C${item.setIdx}_${item.childIdx}_${item.waypoint.hashCode()}"
+                        is FlatItem.GroupHeader -> "cv${contentVersion}_G${item.setIdx}_${item.set.hashCode()}"
+                        is FlatItem.ChildItem -> "cv${contentVersion}_C${item.setIdx}_${item.childIdx}_${item.waypoint.hashCode()}"
                     }
                 }) { _, item ->
                     when (item) {

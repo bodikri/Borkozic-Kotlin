@@ -81,6 +81,7 @@ fun TrackListScreen(
     mode: Int,
     onAction: (Track, TrackAction) -> Unit,
     onLoadTrack: () -> Unit = {},
+    contentVersion: Int = 0,
     themeVersion: Int = 0,
     onThemeChanged: () -> Unit = {}
 ) {
@@ -284,7 +285,7 @@ fun TrackListScreen(
                 modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(1.dp)
             ) {
-                itemsIndexed(tracks, key = { _, track -> track.hashCode() }) { index, track ->
+                itemsIndexed(tracks, key = { _, track -> "cv$contentVersion-${track.hashCode()}" }) { index, track ->
                     val isSelected = selectedItemIndex == index
                     val isMultiSelected = index in multiSelectedIndices
 
