@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -382,30 +384,36 @@ private fun PrimaryTab(
                 Text("Latitude", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(latDD, onLatDDChange, Modifier.fillMaxWidth(), singleLine = true,
-                    label = { Text("DD.DDDDDD") })
+                    label = { Text("DD.DDDDDD") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 Spacer(Modifier.height(8.dp))
                 Text("Longitude", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
                 OutlinedTextField(lonDD, onLonDDChange, Modifier.fillMaxWidth(), singleLine = true,
-                    label = { Text("DD.DDDDDD") })
+                    label = { Text("DD.DDDDDD") },
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
             }
             1 -> { // DD MM.MMMM
                 Text("Latitude", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(latMD, onLatMDChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("DD\u00B0") })
+                        label = { Text("DD\u00B0") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(latMM, onLatMMChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("MM.MMMM\u2032") })
+                        label = { Text("MM.MMMM\u2032") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 }
                 Spacer(Modifier.height(8.dp))
                 Text("Longitude", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(lonMD, onLonMDChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("DD\u00B0") })
+                        label = { Text("DD\u00B0") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(lonMM, onLonMMChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("MM.MMMM\u2032") })
+                        label = { Text("MM.MMMM\u2032") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 }
             }
             2 -> { // DMS
@@ -413,35 +421,44 @@ private fun PrimaryTab(
                 Spacer(Modifier.height(4.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp)) {
                     OutlinedTextField(latSD, onLatSDChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("DD\u00B0") })
+                        label = { Text("DD\u00B0") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(latSM, onLatSMChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("MM\u2032") })
+                        label = { Text("MM\u2032") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(latSS, onLatSSChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("SS\u2033") })
+                        label = { Text("SS\u2033") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 }
                 Spacer(Modifier.height(8.dp))
                 Text("Longitude", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(4.dp)) {
                     OutlinedTextField(lonSD, onLonSDChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("DD\u00B0") })
+                        label = { Text("DD\u00B0") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(lonSM, onLonSMChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("MM\u2032") })
+                        label = { Text("MM\u2032") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(lonSS, onLonSSChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("SS\u2033") })
+                        label = { Text("SS\u2033") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 }
             }
             3 -> { // UTM
                 Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(utmEasting, onUtmEastingChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("Easting") })
+                        label = { Text("Easting") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     OutlinedTextField(utmNorthing, onUtmNorthingChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("Northing") })
+                        label = { Text("Northing") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                 }
                 Spacer(Modifier.height(8.dp))
                 Row(Modifier.fillMaxWidth(), Arrangement.spacedBy(8.dp)) {
                     OutlinedTextField(utmZone, onUtmZoneChange, Modifier.weight(1f), singleLine = true,
-                        label = { Text("Zone") })
+                        label = { Text("Zone") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
                     Column(modifier = Modifier.weight(1f)) {
                         Text("Hemisphere", style = MaterialTheme.typography.bodySmall)
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -462,12 +479,14 @@ private fun PrimaryTab(
             Column(Modifier.weight(1f)) {
                 Text("Altitude", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
-                OutlinedTextField(altitude, onAltitudeChange, Modifier.fillMaxWidth(), singleLine = true)
+                OutlinedTextField(altitude, onAltitudeChange, Modifier.fillMaxWidth(), singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
             }
             Column(Modifier.weight(1f)) {
                 Text("Proximity", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
-                OutlinedTextField(proximity, onProximityChange, Modifier.fillMaxWidth(), singleLine = true)
+                OutlinedTextField(proximity, onProximityChange, Modifier.fillMaxWidth(), singleLine = true,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal))
             }
         }
     }
