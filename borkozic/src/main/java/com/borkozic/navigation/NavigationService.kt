@@ -167,7 +167,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                 val chan = NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
                     ChannelName,
-                    NotificationManager.IMPORTANCE_NONE
+                    NotificationManager.IMPORTANCE_LOW  // Minimum for foreground services on Android 14+
                 )
                 chan.lightColor = Color.BLUE
                 chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
@@ -216,7 +216,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                 val chan = NotificationChannel(
                     NOTIFICATION_CHANNEL_ID,
                     ChannelName,
-                    NotificationManager.IMPORTANCE_NONE
+                    NotificationManager.IMPORTANCE_LOW  // Minimum for foreground services on Android 14+
                 )
                 chan.lightColor = Color.BLUE
                 chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
