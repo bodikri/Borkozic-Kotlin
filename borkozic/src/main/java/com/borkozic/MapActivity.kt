@@ -1409,6 +1409,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         }
 
 
+        // Force movinginfo visible during navigation (regardless of movement)
+        val movingInfo = findViewById<View>(R.id.movinginfo)
+        if (isNavigating) {
+            if (movingInfo.getVisibility() != View.VISIBLE) {
+                movingInfo.setVisibility(View.VISIBLE)
+            }
+        }
+
         // we hide elevation in Navigating mode and show Above/Below glide path
         if (isNavigatingViaRoute) {
             routeName!!.setText("› " + navigationService!!.navRoute!!.name)
@@ -1427,6 +1435,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
         updateMapViewArea()
         map!!.update()
+
+        // Restore normal movinginfo visibility when navigation stops
+        if (!isNavigating) {
+            updateGPSStatus()
+        }
     }
 
     protected fun updateNavigationInfo() {
