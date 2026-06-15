@@ -2299,12 +2299,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                     qaNavigateToWaypoint -> {
                         // Navigate directly to this waypoint (no route needed)
-                        val ns = navigationService
-                        if (ns != null) {
-                            ns.navigateTo(wpt)
-                        } else {
-                            android.widget.Toast.makeText(this@MapActivity, R.string.gpsnoprovider, android.widget.Toast.LENGTH_SHORT).show()
-                        }
+                        navigationService?.navigateTo(wpt)
                     }
 
                     qaAddWaypointToRoute -> {
