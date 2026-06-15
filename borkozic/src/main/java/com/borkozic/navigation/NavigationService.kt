@@ -213,11 +213,11 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     }
 
     /**
-     * Calls startForeground with the correct foreground service type (Android 14+).
-     * Safe to call multiple times — skips if already foreground.
+     * Builds a fresh notification and calls startForeground.
+     * Rebuilds every time to ensure the notification object is valid
+     * (Android 14+ is extremely strict about notification validity at call time).
      */
     private fun ensureForeground() {
-        val notif = notification ?: return
         if (isForeground) return
 
         // On Android 14+, startForeground with TYPE_LOCATION requires ACCESS_FINE_LOCATION
@@ -227,6 +227,30 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                 return
             }
         }
+
+        // Rebuild notification fresh every time — stale Notification objects cause channel=null on Android 14+
+        // Samsung Android 14+ also requires setOngoing(true) for foreground service notifications
+        val notif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.ic_stat_navigation)
+                .setWhen(0)
+                .setOngoing(true)
+                .setContentTitle(getText(R.string.notif_nav_short))
+                .setContentText(getText(R.string.notif_nav_started))
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+                .setContentIntent(contentIntent)
+                .setSmallIcon(R.drawable.ic_stat_navigation)
+                .setWhen(0)
+                .setOngoing(true)
+                .setContentTitle(getText(R.string.notif_nav_short))
+                .setContentText(getText(R.string.notif_nav_started))
+                .build()
+        }
+        notification = notif
 
         Log.d(TAG, "ensureForeground")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
