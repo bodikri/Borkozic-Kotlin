@@ -171,36 +171,41 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                 // Нотификацията няма да се покаже, но услугата ще работи
             }
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startMyOwnForeground() else startForeground(
-            NOTIFICATION_ID,
-            Notification()
-        )
+        ensureForeground()
         Log.i(TAG, "Service started")
+    }
+
+    /**
+     * Ensures notification channel exists (Android 8+) and calls startForeground
+     * with the correct foreground service type (Android 14+).
+     * Call this instead of bare startForeground() everywhere in this service.
+     */
+    private fun ensureForeground() {
+        val notif = notification ?: return
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
+                val chan = NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    ChannelName,
+                    NotificationManager.IMPORTANCE_NONE
+                )
+                chan.lightColor = Color.BLUE
+                chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+                manager.createNotificationChannel(chan)
+            }
+        }
+        Log.d(TAG, "ensureForeground")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // Android 14+
+            startForeground(NOTIFICATION_ID, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
+        } else {
+            startForeground(NOTIFICATION_ID, notif)
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun startMyOwnForeground() {
-        val chan = NotificationChannel(
-            NOTIFICATION_CHANNEL_ID,
-            ChannelName,
-            NotificationManager.IMPORTANCE_NONE
-        )
-        chan.lightColor = Color.BLUE
-        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
-        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        manager.createNotificationChannel(chan)
-        Log.d(TAG, "startMyOwnForeground")
-
-        // За Android 14+ (API 34) трябва да укажем типа на foreground service
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // 34
-            startForeground(
-                NOTIFICATION_ID,
-                notification!!,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
-            )
-        } else {
-            startForeground(NOTIFICATION_ID, notification!!)
-        }
+        ensureForeground()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -362,7 +367,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     fun navigateTo(waypoint: MapObject) {
         clearNavigation()
         connect()
-        startForeground(NOTIFICATION_ID, notification!!)
+        ensureForeground()
 
         //vmgav = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -379,7 +384,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     fun navigateTo(route: Route, direction: Int) {
         clearNavigation()
         connect()
-        startForeground(NOTIFICATION_ID, notification!!)
+        ensureForeground()
 
         //vmgav = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
