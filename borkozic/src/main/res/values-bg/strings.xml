@@ -312,6 +312,8 @@
   <string name="pref_waypoint_bgcolor_title">Име на цвят на фона</string>
   <string name="pref_waypoint_showname_title">Показване на име</string>
   <string name="pref_waypoint_showname_summary">Показва име на точка в близост до маркера</string>
+  <string name="pref_waypoint_textsize_title">Размер на текста</string>
+  <string name="pref_waypoint_textsize_summary">Размер на шрифта за имената на точките върху картата</string>
   <string name="pref_route_title">Маршрути</string>
   <string name="pref_route_preload_title">Презареждане на маршрути</string>
   <string name="pref_route_preload_summary">Mark to preload routes from files on application start</string>

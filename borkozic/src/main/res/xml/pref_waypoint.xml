@@ -19,6 +19,15 @@
         android:text=" pixels"
         android:title="@string/pref_waypoint_width_title" />
 
+    <com.borkozic.ui.preference.HelpfulSeekbarPreference
+        androzic:svp_default="@integer/def_waypoint_textsize"
+        android:key="@string/pref_waypoint_textsize"
+        androzic:max="30"
+        androzic:min="6"
+        android:summary="@string/pref_waypoint_textsize_summary"
+        android:text=" sp"
+        android:title="@string/pref_waypoint_textsize_title" />
+
     <com.borkozic.ui.ColorPreference
         androzic:defaultColor="@color/waypoint"
         android:defaultValue="@color/waypoint"

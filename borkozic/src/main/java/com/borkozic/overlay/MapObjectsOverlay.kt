@@ -252,7 +252,11 @@ open class MapObjectsOverlay(mapActivity: Activity) : MapOverlay(mapActivity) {
             context.getString(R.string.pref_waypoint_namecolor),
             context.resources.getColor(R.color.waypointtext)
         )
-        textPaint.textSize = pointWidth * 1.5f
+        val textSize = settings.getInt(
+            context.getString(R.string.pref_waypoint_textsize),
+            context.resources.getInteger(R.integer.def_waypoint_textsize)
+        )
+        textPaint.textSize = textSize.toFloat()
         clearBitmapCache()
     }
 }
