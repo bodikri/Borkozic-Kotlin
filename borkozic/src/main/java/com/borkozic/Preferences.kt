@@ -34,13 +34,13 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.edit
 import androidx.core.net.toUri
 import androidx.preference.EditTextPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.PreferenceGroup
+import androidx.preference.PreferenceManager
 import com.borkozic.map.online.TileProvider
 import com.borkozic.ui.SeekbarPreference
 import java.io.File
@@ -194,14 +194,10 @@ class Preferences : AppCompatActivity() {
                     resources.getInteger(R.integer.def_onlinemapscale)
                 )
                 if (zoom < curProvider.minZoom) {
-                    sharedPreferences.edit {
-                        putInt(getString(R.string.pref_onlinemapscale), curProvider.minZoom.toInt())
-                    }
+                    sharedPreferences.edit().putInt(getString(R.string.pref_onlinemapscale), curProvider.minZoom.toInt()).apply()
                 }
                 if (zoom > curProvider.maxZoom) {
-                    sharedPreferences.edit {
-                        putInt(getString(R.string.pref_onlinemapscale), curProvider.maxZoom.toInt())
-                    }
+                    sharedPreferences.edit().putInt(getString(R.string.pref_onlinemapscale), curProvider.maxZoom.toInt()).apply()
                 }
             }
         }
