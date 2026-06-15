@@ -20,10 +20,34 @@
 package com.borkozic
 
 import android.app.Application
+import android.content.Context
+import android.content.res.Configuration
 import android.os.Build
+import androidx.preference.PreferenceManager
+import java.util.Locale
 
 abstract class BaseApplication : Application() {
     abstract val rootPath: String?
+
+    override fun attachBaseContext(base: Context?) {
+        val prefs = PreferenceManager.getDefaultSharedPreferences(base!!)
+        val lang = prefs.getString("locale", "") ?: ""
+        if (lang.isNotEmpty()) {
+            val locale = Locale(lang)
+            Locale.setDefault(locale)
+            val config = Configuration(base.resources.configuration)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                config.setLocale(locale)
+            } else {
+                @Suppress("DEPRECATION")
+                config.locale = locale
+            }
+            @Suppress("DEPRECATION")
+            super.attachBaseContext(base.createConfigurationContext(config))
+            return
+        }
+        super.attachBaseContext(base)
+    }
 
     companion object {
         private var self: BaseApplication? = null

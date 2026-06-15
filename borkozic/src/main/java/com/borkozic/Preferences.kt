@@ -153,7 +153,9 @@ class Preferences : AppCompatActivity() {
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .setMessage(getString(R.string.restart_needed_explained))
                         .setCancelable(false)
-                        .setPositiveButton(R.string.ok, null)
+                        .setPositiveButton(R.string.ok) { _, _ ->
+                            requireActivity().recreate()
+                        }
                         .show()
                 }
             }
