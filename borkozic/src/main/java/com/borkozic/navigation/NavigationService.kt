@@ -175,6 +175,17 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
             }
         }
 
+        // Create fallback contentIntent for the notification — required on Android 14+
+        val fallbackActivity = Intent(this, MapActivity::class.java).addFlags(
+            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+        )
+        contentIntent = PendingIntent.getActivity(
+            this,
+            NOTIFICATION_ID,
+            fallbackActivity,
+            PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         builder.setContentIntent(contentIntent)
         builder.setSmallIcon(R.drawable.ic_stat_navigation)
