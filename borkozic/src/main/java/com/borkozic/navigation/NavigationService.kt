@@ -84,6 +84,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     private var locationService: ILocationService? = null
     protected var lastKnownLocation: Location? = null
     private var notification: Notification? = null
+    private var isForeground = false
     private var contentIntent: PendingIntent? = null
     private var routeProximity = 200
     private var useTraverse = true
@@ -178,10 +179,21 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     /**
      * Ensures notification channel exists (Android 8+) and calls startForeground
      * with the correct foreground service type (Android 14+).
+     * Safe to call multiple times — skips if already foreground.
      * Call this instead of bare startForeground() everywhere in this service.
      */
     private fun ensureForeground() {
         val notif = notification ?: return
+
+        // On Android 14+, startForeground with TYPE_LOCATION requires ACCESS_FINE_LOCATION
+        // to be granted at call time. If not granted, skip — service will still run.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Log.w(TAG, "ensureForeground: ACCESS_FINE_LOCATION not granted, skipping startForeground")
+                return
+            }
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             if (manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
@@ -201,6 +213,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         } else {
             startForeground(NOTIFICATION_ID, notif)
         }
+        isForeground = true
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -329,6 +342,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         clearNavigation()
         updateNavigationState(STATE_STOPED)
         stopForeground(true)
+        isForeground = false
         disconnect()
     }
 
@@ -367,7 +381,8 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     fun navigateTo(waypoint: MapObject) {
         clearNavigation()
         connect()
-        ensureForeground()
+        // ensureForeground only on first start; service stays foreground between navigateTo() calls
+        if (!isForeground) ensureForeground()
 
         //vmgav = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -384,7 +399,8 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
     fun navigateTo(route: Route, direction: Int) {
         clearNavigation()
         connect()
-        ensureForeground()
+        // ensureForeground only on first start; service stays foreground between navigateTo() calls
+        if (!isForeground) ensureForeground()
 
         //vmgav = new float[] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
