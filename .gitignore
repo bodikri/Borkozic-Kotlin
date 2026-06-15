@@ -13,6 +13,8 @@
 .externalNativeBuild
 .cxx
 *.keystore
+# borkozic-release.jks is intentionally tracked in git (shared between machines)
+!borkozic-release.jks
 !gradle-wrapper.jar
 /borkozic/build
 /borkoziclib/build
