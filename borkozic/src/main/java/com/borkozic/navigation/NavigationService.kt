@@ -159,6 +159,22 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_navigation_proximity))
         onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_navigation_traverse))
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        // Channel MUST be created before builder.build() — otherwise channel=null in notification
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (manager.getNotificationChannel(NOTIFICATION_CHANNEL_ID) == null) {
+                val chan = NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    ChannelName,
+                    NotificationManager.IMPORTANCE_NONE
+                )
+                chan.lightColor = Color.BLUE
+                chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+                manager.createNotificationChannel(chan)
+            }
+        }
+
         val builder = NotificationCompat.Builder(this, NOTIFICATION_CHANNEL_ID)
         builder.setContentIntent(contentIntent)
         builder.setSmallIcon(R.drawable.ic_stat_navigation)
@@ -166,10 +182,10 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         builder.setContentTitle(getText(R.string.notif_nav_short))
         builder.setContentText(getText(R.string.notif_nav_started))
         notification = builder.build()
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 Log.w(TAG, "POST_NOTIFICATIONS permission not granted")
-                // Нотификацията няма да се покаже, но услугата ще работи
             }
         }
         ensureForeground()

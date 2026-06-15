@@ -1417,8 +1417,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             waypointName!!.setText("» " + navigationService!!.navWaypoint!!.name)
             if (application!!.navigationOverlay == null) {
                 application!!.navigationOverlay = NavigationOverlay(this)
-                application!!.navigationOverlay!!.onMapChanged()
             }
+            // Always refresh overlay on navigation state change (target may have changed)
+            application!!.navigationOverlay!!.onMapChanged()
         } else if (application!!.navigationOverlay != null) {
             application!!.navigationOverlay!!.onBeforeDestroy()
             application!!.navigationOverlay = null
