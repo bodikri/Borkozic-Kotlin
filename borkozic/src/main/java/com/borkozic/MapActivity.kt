@@ -2952,6 +2952,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             activeActions =
                 Arrays.asList<String?>(*pa.split(",".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray())
+        } else if (getString(R.string.pref_waypoint_width) == key ||
+            getString(R.string.pref_waypoint_textsize) == key ||
+            getString(R.string.pref_waypoint_color) == key ||
+            getString(R.string.pref_waypoint_namecolor) == key ||
+            getString(R.string.pref_waypoint_bgcolor) == key ||
+            getString(R.string.pref_waypoint_showname) == key
+        ) {
+            updateOverlays(sharedPreferences, false)
         }
     }
 
