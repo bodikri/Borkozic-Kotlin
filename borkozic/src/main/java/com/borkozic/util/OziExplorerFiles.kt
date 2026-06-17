@@ -565,7 +565,7 @@ class OziExplorerFiles {
                 for (wpt in waypoints) {
                     writer.write("W,") //Field 0
                     writer.write(wpt.name.replace(',', 209.toChar())+",")//Field 1
-                    writer.write(coordFormat.format(wpt.latitude)+","+coordFormat.format(wpt.longitude)+","+wpt.altitude.toString()+",")//Field 2,3, [4] - for Altitude is added from me
+                    writer.write(coordFormat.format(wpt.latitude)+","+coordFormat.format(wpt.longitude)+","+wpt.altitude.toInt().toString()+",")//Field 2,3, [4] - for Altitude is added from me
                     if (wpt.silent)
                         writer.write("1")
                     else
@@ -738,7 +738,7 @@ class OziExplorerFiles {
                 for (wpt in waypoints) {
                     writer.write("W,")
                     writer.write(wpt.name.replace(',', 209.toChar())+",")
-                    writer.write(coordFormat.format(wpt.latitude)+","+coordFormat.format(wpt.longitude)+","+wpt.altitude.toString()+",")//Fields[5] - for Altitude is added from me
+                    writer.write(coordFormat.format(wpt.latitude)+","+coordFormat.format(wpt.longitude)+","+wpt.altitude.toInt().toString()+",")//Fields[5] - for Altitude is added from me
                     if (wpt.silent)
                         writer.write("1")
                     else
