@@ -122,7 +122,7 @@ class OziExplorerFiles {
 
                         if (fields.size >= 15 && "" != fields[14]) {
                             try {
-                                val alt = fields[14].toInt()
+                                val alt = fields[14].toDouble().toInt()
                                 waypoint.altitude = if (alt == -777) Integer.MIN_VALUE.toDouble() else alt.toDouble()
                             } catch (e: NumberFormatException) {
                             }
@@ -205,7 +205,7 @@ class OziExplorerFiles {
                     writer.write(Entities.XML.escape(wpt.description) + ",")
                     writer.write("2,0,")
                     writer.write(wpt.proximity.toString() + ",")
-                    writer.write(if (wpt.altitude == Integer.MIN_VALUE.toDouble()) "-777" else wpt.altitude.toString() + ",")
+                    writer.write(if (wpt.altitude == Integer.MIN_VALUE.toDouble()) "-777" else wpt.altitude.toInt().toString() + ",")
                     writer.write(",,,,,,")
                     writer.write(wpt.image+",,")
                     writer.write("\n")

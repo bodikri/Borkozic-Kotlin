@@ -9,8 +9,8 @@
 <integer name="def_lookahead">80</integer>
 <integer name="def_dragahead">0</integer>
 <integer name="def_loc_gpstimeout">120</integer>
-<integer name="def_waypoint_width">8</integer>
-<integer name="def_waypoint_textsize">12</integer>
+<integer name="def_waypoint_width">12</integer>
+<integer name="def_waypoint_textsize">14</integer>
 <integer name="def_route_linewidth">2</integer>
 <integer name="def_route_pointwidth">6</integer>
     <integer name="def_area_linewidth">2</integer>

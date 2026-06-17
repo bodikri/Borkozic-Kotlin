@@ -102,6 +102,7 @@ class Preferences : AppCompatActivity() {
             val fragment = when (key) {
                 "pref_behavior" -> OnlineMapPreferencesFragment()
                 "pref_sharing" -> LocationSharingPreferencesFragment()
+                "pref_application" -> ApplicationPreferencesFragment()
                 "pref_app_about" -> ApplicationPreferencesFragment()
                 else -> InnerPreferencesFragment().apply {
                     arguments = Bundle().apply { putString("KEY", key) }
