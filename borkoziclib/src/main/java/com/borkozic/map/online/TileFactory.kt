@@ -23,7 +23,7 @@ class TileFactory {
         @JvmStatic
         fun downloadTile(provider: TileProvider, x: Int, y: Int, z: Byte): Bitmap? {
             val url = provider.getTileUri(x, y, z)
-            Log.d("TILE_DEBUG", "Attempting to download: $url")
+            //Log.d("TILE_DEBUG", "Attempting to download: $url")
 
             var connection: HttpURLConnection? = null
             var redirectCount = 0
@@ -47,7 +47,7 @@ class TileFactory {
                         status == 307 || status == 308
                     ) {
                         val newUrl = connection.getHeaderField("Location")
-                        Log.d("TILE_DEBUG", "Redirect ($status) to: $newUrl")
+                        //Log.d("TILE_DEBUG", "Redirect ($status) to: $newUrl")
 
                         connection.disconnect()
                         connection = null
@@ -58,31 +58,31 @@ class TileFactory {
 
                     // Ако не е 200 OK, отказваме
                     if (status != HttpURLConnection.HTTP_OK) {
-                        Log.w("TILE_DEBUG", "Server returned HTTP $status for $currentUrl")
+                        //Log.w("TILE_DEBUG", "Server returned HTTP $status for $currentUrl")
                         return null
                     }
 
                     // Проверка на Content-Type
                     val contentType = connection.contentType
                     if (contentType == null || !contentType.startsWith("image/")) {
-                        Log.w("TILE_DEBUG", "Content-Type is not image: $contentType")
+                        //Log.w("TILE_DEBUG", "Content-Type is not image: $contentType")
                         return null
                     }
 
                     // Декодиране на изображението
                     val bitmap = BitmapFactory.decodeStream(connection.inputStream)
                     if (bitmap != null) {
-                        Log.d("TILE_DEBUG", "Download successful: $x,$y zoom=$z")
+                        //Log.d("TILE_DEBUG", "Download successful: $x,$y zoom=$z")
                     } else {
-                        Log.w("TILE_DEBUG", "Download returned null (bitmap decoding failed)")
+                        //Log.w("TILE_DEBUG", "Download returned null (bitmap decoding failed)")
                     }
                     return bitmap
                 }
 
-                Log.w("TILE_DEBUG", "Too many redirects for: $url")
+                //Log.w("TILE_DEBUG", "Too many redirects for: $url")
                 return null
             } catch (e: Exception) {
-                Log.e("TILE_DEBUG", "Download failed: ${e.message}", e)
+                //Log.e("TILE_DEBUG", "Download failed: ${e.message}", e)
                 return null
             } finally {
                 connection?.disconnect()
@@ -124,16 +124,16 @@ class TileFactory {
         fun loadTile(provider: TileProvider, t: Tile) {
             val data = loadTile(provider, t.x, t.y, t.zoomLevel)
             if (data != null) {
-                Log.d(
-                    "TILE_DEBUG",
-                    "Tile loaded from disk: ${t.x},${t.y} zoom=${t.zoomLevel} data size=${data.size}"
-                )
+                //Log.d(
+                //    "TILE_DEBUG",
+                //    "Tile loaded from disk: ${t.x},${t.y} zoom=${t.zoomLevel} data size=${data.size}"
+                //)
                 t.bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
                 if (t.bitmap == null) {
-                    Log.w("TILE_DEBUG", "BitmapFactory.decodeByteArray returned null – possibly corrupt file")
+                    //Log.w("TILE_DEBUG", "BitmapFactory.decodeByteArray returned null – possibly corrupt file")
                 }
             } else {
-                Log.d("TILE_DEBUG", "Tile NOT found on disk: ${t.x},${t.y} zoom=${t.zoomLevel}")
+                //Log.d("TILE_DEBUG", "Tile NOT found on disk: ${t.x},${t.y} zoom=${t.zoomLevel}")
             }
         }
 
@@ -209,16 +209,16 @@ class TileFactory {
                 val bos = ByteArrayOutputStream()
                 t.bitmap!!.compress(CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
                 val data = bos.toByteArray()
-                Log.d(
-                    "TILE_DEBUG",
-                    "Saving tile to disk: ${t.x},${t.y} zoom=${t.zoomLevel} size=${data.size}"
-                )
+                //Log.d(
+                //    "TILE_DEBUG",
+                //    "Saving tile to disk: ${t.x},${t.y} zoom=${t.zoomLevel} size=${data.size}"
+                //)
                 saveTile(provider, data, t.x, t.y, t.zoomLevel)
             } else {
-                Log.w(
-                    "TILE_DEBUG",
-                    "Cannot save tile – bitmap is null or recycled: ${t.x},${t.y}"
-                )
+                //Log.w(
+                //    "TILE_DEBUG",
+                //    "Cannot save tile – bitmap is null or recycled: ${t.x},${t.y}"
+                //)
             }
         }
     }

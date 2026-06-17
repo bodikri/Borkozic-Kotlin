@@ -100,11 +100,11 @@ class TileController : Thread() {
         if (t == null) {
             t = Tile(tx, ty, tz)
             // ⬇️ LOG: опит за зареждане от диск
-            Log.d("TILE_DEBUG", "getTile: cache miss, loading from disk: $tx,$ty zoom=$tz")
+            //Log.d("TILE_DEBUG", "getTile: cache miss, loading from disk: $tx,$ty zoom=$tz")
             TileFactory.loadTile(provider!!, t)
             if (t.bitmap == null) {
                 // ⬇️ LOG: не е намерен на диска – ще генерираме placeholder
-                Log.d("TILE_DEBUG", "getTile: not on disk, generating placeholder: $tx,$ty")
+                //Log.d("TILE_DEBUG", "getTile: not on disk, generating placeholder: $tx,$ty")
                 TileFactory.generateTile(provider!!, cache!!, t)
                 if (t.bitmap != null) cache?.put(t)
                 tileMap[key] = t
@@ -116,12 +116,12 @@ class TileController : Thread() {
                 }
             } else {
                 // ⬇️ LOG: зареден от диск
-                Log.d("TILE_DEBUG", "getTile: loaded from disk: $tx,$ty")
+                //Log.d("TILE_DEBUG", "getTile: loaded from disk: $tx,$ty")
                 cache?.put(t)
             }
         } else {
             // ⬇️ LOG: намерен в кеша
-            Log.d("TILE_DEBUG", "getTile: cache hit: $tx,$ty")
+            //Log.d("TILE_DEBUG", "getTile: cache hit: $tx,$ty")
         }
         return t
     }

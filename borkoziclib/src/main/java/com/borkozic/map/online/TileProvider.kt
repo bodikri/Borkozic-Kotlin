@@ -69,7 +69,7 @@ class TileProvider {
             val stringlen = (3 * x + newY) and 7
             uri = uri.replace("{\$g}", secret!!.substring(0, stringlen))
         }
-        Log.d("TILE_DEBUG", "Generated URI: $uri")
+        //Log.d("TILE_DEBUG", "Generated URI: $uri")
         return uri
     }
 
