@@ -175,6 +175,14 @@ class RouteDetails : ComponentActivity() {
                             RESULT_EDIT_ROUTE
                         )
                     },
+                    onRouteProperties = {
+                        val routeIdx = application.getRouteIndex(route)
+                        startActivityForResult(
+                            Intent(this, RouteProperties::class.java)
+                                .putExtra("index", routeIdx),
+                            RESULT_EDIT_ROUTE
+                        )
+                    },
                     onBack = { finish() },
                     navCurrentIndex = navCurrentIndex,
                     navDistance = navDistance,
