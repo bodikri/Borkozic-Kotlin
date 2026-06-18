@@ -1854,25 +1854,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             if (application!!.editingRoute != null) {
                 routeSelected = -1
                 waypointSelected = idx
-                // Check if there's a cursor set (selected via orderpoints dialog)
-                val cursor = application!!.routeEditingCursor
-                if (cursor != null && cursor < application!!.editingRoute!!.length() - 1) {
-                    // Add AFTER the cursor position
-                    application!!.routeEditingWaypoints!!.push(
-                        application!!.editingRoute!!.addWaypointAt(
-                            cursor + 1,
-                            waypoint.name,
-                            waypoint.latitude,
-                            waypoint.longitude,
-                            waypoint.altitude
-                        )
-                    )
-                    // Update cursor to the newly added point
-                    application!!.routeEditingCursor = application!!.editingRoute!!.length() - 1
-                } else {
-                    // No cursor or cursor at end → add to end (old behavior)
-                    application!!.routeEditingWaypoints!!.push(waypoint)
-                }
+                // Show Add to Route quick action (with Confirm/Cancel buttons)
+                wptQuickActionAddToRoute!!.show(map, x, y)
                 return true
             } else if (application!!.editingArea != null) {
                 areaSelected = -1
@@ -2324,13 +2307,30 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     }
 
                     qaAddWaypointToRoute -> {
-                        val wpt = application!!.editingRoute!!.addWaypoint(
-                            wpt.name,
-                            wpt.latitude,
-                            wpt.longitude,
-                            wpt.altitude
-                        )
-                        application!!.routeEditingWaypoints!!.push(wpt)
+                        // Check if there's a cursor set (selected via orderpoints dialog)
+                        val cursor = application!!.routeEditingCursor
+                        if (cursor != null && cursor < application!!.editingRoute!!.length() - 1) {
+                            // Add AFTER the cursor position
+                            val newWpt = application!!.editingRoute!!.addWaypointAt(
+                                cursor + 1,
+                                wpt.name,
+                                wpt.latitude,
+                                wpt.longitude,
+                                wpt.altitude
+                            )
+                            application!!.routeEditingWaypoints!!.push(newWpt)
+                            // Update cursor to the newly added point
+                            application!!.routeEditingCursor = cursor + 1
+                        } else {
+                            // No cursor or cursor at end → add to end (old behavior)
+                            val wpt = application!!.editingRoute!!.addWaypoint(
+                                wpt.name,
+                                wpt.latitude,
+                                wpt.longitude,
+                                wpt.altitude
+                            )
+                            application!!.routeEditingWaypoints!!.push(wpt)
+                        }
                         addToRouteWaypointSet(wpt)
                         map!!.invalidate()
                     }
