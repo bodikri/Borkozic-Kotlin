@@ -138,6 +138,7 @@ class Borkozic : BaseApplication() {
     internal var editingRoute: Route? = null
     internal var editingTrack: Track? = null
     internal var routeEditingWaypoints: Stack<Waypoint?>? = null
+    internal var routeEditingCursor: Int? = null
     internal var editingArea: Area? = null
     internal var areaEditingWaypoints: Stack<Waypoint?>? = null
 

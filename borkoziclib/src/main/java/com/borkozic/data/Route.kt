@@ -78,6 +78,13 @@ class Route {
         return waypoint
     }
 
+    /** Add a waypoint at a specific position in the route. */
+    fun addWaypointAt(pos: Int, name: String, lat: Double, lon: Double, alt: Double): Waypoint {
+        val waypoint = Waypoint(name, "", lat, lon, alt)
+        addWaypoint(pos, waypoint)
+        return waypoint
+    }
+
     private fun insertWaypoint(waypoint: Waypoint) {
         if (waypoints.size < 2) {
             addWaypoint(waypoint)

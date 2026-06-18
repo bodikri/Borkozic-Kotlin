@@ -81,6 +81,7 @@ import com.borkozic.overlay.TrackOverlay
 import com.borkozic.overlay.WaypointsOverlay
 import com.borkozic.route.RouteDetails
 import com.borkozic.route.RouteEdit
+import com.borkozic.route.RoutePointListDialog
 import com.borkozic.route.RouteList
 import com.borkozic.route.RouteListActivity
 import com.borkozic.route.RouteStart
@@ -110,6 +111,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ComposeView
 import com.borkozic.ui.SidePanel
 import com.borkozic.ui.SidePanelAction
+import com.borkozic.ui.BorkozicTheme
 import java.io.File
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
@@ -1761,6 +1763,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         //Log.d(TAG, "startEditRoute");
         updateGPSStatus()
         application!!.routeEditingWaypoints = Stack<Waypoint?>()
+        application!!.routeEditingCursor = null
         if (showDistance > 0) application!!.distanceOverlay!!.setEnabled(false)
         updateMapViewArea()
     }
@@ -1888,23 +1891,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 route
             )
         ) {
-            // Tapped a waypoint inside the route being edited.
-            // If it's the last waypoint → direct edit (can't add the same point consecutively).
-            // Otherwise → show popup with Edit and Add to end.
-            val isLast = index == application!!.editingRoute!!.length() - 1
-            if (isLast) {
-                startActivityForResult(
-                    Intent(this, WaypointProperties::class.java).putExtra(
-                        "INDEX",
-                        index
-                    ).putExtra("ROUTE", route + 1), RESULT_EDIT_ROUTE
-                )
-            } else {
-                routeSelected = route
-                waypointSelected = index
-                wptQuickActionRouteEdit!!.show(map, x, y)
-                Log.d(TAG, "routeWaypointTapped: show RouteEdit popup for route=$route index=$index (not last)")
-            }
+            // Tapped a waypoint inside the route being edited → set as cursor
+            application!!.routeEditingCursor = index
+            Log.d(TAG, "routeWaypointTapped: set editing cursor to index=$index")
             return true
         } else if (application!!.editingRoute != null || application!!.editingArea != null) {
             // Route or Area is being edited — offer to add this waypoint to it
@@ -2632,20 +2621,21 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 )
             } else {
                 val aloc: DoubleArray = application!!.getMapCenter()
-                // Use current GPS elevation if available, otherwise 0
                 val alt = lastElevation
-                // Global counter ensures unique names across all routes in this session
                 val name = "RWPT" + routeWaypointNameCounter++
-                val wpt = application!!.editingRoute!!.addWaypoint(
-                    name,
-                    aloc[0],
-                    aloc[1],
-                    alt
-                )
+                val cursor = application!!.routeEditingCursor
+                val wpt = if (cursor != null && cursor < application!!.editingRoute!!.length() - 1) {
+                    // Add AFTER the cursor position
+                    application!!.editingRoute!!.addWaypointAt(cursor + 1, name, aloc[0], aloc[1], alt)
+                } else {
+                    // No cursor or cursor at end → add to end
+                    application!!.editingRoute!!.addWaypoint(name, aloc[0], aloc[1], alt)
+                }
                 application!!.routeEditingWaypoints!!.push(wpt)
-                // Also add to RouteWaypoints set for reuse
                 addToRouteWaypointSet(wpt)
-                Log.d(TAG, "addpoint: $name lat=${aloc[0]} lon=${aloc[1]} alt=$alt editingRoute=${application!!.editingRoute!!.name}")
+                // Update cursor to the newly added point
+                application!!.routeEditingCursor = application!!.editingRoute!!.length() - 1
+                Log.d(TAG, "addpoint: $name lat=${aloc[0]} lon=${aloc[1]} alt=$alt cursor=$cursor editingRoute=${application!!.editingRoute!!.name}")
             }
 
             R.id.insertpoint -> if (application!!.editingArea != null) {
@@ -2660,17 +2650,20 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             } else {
                 val iloc: DoubleArray = application!!.getMapCenter()
                 val alt = lastElevation
-                // Global counter ensures unique names across all routes in this session
                 val name = "RWPT" + routeWaypointNameCounter++
-                val wpt = application!!.editingRoute!!.insertWaypoint(
-                    name,
-                    iloc[0],
-                    iloc[1],
-                    alt
-                )
+                val cursor = application!!.routeEditingCursor
+                val wpt = if (cursor != null && cursor > 0) {
+                    // Insert BEFORE the cursor position
+                    application!!.editingRoute!!.addWaypointAt(cursor, name, iloc[0], iloc[1], alt)
+                } else {
+                    // No cursor or cursor at start → use auto-insert (finds best position)
+                    application!!.editingRoute!!.insertWaypoint(name, iloc[0], iloc[1], alt)
+                }
                 application!!.routeEditingWaypoints!!.push(wpt)
                 addToRouteWaypointSet(wpt)
-                Log.d(TAG, "insertpoint: $name lat=${iloc[0]} lon=${iloc[1]} alt=$alt editingRoute=${application!!.editingRoute!!.name}")
+                // Update cursor to the newly inserted point
+                application!!.routeEditingCursor = application!!.editingRoute!!.length() - 1
+                Log.d(TAG, "insertpoint: $name lat=${iloc[0]} lon=${iloc[1]} alt=$alt cursor=$cursor editingRoute=${application!!.editingRoute!!.name}")
             }
 
             R.id.removepoint -> if (application!!.editingArea != null) {
@@ -2691,12 +2684,25 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     ), RESULT_EDIT_AREA
                 )
             } else {
-                startActivityForResult(
-                    Intent(this, RouteEdit::class.java).putExtra(
-                        "INDEX",
-                        application!!.getRouteIndex(application!!.editingRoute!!)
-                    ), RESULT_EDIT_ROUTE
-                )
+                // Show Compose point list dialog to select cursor position
+                val composeView = ComposeView(this)
+                val alertDialog = AlertDialog.Builder(this)
+                    .setView(composeView)
+                    .create()
+                composeView.setContent {
+                    BorkozicTheme {
+                        RoutePointListDialog(
+                            route = application!!.editingRoute!!,
+                            cursorIndex = application!!.routeEditingCursor,
+                            onSelect = { index ->
+                                application!!.routeEditingCursor = index
+                                alertDialog.dismiss()
+                            },
+                            onDismiss = { alertDialog.dismiss() }
+                        )
+                    }
+                }
+                alertDialog.show()
             }
 
             R.id.finishedit -> if (application!!.editingArea != null) {
@@ -2732,6 +2738,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
                 application!!.editingRoute = null
                 application!!.routeEditingWaypoints = null
+                application!!.routeEditingCursor = null
                 findViewById<View?>(R.id.editroute).setVisibility(View.GONE) //лентата с която се редактира маршрута изчезва
                 updateGPSStatus()
                 if (showDistance == 2) {
