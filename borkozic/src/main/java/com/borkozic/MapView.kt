@@ -993,7 +993,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     }
 
     fun updateViewArea(area: Rect) {
-        Log.e(TAG, "updateViewArea()")
+        // Log.e(TAG, "updateViewArea()") — закоментиран: спами 3 пъти на кадър, причинява ANR
         viewArea.set(area)
     }
 

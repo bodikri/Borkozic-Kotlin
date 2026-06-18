@@ -259,7 +259,12 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         notification = notif
 
         Log.d(TAG, "ensureForeground")
+        // Samsung Android 14 workaround: post notification via NotificationManager
+        // BEFORE calling startForeground(). Some Samsung firmware rejects
+        // startForeground() if the notification hasn't been posted first.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            nm.notify(NOTIFICATION_ID, notif)
             startForeground(NOTIFICATION_ID, notif, ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION)
         } else {
             startForeground(NOTIFICATION_ID, notif)
@@ -458,23 +463,28 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
         navRoute = route
         navDirection = direction
         navCurrentRoutePoint =
-            if (navDirection == 1) 1 else navRoute!!.length() - 2 // задава коя да бъде точката към която да започне маршрута 0-първата точка
+            if (navDirection == 1) 0 else navRoute!!.length() - 1 // започва от първата точка (0) или последната (length-1) при reverse
 
         navWaypoint = navRoute!!.getWaypoint(navCurrentRoutePoint)
-        prevWaypoint = navRoute!!.getWaypoint(navCurrentRoutePoint - navDirection)
-        SlopeAngle = Geo.SlopeAngle(
+        val prev = navCurrentRoutePoint - navDirection
+        prevWaypoint = if (prev >= 0 && prev < navRoute!!.length()) {
+            navRoute!!.getWaypoint(prev)
+        } else {
+            null
+        }
+        SlopeAngle = if (prevWaypoint != null) Geo.SlopeAngle(
             prevWaypoint!!.latitude,
             prevWaypoint!!.longitude,
             navWaypoint!!.latitude,
             navWaypoint!!.longitude,
             prevWaypoint!!.altitude,
             navWaypoint!!.altitude
-        )
+        ) else 0.0
         //double saDegre = Math.toDegrees(SlopeAngle);
         //Log.i(TAG + "TO", "SlopeAngle: " + saDegre);
         navProximity = if (navWaypoint!!.proximity > 0) navWaypoint!!.proximity else routeProximity
         navRouteDistance = -1.0
-        navCourse = Geo.bearing(
+        navCourse = if (prevWaypoint == null) 0.0 else Geo.bearing(
             prevWaypoint!!.latitude,
             prevWaypoint!!.longitude,
             navWaypoint!!.latitude,
