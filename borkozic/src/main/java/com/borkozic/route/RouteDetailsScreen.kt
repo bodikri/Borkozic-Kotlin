@@ -57,6 +57,7 @@ fun RouteDetailsScreen(
     onNavigateToWaypoint: (index: Int) -> Unit,
     onShowWaypoint: (index: Int) -> Unit,
     onStartNavigation: () -> Unit,
+    onEditRoute: () -> Unit,
     onBack: () -> Unit,
     navCurrentIndex: Int = -1,
     navDistance: Double = 0.0,
@@ -117,6 +118,9 @@ fun RouteDetailsScreen(
                 },
                 actions = {
                     if (mode == RouteDetailsMode.MANAGE) {
+                        IconButton(onClick = onEditRoute) {
+                            Icon(Icons.Default.Edit, contentDescription = "Edit Route")
+                        }
                         IconButton(onClick = onStartNavigation) {
                             Icon(Icons.Default.Directions, contentDescription = "Navigate")
                         }

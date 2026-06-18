@@ -167,6 +167,14 @@ class RouteDetails : ComponentActivity() {
                                 .putExtra("index", routeIdx)
                         )
                     },
+                    onEditRoute = {
+                        val routeIdx = application.getRouteIndex(route)
+                        startActivityForResult(
+                            Intent(this, RouteEdit::class.java)
+                                .putExtra("INDEX", routeIdx),
+                            RESULT_EDIT_ROUTE
+                        )
+                    },
                     onBack = { finish() },
                     navCurrentIndex = navCurrentIndex,
                     navDistance = navDistance,
@@ -190,5 +198,6 @@ class RouteDetails : ComponentActivity() {
 
     companion object {
         private const val TAG = "RouteDetails"
+        private const val RESULT_EDIT_ROUTE = 0x110
     }
 }
