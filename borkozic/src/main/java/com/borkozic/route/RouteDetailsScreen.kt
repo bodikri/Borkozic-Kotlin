@@ -59,6 +59,7 @@ fun RouteDetailsScreen(
     onStartNavigation: () -> Unit,
     onEditRoute: () -> Unit,
     onRouteProperties: () -> Unit,
+    onRemoveWaypoint: (index: Int) -> Unit,
     onBack: () -> Unit,
     navCurrentIndex: Int = -1,
     navDistance: Double = 0.0,
@@ -79,6 +80,8 @@ fun RouteDetailsScreen(
     var draggedIndex by remember { mutableStateOf(-1) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
     var showActionMenu by remember { mutableStateOf<Int?>(null) }
+    var showRemoveWarning by remember { mutableStateOf(false) }
+    var removeWarningIndex by remember { mutableStateOf(-1) }
     val density = LocalDensity.current
 
     // Sync list when route changes externally
@@ -310,11 +313,11 @@ fun RouteDetailsScreen(
                         }
                         RouteDetailsMode.MANAGE -> {
                             Row {
-                                TextButton(onClick = {
+                                IconButton(onClick = {
                                     onNavigateToWaypoint(idx)
                                     showActionMenu = null
                                 }) {
-                                    Text("Navigate")
+                                    Icon(Icons.Default.NearMe, contentDescription = "Navigate", tint = MaterialTheme.colorScheme.primary)
                                 }
                                 TextButton(onClick = {
                                     onEditWaypoint(idx)
@@ -322,8 +325,36 @@ fun RouteDetailsScreen(
                                 }) {
                                     Text("Edit")
                                 }
+                                TextButton(onClick = {
+                                    // Check consecutive duplicate before removing
+                                    val prev = if (idx > 0) route.getWaypoint(idx - 1) else null
+                                    val next = if (idx < route.length() - 1) route.getWaypoint(idx + 1) else null
+                                    if (prev != null && next != null && prev.name == next.name && prev.latitude == next.latitude) {
+                                        showRemoveWarning = true
+                                        removeWarningIndex = idx
+                                    } else {
+                                        onRemoveWaypoint(idx)
+                                        showActionMenu = null
+                                    }
+                                }) {
+                                    Text("Remove")
+                                }
                             }
                         }
+                    }
+                }
+            )
+        }
+
+        // Remove warning dialog — consecutive duplicate prevention
+        if (showRemoveWarning) {
+            AlertDialog(
+                onDismissRequest = { showRemoveWarning = false },
+                title = { Text("Cannot Remove") },
+                text = { Text("Cannot remove this waypoint because the previous and next waypoints are the same. Removing it would create consecutive duplicate points.") },
+                confirmButton = {
+                    TextButton(onClick = { showRemoveWarning = false }) {
+                        Text("OK")
                     }
                 }
             )

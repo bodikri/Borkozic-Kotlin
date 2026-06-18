@@ -183,6 +183,10 @@ class RouteDetails : ComponentActivity() {
                             RESULT_EDIT_ROUTE
                         )
                     },
+                    onRemoveWaypoint = { idx ->
+                        route.removeWaypoint(route.getWaypoint(idx))
+                        setResult(RESULT_OK)
+                    },
                     onBack = { finish() },
                     navCurrentIndex = navCurrentIndex,
                     navDistance = navDistance,
