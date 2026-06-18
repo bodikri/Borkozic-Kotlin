@@ -53,6 +53,7 @@ enum class RouteDetailsMode {
 fun RouteDetailsScreen(
     route: Route,
     mode: RouteDetailsMode,
+    refreshKey: Int = 0,
     onEditWaypoint: (index: Int) -> Unit,
     onNavigateToWaypoint: (index: Int) -> Unit,
     onShowWaypoint: (index: Int) -> Unit,
@@ -75,7 +76,7 @@ fun RouteDetailsScreen(
     // We use a snapshot state list so that any change (even mid-drag) triggers recomposition.
     // The drag logic below is intentionally simple: drag only changes a visual *offset*
     // on the dragged item. On drop we calculate the target index and perform a single swap.
-    var waypointList by remember(route) { mutableStateOf(waypoints.toMutableList()) }
+    var waypointList by remember(route, refreshKey) { mutableStateOf(waypoints.toMutableList()) }
 
     var draggedIndex by remember { mutableStateOf(-1) }
     var dragOffset by remember { mutableStateOf(Offset.Zero) }
@@ -85,7 +86,7 @@ fun RouteDetailsScreen(
     val density = LocalDensity.current
 
     // Sync list when route changes externally
-    LaunchedEffect(route.waypoints.size) {
+    LaunchedEffect(route.waypoints.size, refreshKey) {
         waypointList = route.waypoints.toMutableList()
     }
 

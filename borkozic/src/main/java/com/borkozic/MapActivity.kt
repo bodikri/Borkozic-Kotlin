@@ -2704,14 +2704,21 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             } else {
                 // Show point list dialog to select cursor position
                 val route = application!!.editingRoute!!
-                val names = route.waypoints.map { "${it.name}" }.toTypedArray()
+                val currentCursor = application!!.routeEditingCursor
+                val cursor = currentCursor ?: (route.length() - 1) // Default: last point
+                
+                // Mark cursor point with (cursor) label
+                val names = route.waypoints.mapIndexed { index, wpt ->
+                    if (index == cursor) "${wpt.name} ←CURSOR" else wpt.name
+                }.toTypedArray()
+                
                 AlertDialog.Builder(this)
-                    .setTitle("Select Cursor Position")
-                    .setNeutralButton("No cursor") { _, _ ->
-                        application!!.routeEditingCursor = null
-                    }
+                    .setTitle("Cursor Position")
                     .setItems(names) { _, which ->
                         application!!.routeEditingCursor = which
+                    }
+                    .setNegativeButton("Close") { _, _ ->
+                        // Simply dismiss - cursor stays at current position
                     }
                     .show()
             }

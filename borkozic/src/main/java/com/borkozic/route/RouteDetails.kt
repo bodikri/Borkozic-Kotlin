@@ -37,6 +37,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.borkozic.BaseApplication
 import com.borkozic.Borkozic
 import com.borkozic.R
@@ -61,6 +64,7 @@ class RouteDetails : ComponentActivity() {
     private var navETE = 0
     private var navBearing = 0.0
     private var navDirection = BaseNavigationService.DIRECTION_FORWARD
+    private var refreshKey by mutableStateOf(0)
 
     private val navigationUpdateReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context, intent: Intent) {
@@ -127,10 +131,11 @@ class RouteDetails : ComponentActivity() {
                     mode = if (navigation) RouteDetailsMode.NAVIGATION else RouteDetailsMode.MANAGE,
                     onEditWaypoint = { idx ->
                         val routeIdx = application.getRouteIndex(route)
-                        startActivity(
+                        startActivityForResult(
                             Intent(this, WaypointProperties::class.java)
                                 .putExtra("INDEX", idx)
-                                .putExtra("ROUTE", routeIdx + 1)
+                                .putExtra("ROUTE", routeIdx + 1),
+                            RESULT_SAVE_WAYPOINT
                         )
                     },
                     onNavigateToWaypoint = { idx ->
@@ -180,6 +185,7 @@ class RouteDetails : ComponentActivity() {
                             RESULT_EDIT_ROUTE
                         )
                     },
+                    refreshKey = refreshKey,
                     onRemoveWaypoint = { idx ->
                         route.removeWaypoint(route.getWaypoint(idx))
                         setResult(RESULT_OK)
@@ -205,8 +211,26 @@ class RouteDetails : ComponentActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            RESULT_SAVE_WAYPOINT, RESULT_EDIT_ROUTE -> {
+                if (resultCode == RESULT_OK) {
+                    // Recalculate route totals after waypoint edit or route properties change
+                    val route = BaseApplication.getApplication<Borkozic>()!!.getRoute(intent.extras!!.getInt("index"))!!
+                    if (route.length() > 1) {
+                        route.distance = route.distanceBetween(0, route.length() - 1)
+                    }
+                    refreshKey++
+                    setResult(RESULT_OK)
+                }
+            }
+        }
+    }
+
     companion object {
         private const val TAG = "RouteDetails"
         private const val RESULT_EDIT_ROUTE = 0x110
+        private const val RESULT_SAVE_WAYPOINT = 0x400
     }
 }
