@@ -169,11 +169,8 @@ class RouteDetails : ComponentActivity() {
                     },
                     onEditRoute = {
                         val routeIdx = application.getRouteIndex(route)
-                        startActivityForResult(
-                            Intent(this, RouteEdit::class.java)
-                                .putExtra("INDEX", routeIdx),
-                            RESULT_EDIT_ROUTE
-                        )
+                        setResult(RESULT_OK, Intent().putExtra("index", routeIdx).putExtra("editRoute", true))
+                        finish()
                     },
                     onRouteProperties = {
                         val routeIdx = application.getRouteIndex(route)

@@ -1922,7 +1922,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             Log.e(TAG, "rteQuickAction")
             return true
         } else {
-            startActivity(Intent(this, RouteDetails::class.java).putExtra("index", route))
+            startActivityForResult(Intent(this, RouteDetails::class.java).putExtra("index", route), RESULT_ROUTE_DETAILS)
             return true
         }
     }
@@ -2529,6 +2529,16 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
             }
 
+            RESULT_ROUTE_DETAILS -> {
+                if (resultCode == RESULT_OK && data != null) {
+                    val extras = data.getExtras()
+                    if (extras != null && extras.getBoolean("editRoute", false)) {
+                        val index = extras.getInt("index")
+                        startEditRoute(application!!.getRoute(index))
+                    }
+                }
+            }
+
             RESULT_LOAD_MAP -> if (resultCode == RESULT_OK) {
                 val extras = data!!.getExtras()
                 val id = extras!!.getInt("id")
@@ -3069,6 +3079,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
         private const val RESULT_MANAGE_AREAS = 0x150
         private const val RESULT_EDIT_AREA = 0x160
+        private const val RESULT_ROUTE_DETAILS = 0x170
 
         private const val qaAddWaypointToRoute = 1
         private const val qaNavigateToWaypoint = 2
