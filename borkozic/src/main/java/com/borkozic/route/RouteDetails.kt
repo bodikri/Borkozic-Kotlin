@@ -188,6 +188,12 @@ class RouteDetails : ComponentActivity() {
                     refreshKey = refreshKey,
                     onRemoveWaypoint = { idx ->
                         route.removeWaypoint(route.getWaypoint(idx))
+                        if (route.length() > 1) {
+                            route.distance = route.distanceBetween(0, route.length() - 1)
+                        } else {
+                            route.distance = 0.0
+                        }
+                        refreshKey++
                         setResult(RESULT_OK)
                     },
                     onBack = { finish() },
