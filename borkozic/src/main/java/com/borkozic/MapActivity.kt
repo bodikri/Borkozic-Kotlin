@@ -1854,7 +1854,25 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             if (application!!.editingRoute != null) {
                 routeSelected = -1
                 waypointSelected = idx
-                wptQuickActionAddToRoute!!.show(map, x, y)
+                // Check if there's a cursor set (selected via orderpoints dialog)
+                val cursor = application!!.routeEditingCursor
+                if (cursor != null && cursor < application!!.editingRoute!!.length() - 1) {
+                    // Add AFTER the cursor position
+                    application!!.routeEditingWaypoints!!.push(
+                        application!!.editingRoute!!.addWaypointAt(
+                            cursor + 1,
+                            waypoint.name,
+                            waypoint.latitude,
+                            waypoint.longitude,
+                            waypoint.altitude
+                        )
+                    )
+                    // Update cursor to the newly added point
+                    application!!.routeEditingCursor = application!!.editingRoute!!.length() - 1
+                } else {
+                    // No cursor or cursor at end → add to end (old behavior)
+                    application!!.routeEditingWaypoints!!.push(waypoint)
+                }
                 return true
             } else if (application!!.editingArea != null) {
                 areaSelected = -1
@@ -2685,24 +2703,28 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 )
             } else {
                 // Show Compose point list dialog to select cursor position
-                val composeView = ComposeView(this)
-                val alertDialog = AlertDialog.Builder(this)
-                    .setView(composeView)
+                val dialog = AlertDialog.Builder(this)
+                    .setTitle("Select Cursor Position")
+                    .setPositiveButton("Close", null)
                     .create()
-                composeView.setContent {
-                    BorkozicTheme {
-                        RoutePointListDialog(
-                            route = application!!.editingRoute!!,
-                            cursorIndex = application!!.routeEditingCursor,
-                            onSelect = { index ->
-                                application!!.routeEditingCursor = index
-                                alertDialog.dismiss()
-                            },
-                            onDismiss = { alertDialog.dismiss() }
-                        )
+                dialog.setOnShowListener {
+                    val composeView = ComposeView(this)
+                    composeView.setContent {
+                        BorkozicTheme {
+                            RoutePointListDialog(
+                                route = application!!.editingRoute!!,
+                                cursorIndex = application!!.routeEditingCursor,
+                                onSelect = { index ->
+                                    application!!.routeEditingCursor = index
+                                    dialog.dismiss()
+                                },
+                                onDismiss = { dialog.dismiss() }
+                            )
+                        }
                     }
+                    dialog.setContentView(composeView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
                 }
-                alertDialog.show()
+                dialog.show()
             }
 
             R.id.finishedit -> if (application!!.editingArea != null) {
