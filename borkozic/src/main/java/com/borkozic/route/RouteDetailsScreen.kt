@@ -47,6 +47,9 @@ enum class RouteDetailsMode {
  * - Drag-and-drop reorder via long-press (consecutive duplicate prevention)
  * - Tap to show quick action (View / Edit or View / Navigate)
  * - Navigation integration (progress indicator, ETE, ETA)
+ *
+ * @param refreshKey Incremented by RouteDetails to trigger recomposition after
+ *                  external data changes (waypoint edit, route properties, removal)
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

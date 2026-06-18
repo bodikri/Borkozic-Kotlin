@@ -2308,9 +2308,10 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                     qaAddWaypointToRoute -> {
                         // Check if there's a cursor set (selected via orderpoints dialog)
+                        // cursor = null means "last point" (default)
                         val cursor = application!!.routeEditingCursor
                         if (cursor != null && cursor < application!!.editingRoute!!.length() - 1) {
-                            // Add AFTER the cursor position
+                            // Insert AFTER the cursor position, then advance cursor
                             val newWpt = application!!.editingRoute!!.addWaypointAt(
                                 cursor + 1,
                                 wpt.name,
@@ -2319,17 +2320,16 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                 wpt.altitude
                             )
                             application!!.routeEditingWaypoints!!.push(newWpt)
-                            // Update cursor to the newly added point
                             application!!.routeEditingCursor = cursor + 1
                         } else {
-                            // No cursor or cursor at end → add to end (old behavior)
-                            val wpt = application!!.editingRoute!!.addWaypoint(
+                            // No cursor or cursor at end → append to end (default behavior)
+                            val addedWpt = application!!.editingRoute!!.addWaypoint(
                                 wpt.name,
                                 wpt.latitude,
                                 wpt.longitude,
                                 wpt.altitude
                             )
-                            application!!.routeEditingWaypoints!!.push(wpt)
+                            application!!.routeEditingWaypoints!!.push(addedWpt)
                         }
                         addToRouteWaypointSet(wpt)
                         map!!.invalidate()

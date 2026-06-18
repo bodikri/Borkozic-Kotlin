@@ -130,6 +130,7 @@ class RouteDetails : ComponentActivity() {
                     route = route,
                     mode = if (navigation) RouteDetailsMode.NAVIGATION else RouteDetailsMode.MANAGE,
                     onEditWaypoint = { idx ->
+                        // Use startActivityForResult so we get callback to recalc route after edit
                         val routeIdx = application.getRouteIndex(route)
                         startActivityForResult(
                             Intent(this, WaypointProperties::class.java)
@@ -188,12 +189,13 @@ class RouteDetails : ComponentActivity() {
                     refreshKey = refreshKey,
                     onRemoveWaypoint = { idx ->
                         route.removeWaypoint(route.getWaypoint(idx))
+                        // Recalculate route distance after waypoint removal
                         if (route.length() > 1) {
                             route.distance = route.distanceBetween(0, route.length() - 1)
                         } else {
                             route.distance = 0.0
                         }
-                        refreshKey++
+                        refreshKey++ // Trigger Compose recomposition
                         setResult(RESULT_OK)
                     },
                     onBack = { finish() },
@@ -220,6 +222,7 @@ class RouteDetails : ComponentActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
+            // After waypoint edit or route properties change — recalculate route totals
             RESULT_SAVE_WAYPOINT, RESULT_EDIT_ROUTE -> {
                 if (resultCode == RESULT_OK) {
                     // Recalculate route totals after waypoint edit or route properties change
