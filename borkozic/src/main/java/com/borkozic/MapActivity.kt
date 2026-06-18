@@ -2702,29 +2702,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     ), RESULT_EDIT_AREA
                 )
             } else {
-                // Show Compose point list dialog to select cursor position
-                val dialog = AlertDialog.Builder(this)
+                // Show point list dialog to select cursor position
+                val route = application!!.editingRoute!!
+                val names = route.waypoints.map { "${it.name}" }.toTypedArray()
+                AlertDialog.Builder(this)
                     .setTitle("Select Cursor Position")
-                    .setPositiveButton("Close", null)
-                    .create()
-                dialog.setOnShowListener {
-                    val composeView = ComposeView(this)
-                    composeView.setContent {
-                        BorkozicTheme {
-                            RoutePointListDialog(
-                                route = application!!.editingRoute!!,
-                                cursorIndex = application!!.routeEditingCursor,
-                                onSelect = { index ->
-                                    application!!.routeEditingCursor = index
-                                    dialog.dismiss()
-                                },
-                                onDismiss = { dialog.dismiss() }
-                            )
-                        }
+                    .setNeutralButton("No cursor") { _, _ ->
+                        application!!.routeEditingCursor = null
                     }
-                    dialog.setContentView(composeView, ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT))
-                }
-                dialog.show()
+                    .setItems(names) { _, which ->
+                        application!!.routeEditingCursor = which
+                    }
+                    .show()
             }
 
             R.id.finishedit -> if (application!!.editingArea != null) {
