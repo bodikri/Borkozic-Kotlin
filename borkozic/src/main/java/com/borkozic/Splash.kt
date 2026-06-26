@@ -536,6 +536,8 @@ class Splash : Activity(), OnClickListener {
                         }
                         application.addAreas(areas ?: emptyList())
                         for (area in areas!!) {
+                            // Calculate area size from waypoints/center
+                            area.areaSize = area.calculateArea()
                             val newArea = AreaOverlay(this@Splash, area)
                             if (hide) {
                                 newArea.area.show = false
