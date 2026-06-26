@@ -1880,7 +1880,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             } else if (application!!.editingArea != null) {
                 if (application!!.editingArea!!.isCircleArea()) {
                     // Circle area edit: tapping a waypoint sets it as circle center
-                    application!!.editingArea!!.AreaCenter = Waypoint(waypoint.name, "", waypoint.latitude, waypoint.longitude, 0.0)
+                    if (application!!.editingArea!!.AreaCenter != null) {
+                        // Update existing center waypoint coordinates
+                        application!!.editingArea!!.AreaCenter!!.latitude = waypoint.latitude
+                        application!!.editingArea!!.AreaCenter!!.longitude = waypoint.longitude
+                        application!!.editingArea!!.AreaCenter!!.name = waypoint.name
+                    } else {
+                        application!!.editingArea!!.AreaCenter = Waypoint(waypoint.name, "", waypoint.latitude, waypoint.longitude, 0.0)
+                    }
                     // Recalculate area size
                     application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
                     // Refresh overlay
@@ -2671,11 +2678,19 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     // Circle area: set center = current map center (replace previous if any)
                     val aloc: DoubleArray = application!!.getMapCenter()
                     val ctrName = "Ctr0"
-                    val wpt = Waypoint(ctrName, "", aloc[0], aloc[1], 0.0)
-                    application!!.editingArea!!.AreaCenter = wpt
-                    // Add center to global waypoint list (like route waypoints)
-                    if (application!!.getWaypointIndex(wpt) < 0) {
-                        application!!.addWaypoint(wpt)
+                    // If there's an existing center, update its coordinates (and remove from waypoint list if was added)
+                    if (application!!.editingArea!!.AreaCenter != null) {
+                        // Update existing center waypoint coordinates
+                        application!!.editingArea!!.AreaCenter!!.latitude = aloc[0]
+                        application!!.editingArea!!.AreaCenter!!.longitude = aloc[1]
+                        application!!.editingArea!!.AreaCenter!!.name = ctrName
+                    } else {
+                        val wpt = Waypoint(ctrName, "", aloc[0], aloc[1], 0.0)
+                        application!!.editingArea!!.AreaCenter = wpt
+                        // Add center to global waypoint list (like route waypoints)
+                        if (application!!.getWaypointIndex(wpt) < 0) {
+                            application!!.addWaypoint(wpt)
+                        }
                     }
                     // Recalculate area size
                     application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
@@ -2783,6 +2798,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
 
             R.id.finishedit -> if (application!!.editingArea != null) {
+                // Circle area: if no center was set (user pressed Done without Add),
+                // set center = current map center (like Add), then finish
+                if (application!!.editingArea!!.isCircleArea() && application!!.editingArea!!.AreaCenter == null) {
+                    val aloc: DoubleArray = application!!.getMapCenter()
+                    val ctrName = "Ctr0"
+                    val wpt = Waypoint(ctrName, "", aloc[0], aloc[1], 0.0)
+                    application!!.editingArea!!.AreaCenter = wpt
+                    // Add center to global waypoint list
+                    if (application!!.getWaypointIndex(wpt) < 0) {
+                        application!!.addWaypoint(wpt)
+                    }
+                }
                 if ("New area" == application!!.editingArea!!.name || "New Circle" == application!!.editingArea!!.name) {
                     val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm")
                     application!!.editingArea!!.name = formatter.format(Date())

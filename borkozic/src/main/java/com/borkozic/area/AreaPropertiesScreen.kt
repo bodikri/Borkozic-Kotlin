@@ -30,7 +30,7 @@ fun AreaPropertiesScreen(
     var show by remember { mutableStateOf(area.show) }
     var lineColor by remember { mutableStateOf(Color(area.lineColor)) }
     var fillColor by remember { mutableStateOf(Color(area.fillColor)) }
-    var transparency by remember { mutableStateOf(area.AreaTransperency.toFloat()) }
+    var transparency by remember { mutableStateOf(area.AreaTransperency.toFloat().coerceIn(0f, 100f)) }
     val isCircle = area.isCircleArea()
 
     // Circle area: center coordinates + radius
@@ -72,20 +72,23 @@ fun AreaPropertiesScreen(
             if (isCircle) {
                 Spacer(Modifier.height(16.dp))
 
-                // Center section
-                Text("Center", fontWeight = FontWeight.Bold)
-                Spacer(Modifier.height(4.dp))
-                
-                // If center was selected from an existing waypoint, show its name
-                if (centerName.isNotEmpty() && centerName != "New Circle" && centerName != name) {
-                    Text(
-                        text = "Point: $centerName",
-                        fontSize = 13.sp,
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Medium
-                    )
-                    Spacer(Modifier.height(4.dp))
+                // Center + Point name on one row
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Center", fontWeight = FontWeight.Bold)
+                    if (centerName.isNotEmpty() && centerName != "New Circle" && centerName != name) {
+                        Text(
+                            text = "Point: $centerName",
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
                 }
+                Spacer(Modifier.height(4.dp))
 
                 Text("Latitude", fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(2.dp))
@@ -179,7 +182,7 @@ fun AreaPropertiesScreen(
             Slider(
                 value = transparency,
                 onValueChange = { transparency = it },
-                valueRange = 10f..200f,
+                valueRange = 0f..100f,
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -213,8 +216,13 @@ fun AreaPropertiesScreen(
                         if (area.AreaCenter == null) {
                             area.AreaCenter = com.borkozic.data.Waypoint(name, "", lat, lon, 0.0)
                         } else {
+                            // Update existing center waypoint coordinates
                             area.AreaCenter!!.latitude = lat
                             area.AreaCenter!!.longitude = lon
+                            // Also update the name if center has a custom name
+                            if (centerName.isNotEmpty() && centerName != "New Circle" && centerName != name) {
+                                area.AreaCenter!!.name = centerName
+                            }
                         }
                     }
                 }
