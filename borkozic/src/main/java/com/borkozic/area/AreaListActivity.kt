@@ -23,6 +23,7 @@ class AreaListActivity : ComponentActivity(), OnAreaActionListener {
         const val RESULT_START_AREA = 1
         const val RESULT_LOAD_AREA = 2
         const val RESULT_AREA_DETAILS = 3
+        const val RESULT_AREA_PROPERTIES = 4
     }
 
     private lateinit var application: Borkozic
@@ -85,6 +86,26 @@ class AreaListActivity : ComponentActivity(), OnAreaActionListener {
                     finish()
                 }
             }
+            RESULT_AREA_PROPERTIES -> {
+                if (resultCode == RESULT_OK) {
+                    // Check if we should open edit mode on map
+                    val editAfterSave = data?.extras?.getBoolean("editAfterSave", false) ?: false
+                    if (editAfterSave) {
+                        val index = data?.extras?.getInt("index") ?: -1
+                        if (index >= 0) {
+                            val area = application.getArea(index)
+                            if (area != null) {
+                                area.show = true
+                                setResult(RESULT_OK, Intent().putExtra("index", index).putExtra("dir", 0))
+                                finish()
+                            }
+                        }
+                    } else {
+                        // Just refresh list
+                        contentVersion++
+                    }
+                }
+            }
         }
     }
 
@@ -103,7 +124,14 @@ class AreaListActivity : ComponentActivity(), OnAreaActionListener {
                 )
             }
             is AreaAction.Properties -> {
-                startActivity(Intent(this, AreaProperties::class.java).putExtra("index", application.getAreaIndex(area)))
+                val isNew = area.waypoints.isEmpty() && !area.isCircleArea()
+                val isNewCircle = area.isCircleArea() && area.AreaCenter != null
+                startActivityForResult(
+                    Intent(this, AreaProperties::class.java)
+                        .putExtra("index", application.getAreaIndex(area))
+                        .putExtra("editAfterSave", isNew || isNewCircle),
+                    RESULT_AREA_PROPERTIES
+                )
             }
             is AreaAction.Edit -> {
                 area.show = true
@@ -134,7 +162,12 @@ class AreaListActivity : ComponentActivity(), OnAreaActionListener {
     }
 
     override fun onAreaEdit(area: Area) {
-        startActivity(Intent(this, AreaProperties::class.java).putExtra("index", application.getAreaIndex(area)))
+        startActivityForResult(
+            Intent(this, AreaProperties::class.java)
+                .putExtra("index", application.getAreaIndex(area))
+                .putExtra("editAfterSave", false),
+            RESULT_AREA_PROPERTIES
+        )
     }
 
     override fun onAreaEditPath(area: Area) {

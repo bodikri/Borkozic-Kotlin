@@ -1,5 +1,6 @@
 package com.borkozic.area
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +21,7 @@ class AreaProperties : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val index = intent.extras!!.getInt("index")
+        val editAfterSave = intent.extras?.getBoolean("editAfterSave", false) ?: false
         val application = BaseApplication.getApplication<Borkozic>()!!
         val area = application.getArea(index)!!
         val defTransparency = if (area.AreaTransperency < 0) resources.getInteger(R.integer.def_area_transparensy) else area.AreaTransperency
@@ -35,7 +37,7 @@ class AreaProperties : ComponentActivity() {
                         defaultFillColor = defFillColor,
                         defaultTransparency = defTransparency,
                         onSave = {
-                            setResult(RESULT_OK)
+                            setResult(RESULT_OK, Intent().putExtra("index", index).putExtra("editAfterSave", editAfterSave))
                             finish()
                         },
                         onCancel = { finish() }

@@ -162,7 +162,6 @@ fun AreaListScreen(
     // Theme picker dialog
     var showThemePicker by remember { mutableStateOf(false) }
     // Circle area creation dialog
-    var showCircleDialog by remember { mutableStateOf(false) }
 
     val isMultiMode = multiSelectedIndices.isNotEmpty()
 
@@ -274,21 +273,6 @@ fun AreaListScreen(
         )
     }
 
-    // Circle Area Creation Dialog
-    if (showCircleDialog) {
-        CircleAreaCreateDialog(
-            onDismiss = { showCircleDialog = false },
-            onConfirm = { name, radius ->
-                val loc = application.getLocation()
-                val wpt = com.borkozic.data.Waypoint(name, "", loc[0], loc[1], 0.0)
-                val newArea = Area(name, "", wpt, true, 10.0, 1000.0, radius)
-                application.addArea(newArea)
-                showCircleDialog = false
-                onAction(newArea, AreaAction.Properties)
-            }
-        )
-    }
-
     Column(modifier = Modifier.fillMaxSize()) {
         // Top bar
         if (mode == AreaList.MODE_MANAGE) {
@@ -306,17 +290,21 @@ fun AreaListScreen(
                 }
                 // Add (Polygon) + Circle + Load — right
                 Row {
-                    // Polygon area button
+                    // Polygon area button — creates new area, opens Properties
                     IconButton(onClick = {
                         val newArea = Area("New Area", "", null, true, 10.0, 1000.0)
                         application.addArea(newArea)
-                        onAction(newArea, AreaAction.Edit)
+                        onAction(newArea, AreaAction.Properties)
                     }) {
                         Icon(Icons.Default.Add, contentDescription = "New Polygon Area", tint = MaterialTheme.colorScheme.primary)
                     }
-                    // Circle area button
+                    // Circle area button — creates new circle area, opens Properties
                     IconButton(onClick = {
-                        showCircleDialog = true
+                        val loc = application.getLocation()
+                        val wpt = com.borkozic.data.Waypoint("New Circle", "", loc[0], loc[1], 0.0)
+                        val newArea = Area("New Circle", "", wpt, true, 10.0, 1000.0, 500.0)
+                        application.addArea(newArea)
+                        onAction(newArea, AreaAction.Properties)
                     }) {
                         Icon(Icons.Default.Circle, contentDescription = "New Circle Area", tint = MaterialTheme.colorScheme.primary)
                     }
@@ -470,77 +458,4 @@ fun AreaListScreen(
             }
         }
     }
-}
-
-// ============================================================
-// CircleAreaCreateDialog — Compose dialog for creating circle areas
-// ============================================================
-@Composable
-fun CircleAreaCreateDialog(
-    onDismiss: () -> Unit,
-    onConfirm: (name: String, radius: Double) -> Unit
-) {
-    var name by remember { mutableStateOf("") }
-    var radiusText by remember { mutableStateOf("500") }
-
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text("New Circle Area") },
-        text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = "Center: current GPS/map location",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(bottom = 12.dp)
-                )
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Area name") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp)
-                )
-                OutlinedTextField(
-                    value = radiusText,
-                    onValueChange = { value ->
-                        // Allow only digits and decimal point
-                        val filtered = value.filter { it.isDigit() || it == '.' }
-                        radiusText = filtered
-                    },
-                    label = { Text("Radius (meters)") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-                // Quick radius presets
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    listOf("100", "500", "1000", "5000").forEach { preset ->
-                        FilterChip(
-                            selected = radiusText == preset,
-                            onClick = { radiusText = preset },
-                            label = { Text(preset + "m") }
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(
-                onClick = {
-                    val radius = radiusText.toDoubleOrNull() ?: 0.0
-                    if (name.isBlank()) {
-                        onConfirm("Circle Area", radius)
-                    } else {
-                        onConfirm(name, radius)
-                    }
-                }
-            ) { Text("Create") }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Cancel") }
-        }
-    )
 }
