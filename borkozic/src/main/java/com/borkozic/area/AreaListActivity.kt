@@ -125,7 +125,7 @@ class AreaListActivity : ComponentActivity(), OnAreaActionListener {
             }
             is AreaAction.Properties -> {
                 val isNew = area.waypoints.isEmpty() && !area.isCircleArea()
-                val isNewCircle = area.isCircleArea() && area.AreaCenter != null
+                val isNewCircle = area.isCircleArea() // always edit after properties for circle (even if center set)
                 startActivityForResult(
                     Intent(this, AreaProperties::class.java)
                         .putExtra("index", application.getAreaIndex(area))

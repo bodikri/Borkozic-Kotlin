@@ -1773,10 +1773,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         application!!.editingArea = area
         application!!.editingArea!!.editing = true
 
-        // Center map on first waypoint if area has points
-        val firstWp = application!!.editingArea!!.waypoints.firstOrNull()
-        if (firstWp != null) {
-            application!!.setMapCenter(firstWp.latitude, firstWp.longitude, true, false)
+        // Center map on first waypoint or center point
+        if (area!!.isCircleArea() && area.AreaCenter != null) {
+            application!!.setMapCenter(area.AreaCenter!!.latitude, area.AreaCenter!!.longitude, true, false)
+        } else {
+            val firstWp = application!!.editingArea!!.waypoints.firstOrNull()
+            if (firstWp != null) {
+                application!!.setMapCenter(firstWp.latitude, firstWp.longitude, true, false)
+            }
         }
 
         var newarea = true
@@ -1794,6 +1798,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             application!!.areaOverlays.add(newArea)
         }
         findViewById<View?>(R.id.editroute).setVisibility(View.VISIBLE) //използвам същият панел с бутони за едитване на маршрут
+
+        // For circle area edit: hide insert/remove/order buttons (only Add + Done)
+        if (area.isCircleArea()) {
+            findViewById<View?>(R.id.insertpoint).setVisibility(View.GONE)
+            findViewById<View?>(R.id.removepoint).setVisibility(View.GONE)
+            findViewById<View?>(R.id.orderpoints).setVisibility(View.GONE)
+        } else {
+            findViewById<View?>(R.id.insertpoint).setVisibility(View.VISIBLE)
+            findViewById<View?>(R.id.removepoint).setVisibility(View.VISIBLE)
+            findViewById<View?>(R.id.orderpoints).setVisibility(View.VISIBLE)
+        }
+
         //Log.d(TAG, "startEditArea");
         updateGPSStatus()
         application!!.areaEditingWaypoints = Stack<Waypoint?>()
@@ -1858,6 +1874,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 wptQuickActionAddToRoute!!.show(map, x, y)
                 return true
             } else if (application!!.editingArea != null) {
+                if (application!!.editingArea!!.isCircleArea()) {
+                    // Circle area edit: tapping a waypoint sets it as circle center
+                    application!!.editingArea!!.AreaCenter = Waypoint(application!!.editingArea!!.name, "", waypoint.latitude, waypoint.longitude, 0.0)
+                    // Refresh overlay
+                    val iter = application!!.areaOverlays.iterator()
+                    while (iter.hasNext()) {
+                        val ao = iter.next()
+                        if (ao.area.editing) ao.onAreaPropertiesChanged()
+                    }
+                    map!!.postInvalidate()
+                    return true
+                }
                 areaSelected = -1
                 waypointSelected = idx
                 wptQuickActionAddToArea!!.show(map, x, y)
@@ -1935,6 +1963,10 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 area
             )
         ) {
+            // Circle area in edit mode: tapping own center does nothing (or could open properties)
+            if (application!!.editingArea!!.isCircleArea()) {
+                return true // consume tap, no action
+            }
             startActivityForResult(
                 Intent(this, WaypointProperties::class.java).putExtra(
                     "INDEX",
@@ -2629,14 +2661,27 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
 
             R.id.addpoint -> if (application!!.editingArea != null) {
-                val aloc: DoubleArray = application!!.getMapCenter()
-                application!!.areaEditingWaypoints!!.push(
-                    application!!.editingArea!!.addWaypoint(
-                        "AWPT" + application!!.editingArea!!.length(),
-                        aloc[0],
-                        aloc[1]
+                if (application!!.editingArea!!.isCircleArea()) {
+                    // Circle area: set center = current map center (replace previous if any)
+                    val aloc: DoubleArray = application!!.getMapCenter()
+                    application!!.editingArea!!.AreaCenter = Waypoint(application!!.editingArea!!.name, "", aloc[0], aloc[1], 0.0)
+                    // Refresh overlay
+                    val iter = application!!.areaOverlays.iterator()
+                    while (iter.hasNext()) {
+                        val ao = iter.next()
+                        if (ao.area.editing) ao.onAreaPropertiesChanged()
+                    }
+                    map!!.postInvalidate()
+                } else {
+                    val aloc: DoubleArray = application!!.getMapCenter()
+                    application!!.areaEditingWaypoints!!.push(
+                        application!!.editingArea!!.addWaypoint(
+                            "AWPT" + application!!.editingArea!!.length(),
+                            aloc[0],
+                            aloc[1]
+                        )
                     )
-                )
+                }
             } else {
                 val aloc: DoubleArray = application!!.getMapCenter()
                 val alt = lastElevation
@@ -2724,7 +2769,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
 
             R.id.finishedit -> if (application!!.editingArea != null) {
-                if ("New area" == application!!.editingArea!!.name) {
+                if ("New area" == application!!.editingArea!!.name || "New Circle" == application!!.editingArea!!.name) {
                     val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm")
                     application!!.editingArea!!.name = formatter.format(Date())
                 }
@@ -2736,6 +2781,10 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 }
                 application!!.editingArea = null
                 application!!.areaEditingWaypoints = null
+                // Restore all edit buttons visibility
+                findViewById<View?>(R.id.insertpoint).setVisibility(View.VISIBLE)
+                findViewById<View?>(R.id.removepoint).setVisibility(View.VISIBLE)
+                findViewById<View?>(R.id.orderpoints).setVisibility(View.VISIBLE)
                 findViewById<View?>(R.id.editroute).setVisibility(View.GONE) //лентата с която се редактира маршрута/зоната изчезва - използва същата лената и а маршрута
                 updateGPSStatus()
                 if (showDistance == 2) {

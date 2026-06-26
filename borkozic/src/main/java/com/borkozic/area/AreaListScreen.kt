@@ -298,11 +298,9 @@ fun AreaListScreen(
                     }) {
                         Icon(Icons.Default.Add, contentDescription = "New Polygon Area", tint = MaterialTheme.colorScheme.primary)
                     }
-                    // Circle area button — creates new circle area, opens Properties
+                    // Circle area button — creates new circle area with NO center, opens Properties
                     IconButton(onClick = {
-                        val loc = application.getLocation()
-                        val wpt = com.borkozic.data.Waypoint("New Circle", "", loc[0], loc[1], 0.0)
-                        val newArea = Area("New Circle", "", wpt, true, 10.0, 1000.0, 500.0)
+                        val newArea = Area("New Circle", "", null, true, 10.0, 1000.0, 500.0)
                         application.addArea(newArea)
                         onAction(newArea, AreaAction.Properties)
                     }) {
