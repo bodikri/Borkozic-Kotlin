@@ -2397,14 +2397,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     }
 
                     qaAddWaypointToArea -> {
-                        application!!.areaEditingWaypoints!!.push(
-                            application!!.editingArea!!.addWaypoint(
-                                wpt.name,
-                                wpt.latitude,
-                                wpt.longitude,
-                                wpt.altitude
-                            )
+                        val newWpt = application!!.editingArea!!.addWaypoint(
+                            wpt.name,
+                            wpt.latitude,
+                            wpt.longitude,
+                            wpt.altitude
                         )
+                        application!!.areaEditingWaypoints!!.push(newWpt)
+                        addToAreaWaypointSet(newWpt)
                         map!!.invalidate()
                     }
                 }
@@ -2717,13 +2717,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     map!!.postInvalidate()
                 } else {
                     val aloc: DoubleArray = application!!.getMapCenter()
-                    application!!.areaEditingWaypoints!!.push(
-                        application!!.editingArea!!.addWaypoint(
-                            "AWPT" + application!!.editingArea!!.length(),
+                    val wpt = application!!.editingArea!!.addWaypoint(
+                        "AWPT" + application!!.editingArea!!.length(),
                             aloc[0],
                             aloc[1]
                         )
-                    )
+                    application!!.areaEditingWaypoints!!.push(wpt)
+                    addToAreaWaypointSet(wpt)
                 }
             } else {
                 val aloc: DoubleArray = application!!.getMapCenter()
@@ -2746,13 +2746,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
             R.id.insertpoint -> if (application!!.editingArea != null) {
                 val iloc: DoubleArray = application!!.getMapCenter()
-                application!!.areaEditingWaypoints!!.push(
-                    application!!.editingArea!!.insertWaypoint(
-                        "AWPT" + application!!.editingArea!!.length(),
+                val wpt = application!!.editingArea!!.insertWaypoint(
+                    "AWPT" + application!!.editingArea!!.length(),
                         iloc[0],
                         iloc[1]
                     )
-                )
+                application!!.areaEditingWaypoints!!.push(wpt)
+                addToAreaWaypointSet(wpt)
             } else {
                 val iloc: DoubleArray = application!!.getMapCenter()
                 val alt = lastElevation
