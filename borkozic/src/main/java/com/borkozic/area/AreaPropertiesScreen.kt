@@ -36,7 +36,6 @@ fun AreaPropertiesScreen(
     // Circle area: center coordinates + radius
     var latText by remember { mutableStateOf(if (area.AreaCenter != null) String.format("%.6f", area.AreaCenter!!.latitude) else "") }
     var lonText by remember { mutableStateOf(if (area.AreaCenter != null) String.format("%.6f", area.AreaCenter!!.longitude) else "") }
-    // Center point name (if center was selected from existing waypoint)
     var centerName by remember { mutableStateOf(if (area.AreaCenter != null) area.AreaCenter!!.name else "") }
     var radiusText by remember { mutableStateOf(
         if (isCircle && area.AreaRadius > 0) {
@@ -46,22 +45,60 @@ fun AreaPropertiesScreen(
     var radiusUnit by remember { mutableStateOf<String>(if (area.AreaRadius >= 1000.0) "km" else "m") }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Top row: Name field + Cancel/Done buttons
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.weight(1f),
+                singleLine = true
+            )
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(onClick = onCancel) { Text("Cancel") }
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = {
+                area.name = name
+                area.show = show
+                area.lineColor = lineColor.toArgb()
+                area.fillColor = fillColor.toArgb()
+                area.AreaTransperency = transparency.toInt()
+
+                if (isCircle) {
+                    val lat = latText.toDoubleOrNull()
+                    val lon = lonText.toDoubleOrNull()
+                    val radVal = radiusText.toDoubleOrNull() ?: 0.0
+                    val radiusMeters = if (radiusUnit == "km") radVal * 1000.0 else radVal
+                    area.AreaRadius = radiusMeters
+
+                    if (lat != null && lon != null) {
+                        if (area.AreaCenter == null) {
+                            area.AreaCenter = com.borkozic.data.Waypoint(name, "", lat, lon, 0.0)
+                        } else {
+                            area.AreaCenter!!.latitude = lat
+                            area.AreaCenter!!.longitude = lon
+                            if (centerName.isNotEmpty() && centerName != "New Circle" && centerName != name) {
+                                area.AreaCenter!!.name = centerName
+                            }
+                        }
+                    }
+                }
+
+                area.areaSize = area.calculateArea()
+                onSave(area)
+            }) { Text("Done") }
+        }
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Text("Name", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(4.dp))
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = show, onCheckedChange = { show = it })
@@ -134,7 +171,6 @@ fun AreaPropertiesScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                         label = { Text("0") }
                     )
-                    // m / km toggle
                     FilterChip(
                         selected = radiusUnit == "m",
                         onClick = { radiusUnit = "m" },
@@ -185,53 +221,6 @@ fun AreaPropertiesScreen(
                 valueRange = 0f..100f,
                 modifier = Modifier.fillMaxWidth()
             )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            OutlinedButton(onClick = onCancel) { Text("Cancel") }
-            Spacer(Modifier.width(8.dp))
-            Button(onClick = {
-                area.name = name
-                area.show = show
-                area.lineColor = lineColor.toArgb()
-                area.fillColor = fillColor.toArgb()
-                area.AreaTransperency = transparency.toInt()
-
-                // Update circle area center + radius
-                if (isCircle) {
-                    val lat = latText.toDoubleOrNull()
-                    val lon = lonText.toDoubleOrNull()
-                    val radVal = radiusText.toDoubleOrNull() ?: 0.0
-                    val radiusMeters = if (radiusUnit == "km") radVal * 1000.0 else radVal
-                    area.AreaRadius = radiusMeters
-
-                    // Only set center if user entered coordinates
-                    // If lat/lon are empty, leave AreaCenter as null (map will use GPS location)
-                    if (lat != null && lon != null) {
-                        if (area.AreaCenter == null) {
-                            area.AreaCenter = com.borkozic.data.Waypoint(name, "", lat, lon, 0.0)
-                        } else {
-                            // Update existing center waypoint coordinates
-                            area.AreaCenter!!.latitude = lat
-                            area.AreaCenter!!.longitude = lon
-                            // Also update the name if center has a custom name
-                            if (centerName.isNotEmpty() && centerName != "New Circle" && centerName != name) {
-                                area.AreaCenter!!.name = centerName
-                            }
-                        }
-                    }
-                }
-
-                // Calculate area size
-                area.areaSize = area.calculateArea()
-
-                onSave(area)
-            }) { Text("Done") }
         }
     }
 }

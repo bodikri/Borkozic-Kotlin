@@ -160,6 +160,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     protected var followOnLocation: Boolean = false
     /** WaypointSet that collects all waypoints added to a route during editing for reuse across routes. */
     private var routeWaypointSet: WaypointSet? = null
+    private var areaWaypointSet: WaypointSet? = null
     /** Global counter for unique waypoint names across all routes in this session. */
     private var routeWaypointNameCounter = 0
     protected var exitConfirmation: Int = 0
@@ -1990,6 +1991,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         } else if (application!!.editingRoute != null || application!!.editingArea != null) {
             // Route or Area is being edited — offer to add this area waypoint to it
             val are = application!!.getArea(area) ?: return false
+            // Circle area: center is not in waypoints list, use AreaCenter
+            if (are.isCircleArea() && are.AreaCenter != null) {
+                Log.d(TAG, "areaWaypointTapped: circle center redirect to waypointTapped for editingArea=${application!!.editingArea?.name}")
+                return waypointTapped(are.AreaCenter!!, x, y)
+            }
             val wpt = are.waypoints[index]
             Log.d(TAG, "areaWaypointTapped: redirect to waypointTapped for editingRoute=${application!!.editingRoute?.name} editingArea=${application!!.editingArea?.name} wpt=${wpt.name}")
             return waypointTapped(wpt, x, y)
@@ -2002,6 +2008,16 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             rteQuickAction!!.show(map, x, y)
             return true
         } else {
+            // Circle area: tapping center in normal mode → show quick action like a waypoint
+            val are = application!!.getArea(area) ?: return false
+            if (are.isCircleArea() && are.AreaCenter != null) {
+                areaSelected = area
+                // Find center waypoint in global waypoint list
+                val wptIdx = application!!.getWaypointIndex(are.AreaCenter!!)
+                waypointSelected = if (wptIdx >= 0) wptIdx else 0
+                wptQuickAction!!.show(map, x, y)
+                return true
+            }
             startActivity(Intent(this, AreaDetails::class.java).putExtra("INDEX", area))
             return true
         }
@@ -2687,10 +2703,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     } else {
                         val wpt = Waypoint(ctrName, "", aloc[0], aloc[1], 0.0)
                         application!!.editingArea!!.AreaCenter = wpt
-                        // Add center to global waypoint list (like route waypoints)
-                        if (application!!.getWaypointIndex(wpt) < 0) {
-                            application!!.addWaypoint(wpt)
-                        }
+                        // Add center to AreaWaypoints set
+                        addToAreaWaypointSet(wpt)
                     }
                     // Recalculate area size
                     application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
@@ -3179,6 +3193,33 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         application!!.addWaypoint(wpt)
         wpt.set = routeWaypointSet  // override defWaypointSet assignment
         application!!.saveWaypoints(routeWaypointSet!!)
+    }
+
+    /**
+     * Finds or creates an "AreaWaypoints" WaypointSet so that waypoints
+     * added during area editing are grouped together.
+     */
+    private fun ensureAreaWaypointSet() {
+        if (areaWaypointSet != null) return
+        for (wptset in application!!.waypointSets) {
+            if ("AreaWaypoints" == wptset.name) {
+                areaWaypointSet = wptset
+                return
+            }
+        }
+        val path = application!!.dataPath + File.separator + "AreaWaypoints.wpt"
+        areaWaypointSet = WaypointSet(path, "AreaWaypoints")
+        application!!.addWaypointSet(areaWaypointSet)
+    }
+
+    /**
+     * Adds a waypoint to the AreaWaypoints set so it is grouped with other area points.
+     */
+    private fun addToAreaWaypointSet(wpt: Waypoint) {
+        ensureAreaWaypointSet()
+        application!!.addWaypoint(wpt)
+        wpt.set = areaWaypointSet
+        application!!.saveWaypoints(areaWaypointSet!!)
     }
 
     companion object {

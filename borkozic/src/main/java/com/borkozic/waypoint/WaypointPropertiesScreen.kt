@@ -209,6 +209,47 @@ fun WaypointPropertiesScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Top row: Name field + Cancel/Done buttons
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.weight(1f),
+                singleLine = true
+            )
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(onClick = onCancel) { Text("Cancel") }
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = {
+                if (name.isEmpty()) return@Button
+                waypoint.name = name
+                waypoint.description = description
+                val coords = parseCoords()
+                waypoint.latitude = coords.lat
+                waypoint.longitude = coords.lon
+                waypoint.altitude = altitude.toDoubleOrNull() ?: Int.MIN_VALUE.toDouble()
+                waypoint.proximity = proximity.toIntOrNull() ?: 0
+                if (iconValue == null) {
+                    waypoint.image = ""; waypoint.drawImage = false
+                } else {
+                    waypoint.image = iconValue; waypoint.drawImage = true
+                }
+                waypoint.backcolor = markerColor.toArgb()
+                waypoint.textcolor = textColor.toArgb()
+                if (routeIdx == 0 && waypoint.set == null) {
+                    application.addWaypoint(waypoint)
+                }
+                if (routeIdx == 0) {
+                    waypoint.set = application.waypointSets.getOrNull(setIndex)
+                }
+                onSave(waypoint)
+            }) { Text("Done") }
+        }
+
         if (routeIdx == 0) {
             TabRow(selectedTabIndex = selectedTab) {
                 Tab(
@@ -267,38 +308,6 @@ fun WaypointPropertiesScreen(
                     defTextColor = Color(defTextColor)
                 )
             }
-        }
-
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            OutlinedButton(onClick = onCancel) { Text("Cancel") }
-            Spacer(Modifier.width(8.dp))
-            Button(onClick = {
-                if (name.isEmpty()) return@Button
-                waypoint.name = name
-                waypoint.description = description
-                val coords = parseCoords()
-                waypoint.latitude = coords.lat
-                waypoint.longitude = coords.lon
-                waypoint.altitude = altitude.toDoubleOrNull() ?: Int.MIN_VALUE.toDouble()
-                waypoint.proximity = proximity.toIntOrNull() ?: 0
-                if (iconValue == null) {
-                    waypoint.image = ""; waypoint.drawImage = false
-                } else {
-                    waypoint.image = iconValue; waypoint.drawImage = true
-                }
-                waypoint.backcolor = markerColor.toArgb()
-                waypoint.textcolor = textColor.toArgb()
-                if (routeIdx == 0 && waypoint.set == null) {
-                    application.addWaypoint(waypoint)
-                }
-                if (routeIdx == 0) {
-                    waypoint.set = application.waypointSets.getOrNull(setIndex)
-                }
-                onSave(waypoint)
-            }) { Text("Done") }
         }
     }
 }

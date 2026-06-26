@@ -26,22 +26,36 @@ fun RoutePropertiesScreen(
     var colorValue by remember { mutableStateOf(Color(route.lineColor)) }
 
     Column(modifier = Modifier.fillMaxSize()) {
+        // Top row: Name field + Cancel/Done buttons
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp, 16.dp, 16.dp, 0.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("Name") },
+                modifier = Modifier.weight(1f),
+                singleLine = true
+            )
+            Spacer(Modifier.width(8.dp))
+            OutlinedButton(onClick = onCancel) { Text("Cancel") }
+            Spacer(Modifier.width(8.dp))
+            Button(onClick = {
+                route.name = name
+                route.show = show
+                route.lineColor = colorValue.toArgb()
+                onSave(route)
+            }) { Text("Done") }
+        }
+
         Column(
             modifier = Modifier
                 .weight(1f)
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            Text("Name", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(4.dp))
-            OutlinedTextField(
-                value = name,
-                onValueChange = { name = it },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
-
-            Spacer(Modifier.height(12.dp))
+            Spacer(Modifier.height(8.dp))
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = show, onCheckedChange = { show = it })
@@ -57,22 +71,6 @@ fun RoutePropertiesScreen(
                 defaultColor = Color(defaultColor),
                 onColorChanged = { colorValue = it }
             )
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.End
-        ) {
-            OutlinedButton(onClick = onCancel) { Text("Cancel") }
-            Spacer(Modifier.width(8.dp))
-            Button(onClick = {
-                route.name = name
-                route.show = show
-                route.lineColor = colorValue.toArgb()
-                onSave(route)
-            }) { Text("Done") }
         }
     }
 }
