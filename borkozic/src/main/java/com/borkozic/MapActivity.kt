@@ -1776,6 +1776,10 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         // Center map on first waypoint or center point
         if (area!!.isCircleArea() && area.AreaCenter != null) {
             application!!.setMapCenter(area.AreaCenter!!.latitude, area.AreaCenter!!.longitude, true, false)
+        } else if (area!!.isCircleArea() && area.AreaCenter == null) {
+            // Circle with no center: use current GPS location
+            val loc = application!!.getLocation()
+            application!!.setMapCenter(loc[0], loc[1], true, false)
         } else {
             val firstWp = application!!.editingArea!!.waypoints.firstOrNull()
             if (firstWp != null) {
@@ -1877,6 +1881,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 if (application!!.editingArea!!.isCircleArea()) {
                     // Circle area edit: tapping a waypoint sets it as circle center
                     application!!.editingArea!!.AreaCenter = Waypoint(application!!.editingArea!!.name, "", waypoint.latitude, waypoint.longitude, 0.0)
+                    // Recalculate area size
+                    application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
                     // Refresh overlay
                     val iter = application!!.areaOverlays.iterator()
                     while (iter.hasNext()) {
@@ -2665,6 +2671,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     // Circle area: set center = current map center (replace previous if any)
                     val aloc: DoubleArray = application!!.getMapCenter()
                     application!!.editingArea!!.AreaCenter = Waypoint(application!!.editingArea!!.name, "", aloc[0], aloc[1], 0.0)
+                    // Recalculate area size
+                    application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
                     // Refresh overlay
                     val iter = application!!.areaOverlays.iterator()
                     while (iter.hasNext()) {
@@ -2773,6 +2781,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     val formatter = SimpleDateFormat("yyyy-MM-dd_HH-mm")
                     application!!.editingArea!!.name = formatter.format(Date())
                 }
+                // Calculate area size before finishing edit
+                application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
                 application!!.editingArea!!.editing = false
                 val iter: MutableIterator<AreaOverlay> = application!!.areaOverlays.iterator()
                 while (iter.hasNext()) {

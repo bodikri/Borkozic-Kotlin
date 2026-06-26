@@ -180,20 +180,26 @@ fun AreaPropertiesScreen(
 
                 // Update circle area center + radius
                 if (isCircle) {
-                    val lat = latText.toDoubleOrNull() ?: 0.0
-                    val lon = lonText.toDoubleOrNull() ?: 0.0
+                    val lat = latText.toDoubleOrNull()
+                    val lon = lonText.toDoubleOrNull()
                     val radVal = radiusText.toDoubleOrNull() ?: 0.0
                     val radiusMeters = if (radiusUnit == "km") radVal * 1000.0 else radVal
                     area.AreaRadius = radiusMeters
 
-                    // Update or create center waypoint
-                    if (area.AreaCenter == null) {
-                        area.AreaCenter = com.borkozic.data.Waypoint(name, "", lat, lon, 0.0)
-                    } else {
-                        area.AreaCenter!!.latitude = lat
-                        area.AreaCenter!!.longitude = lon
+                    // Only set center if user entered coordinates
+                    // If lat/lon are empty, leave AreaCenter as null (map will use GPS location)
+                    if (lat != null && lon != null) {
+                        if (area.AreaCenter == null) {
+                            area.AreaCenter = com.borkozic.data.Waypoint(name, "", lat, lon, 0.0)
+                        } else {
+                            area.AreaCenter!!.latitude = lat
+                            area.AreaCenter!!.longitude = lon
+                        }
                     }
                 }
+
+                // Calculate area size
+                area.areaSize = area.calculateArea()
 
                 onSave(area)
             }) { Text("Done") }

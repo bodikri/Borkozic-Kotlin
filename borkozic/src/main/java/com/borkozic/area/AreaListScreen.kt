@@ -430,8 +430,9 @@ fun AreaListScreen(
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
                                 val distance = StringFormatter.distanceH(area.distance)
+                                val areaSizeText = area.getFormattedAreaSize()
                                 Text(
-                                    text = distance,
+                                    text = "$distance · $areaSizeText",
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
