@@ -177,8 +177,13 @@ class AreaOverlay(mapActivity: Activity) : MapOverlay(mapActivity) {
             val cy = (centerXY[1] - cxy[1]).toFloat()
 
             // Convert radius from meters to pixels
-            // Use the map's current scale: pixels per meter
             val radiusPixels = metersToPixels(area.AreaRadius, center.latitude, mapView).toFloat()
+
+            android.util.Log.d("AreaOverlay", "Circle draw: center=(${center.latitude}, ${center.longitude}) cx=$cx cy=$cy radius=${area.AreaRadius}m radiusPx=$radiusPixels zoom=${application.zoom}")
+
+            if (radiusPixels < 2f) {
+                android.util.Log.w("AreaOverlay", "Circle radius too small in pixels ($radiusPixels), skipping draw")
+            }
 
             // Draw filled circle
             c.drawCircle(cx, cy, radiusPixels, areaFillPaint)
@@ -225,16 +230,18 @@ class AreaOverlay(mapActivity: Activity) : MapOverlay(mapActivity) {
         c.drawPath(path2, areaFillPaint)
     }
 
-    /** Convert meters to pixels at given latitude and current map zoom */
+    /** Convert meters to pixels at given latitude and current map zoom.
+     * Uses 1 degree of latitude ≈ 111000 meters as basis.
+     * We compute pixels-per-degree from two points 1 degree apart (large enough
+     * to avoid Int rounding to zero), then derive pixels-per-meter from that.
+     */
     private fun metersToPixels(meters: Double, lat: Double, mapView: MapView): Double {
-        // Get the current scale from mapView (pixels per degree)
-        // Use Geo.distance to compute: 1 degree of latitude ≈ 111000 meters
-        // The map view's scale gives us pixels per unit
         val application = context.application as Borkozic
-        // Get XY for two points 1 meter apart in latitude
+        // Get XY for two points 1 degree apart in latitude (avoids Int rounding loss)
         val xy1 = application.getXYbyLatLon(lat, 0.0)
-        val xy2 = application.getXYbyLatLon(lat + (1.0 / 111000.0), 0.0)
-        val pixelsPerMeter = Math.abs(xy2[1] - xy1[1]).toDouble()
+        val xy2 = application.getXYbyLatLon(lat + 1.0, 0.0)
+        val pixelsPerDegree = Math.abs(xy2[1] - xy1[1]).toDouble()
+        val pixelsPerMeter = pixelsPerDegree / 111000.0
         return meters * pixelsPerMeter
     }
 

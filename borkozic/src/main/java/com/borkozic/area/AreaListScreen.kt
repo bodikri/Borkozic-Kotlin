@@ -48,7 +48,7 @@ sealed class AreaAction {
 }
 
 // ============================================================
-// Canvas icon — reproduces the original Android Canvas drawing
+// Canvas icon — draws different shapes for circle vs polygon areas
 // ============================================================
 
 @Composable
@@ -60,29 +60,76 @@ fun AreaListIcon(
         val iconSize = size.minDimension
         val scale = iconSize / 38f
 
-        val linePath = Path().apply {
-            moveTo(12f * scale, 5f * scale)
-            lineTo(24f * scale, 12f * scale)
-            lineTo(15f * scale, 24f * scale)
-            lineTo(28f * scale, 35f * scale)
-        }
-
         val lineColor = Color(area.lineColor.toLong())
         val borderColor = Color(area.fillColor.toLong())
 
-        drawPath(path = linePath, color = lineColor, style = Stroke(width = 3f * scale))
-        drawPath(path = linePath, color = borderColor, style = Stroke(width = 1.5f * scale))
+        if (area.isCircleArea()) {
+            // Circle area icon: circle with center dot
+            val cx = iconSize / 2f
+            val cy = iconSize / 2f
+            val radius = iconSize * 0.38f
 
-        val pointRadius = 2.5f * scale
-        val points = listOf(
-            12f * scale to 5f * scale,
-            24f * scale to 12f * scale,
-            15f * scale to 24f * scale,
-            28f * scale to 35f * scale
-        )
-        points.forEach { (x, y) ->
-            drawCircle(color = lineColor, radius = pointRadius, center = androidx.compose.ui.geometry.Offset(x, y))
-            drawCircle(color = borderColor, radius = pointRadius + 0.8f * scale, center = androidx.compose.ui.geometry.Offset(x, y), style = Stroke(width = 1f * scale))
+            // Filled circle (translucent)
+            drawCircle(
+                color = borderColor.copy(alpha = 0.3f),
+                radius = radius,
+                center = androidx.compose.ui.geometry.Offset(cx, cy)
+            )
+            // Circle border
+            drawCircle(
+                color = lineColor,
+                radius = radius,
+                center = androidx.compose.ui.geometry.Offset(cx, cy),
+                style = Stroke(width = 2.5f * scale)
+            )
+            // Center dot
+            val pointRadius = 2.5f * scale
+            drawCircle(
+                color = lineColor,
+                radius = pointRadius,
+                center = androidx.compose.ui.geometry.Offset(cx, cy)
+            )
+            drawCircle(
+                color = borderColor,
+                radius = pointRadius + 0.8f * scale,
+                center = androidx.compose.ui.geometry.Offset(cx, cy),
+                style = Stroke(width = 1f * scale)
+            )
+        } else {
+            // Polygon area icon: trapezoid/diamond shape
+            val linePath = Path().apply {
+                // Diamond/trapezoid shape
+                moveTo(iconSize * 0.5f, iconSize * 0.12f)  // top
+                lineTo(iconSize * 0.82f, iconSize * 0.38f)  // right
+                lineTo(iconSize * 0.65f, iconSize * 0.82f)  // bottom-right
+                lineTo(iconSize * 0.22f, iconSize * 0.68f)  // bottom-left
+                close()
+            }
+
+            // Fill (translucent)
+            drawPath(
+                path = linePath,
+                color = borderColor.copy(alpha = 0.3f)
+            )
+            // Border
+            drawPath(
+                path = linePath,
+                color = lineColor,
+                style = Stroke(width = 2.5f * scale)
+            )
+
+            // Vertex dots
+            val pointRadius = 2.5f * scale
+            val points = listOf(
+                iconSize * 0.5f to iconSize * 0.12f,
+                iconSize * 0.82f to iconSize * 0.38f,
+                iconSize * 0.65f to iconSize * 0.82f,
+                iconSize * 0.22f to iconSize * 0.68f
+            )
+            points.forEach { (x, y) ->
+                drawCircle(color = lineColor, radius = pointRadius, center = androidx.compose.ui.geometry.Offset(x, y))
+                drawCircle(color = borderColor, radius = pointRadius + 0.8f * scale, center = androidx.compose.ui.geometry.Offset(x, y), style = Stroke(width = 1f * scale))
+            }
         }
     }
 }
