@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.borkozic.data.Area
 import com.borkozic.ui.ColorSwatchButton
 
@@ -35,6 +36,8 @@ fun AreaPropertiesScreen(
     // Circle area: center coordinates + radius
     var latText by remember { mutableStateOf(if (area.AreaCenter != null) String.format("%.6f", area.AreaCenter!!.latitude) else "") }
     var lonText by remember { mutableStateOf(if (area.AreaCenter != null) String.format("%.6f", area.AreaCenter!!.longitude) else "") }
+    // Center point name (if center was selected from existing waypoint)
+    var centerName by remember { mutableStateOf(if (area.AreaCenter != null) area.AreaCenter!!.name else "") }
     var radiusText by remember { mutableStateOf(
         if (isCircle && area.AreaRadius > 0) {
             if (area.AreaRadius >= 1000.0) String.format("%.2f", area.AreaRadius / 1000.0) else area.AreaRadius.toLong().toString()
@@ -69,9 +72,20 @@ fun AreaPropertiesScreen(
             if (isCircle) {
                 Spacer(Modifier.height(16.dp))
 
-                // Center coordinates
+                // Center section
                 Text("Center", fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(4.dp))
+                
+                // If center was selected from an existing waypoint, show its name
+                if (centerName.isNotEmpty() && centerName != "New Circle" && centerName != name) {
+                    Text(
+                        text = "Point: $centerName",
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Spacer(Modifier.height(4.dp))
+                }
 
                 Text("Latitude", fontWeight = FontWeight.Medium)
                 Spacer(Modifier.height(2.dp))
@@ -133,23 +147,30 @@ fun AreaPropertiesScreen(
 
             Spacer(Modifier.height(12.dp))
 
-            Text("Line Color", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(4.dp))
-            ColorSwatchButton(
-                currentColor = lineColor,
-                defaultColor = Color(defaultLineColor),
-                onColorChanged = { lineColor = it }
-            )
-
-            Spacer(Modifier.height(12.dp))
-
-            Text("Fill Color", fontWeight = FontWeight.Bold)
-            Spacer(Modifier.height(4.dp))
-            ColorSwatchButton(
-                currentColor = fillColor,
-                defaultColor = Color(defaultFillColor),
-                onColorChanged = { fillColor = it }
-            )
+            // Line Color + Fill Color on one row
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Line Color", fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(4.dp))
+                    ColorSwatchButton(
+                        currentColor = lineColor,
+                        defaultColor = Color(defaultLineColor),
+                        onColorChanged = { lineColor = it }
+                    )
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Fill Color", fontWeight = FontWeight.Bold)
+                    Spacer(Modifier.height(4.dp))
+                    ColorSwatchButton(
+                        currentColor = fillColor,
+                        defaultColor = Color(defaultFillColor),
+                        onColorChanged = { fillColor = it }
+                    )
+                }
+            }
 
             Spacer(Modifier.height(12.dp))
 

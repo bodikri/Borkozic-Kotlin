@@ -1880,7 +1880,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             } else if (application!!.editingArea != null) {
                 if (application!!.editingArea!!.isCircleArea()) {
                     // Circle area edit: tapping a waypoint sets it as circle center
-                    application!!.editingArea!!.AreaCenter = Waypoint(application!!.editingArea!!.name, "", waypoint.latitude, waypoint.longitude, 0.0)
+                    application!!.editingArea!!.AreaCenter = Waypoint(waypoint.name, "", waypoint.latitude, waypoint.longitude, 0.0)
                     // Recalculate area size
                     application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
                     // Refresh overlay
@@ -2670,7 +2670,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 if (application!!.editingArea!!.isCircleArea()) {
                     // Circle area: set center = current map center (replace previous if any)
                     val aloc: DoubleArray = application!!.getMapCenter()
-                    application!!.editingArea!!.AreaCenter = Waypoint(application!!.editingArea!!.name, "", aloc[0], aloc[1], 0.0)
+                    val ctrName = "Ctr0"
+                    val wpt = Waypoint(ctrName, "", aloc[0], aloc[1], 0.0)
+                    application!!.editingArea!!.AreaCenter = wpt
+                    // Add center to global waypoint list (like route waypoints)
+                    if (application!!.getWaypointIndex(wpt) < 0) {
+                        application!!.addWaypoint(wpt)
+                    }
                     // Recalculate area size
                     application!!.editingArea!!.areaSize = application!!.editingArea!!.calculateArea()
                     // Refresh overlay

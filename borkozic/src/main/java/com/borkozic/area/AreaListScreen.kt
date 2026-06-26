@@ -429,10 +429,9 @@ fun AreaListScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Spacer(modifier = Modifier.height(2.dp))
-                                val distance = StringFormatter.distanceH(area.distance)
                                 val areaSizeText = area.getFormattedAreaSize()
                                 Text(
-                                    text = "$distance · $areaSizeText",
+                                    text = areaSizeText,
                                     fontSize = 13.sp,
                                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                                 )
