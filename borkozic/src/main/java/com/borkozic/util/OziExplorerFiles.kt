@@ -644,6 +644,13 @@ class OziExplorerFiles {
                     area.AreaTransperency = fields[5].toInt()
                 } catch (e: NumberFormatException) {
                 }
+                // Field 6: AreaRadius (extension for circle areas)
+                if (fields.size > 6) {
+                    try {
+                        area.AreaRadius = fields[6].toDouble()
+                    } catch (e: NumberFormatException) {
+                    }
+                }
                 /*
                  W,Tsapelka,  58.0460242,  28.9465437,1500,0
                 Field 0 : W
@@ -710,21 +717,24 @@ class OziExplorerFiles {
             // Field 3 : area line color (RGB)
             // Field 4 : area fill color (RGB)
             // Field 5 : area fill color transparency (int)
-            writer.write("H3,"+area.name.replace(',', 209.toChar())+"," + area.show.toString() + ","+rgb2bgr(area.lineColor).toString()+ ","+rgb2bgr(area.fillColor).toString()+","+area.AreaTransperency.toString()+"\n")
+            // Field 6 : area radius in meters (extension for circle areas, 0 = polygon)
+            writer.write("H3,"+area.name.replace(',', 209.toChar())+"," + area.show.toString() + ","+rgb2bgr(area.lineColor).toString()+ ","+rgb2bgr(area.fillColor).toString()+","+area.AreaTransperency.toString()+","+area.AreaRadius.toString()+"\n")
 
-            /*AreaCenter
-            writer.write("C,")
-            writer.write(area.AreaCenter.name.replace(',', 209.toChar())+",")
-            writer.write(coordFormat.format(area.AreaCenter.latitude)+","+coordFormat.format(area.AreaCenter.longitude)+","+area.AreaCenter.altitude.toString()+",")//Fields[5] - for Altitude is added from me
-            if (area.AreaCenter.silent)
-                writer.write("1")
-            else
-                writer.write("0")
-            // Format extension (probably not compatible with OziExplorer)
-            if (area.AreaCenter.proximity > 0)
-                writer.write("," + area.AreaCenter.proximity.toString())
-            writer.write("\n")
-            */
+            // Write AreaCenter (C record) — always written if present
+            if (area.AreaCenter != null) {
+                val center = area.AreaCenter!!
+                writer.write("C,")
+                writer.write(center.name.replace(',', 209.toChar())+",")
+                writer.write(coordFormat.format(center.latitude)+","+coordFormat.format(center.longitude)+","+center.altitude.toInt().toString()+",")//Fields[5] - for Altitude is added from me
+                if (center.silent)
+                    writer.write("1")
+                else
+                    writer.write("0")
+                // Format extension (probably not compatible with OziExplorer)
+                if (center.proximity > 0)
+                    writer.write("," + center.proximity.toString())
+                writer.write("\n")
+            }
             val waypoints = area.waypoints
             //Field 0 : W
             //Field 1 : Name

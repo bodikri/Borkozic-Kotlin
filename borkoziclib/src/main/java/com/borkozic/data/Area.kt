@@ -16,6 +16,8 @@ class Area {
     @JvmField var bottomArea: Double = 10.0
     @JvmField var topArea: Double = 1000.0
     @JvmField var AreaCenter: Waypoint? = null
+    /** Radius in meters for circle areas. 0.0 = polygon area (waypoints-based) */
+    @JvmField var AreaRadius: Double = 0.0
     @JvmField var distance: Double = 0.0
     @JvmField var filepath: String? = null
     @JvmField var removed: Boolean = false
@@ -26,16 +28,20 @@ class Area {
 
     val waypoints: MutableList<Waypoint> = ArrayList(0)
 
-    constructor() : this("", "", null, false, 10.0, 1000.0)
+    constructor() : this("", "", null, false, 10.0, 1000.0, 0.0)
 
-    constructor(name: String, description: String, AreaCenter: Waypoint?, show: Boolean, bottomArea: Double, topArea: Double) {
+    constructor(name: String, description: String, AreaCenter: Waypoint?, show: Boolean, bottomArea: Double, topArea: Double, areaRadius: Double = 0.0) {
         this.name = name
         this.description = description
         this.AreaCenter = AreaCenter
         this.show = show
         this.bottomArea = bottomArea
         this.topArea = topArea
+        this.AreaRadius = areaRadius
     }
+
+    /** Returns true if this is a circle area (has radius, no polygon waypoints needed) */
+    fun isCircleArea(): Boolean = AreaRadius > 0.0
 
     fun addWaypoint(waypoint: Waypoint) {
         if (lastWaypoint != null) {

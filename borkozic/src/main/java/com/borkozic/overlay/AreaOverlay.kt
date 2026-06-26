@@ -137,6 +137,19 @@ class AreaOverlay(mapActivity: Activity) : MapOverlay(mapActivity) {
     override fun onSingleTap(e: MotionEvent, mapTap: Rect, mapView: MapView): Boolean {
         if (!area.show) return false
         val application = context.application as Borkozic
+
+        // Circle area: tap on center point
+        if (area.isCircleArea() && area.AreaCenter != null) {
+            val center = area.AreaCenter!!
+            val pointXY = application.getXYbyLatLon(center.latitude, center.longitude)
+            if (mapTap.contains(pointXY[0], pointXY[1]) && context is MapActivity) {
+                val mapActivity = context as MapActivity
+                return mapActivity.areaWaypointTapped(application.getAreaIndex(area), 0, e.x.toInt(), e.y.toInt())
+            }
+            return false
+        }
+
+        // Polygon area: tap on any waypoint
         val waypoints = area.waypoints
         synchronized(waypoints) {
             for (i in waypoints.size - 1 downTo 0) {
@@ -155,6 +168,26 @@ class AreaOverlay(mapActivity: Activity) : MapOverlay(mapActivity) {
         if (!area.show) return
         val application = context.application as Borkozic
         val cxy = mapView.mapCenterXY
+
+        if (area.isCircleArea() && area.AreaCenter != null) {
+            // Circle area: draw true circle centered on AreaCenter
+            val center = area.AreaCenter!!
+            val centerXY = application.getXYbyLatLon(center.latitude, center.longitude)
+            val cx = (centerXY[0] - cxy[0]).toFloat()
+            val cy = (centerXY[1] - cxy[1]).toFloat()
+
+            // Convert radius from meters to pixels
+            // Use the map's current scale: pixels per meter
+            val radiusPixels = metersToPixels(area.AreaRadius, center.latitude, mapView).toFloat()
+
+            // Draw filled circle
+            c.drawCircle(cx, cy, radiusPixels, areaFillPaint)
+            // Draw circle border
+            c.drawCircle(cx, cy, radiusPixels, areaLinePaint)
+            return
+        }
+
+        // Polygon area: draw path through waypoints
         val path = Path()
         val path2 = Path()
         var i = 0
@@ -192,11 +225,61 @@ class AreaOverlay(mapActivity: Activity) : MapOverlay(mapActivity) {
         c.drawPath(path2, areaFillPaint)
     }
 
+    /** Convert meters to pixels at given latitude and current map zoom */
+    private fun metersToPixels(meters: Double, lat: Double, mapView: MapView): Double {
+        // Get the current scale from mapView (pixels per degree)
+        // Use Geo.distance to compute: 1 degree of latitude ≈ 111000 meters
+        // The map view's scale gives us pixels per unit
+        val application = context.application as Borkozic
+        // Get XY for two points 1 meter apart in latitude
+        val xy1 = application.getXYbyLatLon(lat, 0.0)
+        val xy2 = application.getXYbyLatLon(lat + (1.0 / 111000.0), 0.0)
+        val pixelsPerMeter = Math.abs(xy2[1] - xy1[1]).toDouble()
+        return meters * pixelsPerMeter
+    }
+
     override fun onDrawFinished(c: Canvas, mapView: MapView, centerX: Int, centerY: Int) {
         if (!area.show) return
         val application = context.application as Borkozic
         val cxy = mapView.mapCenterXY
         val half = Math.round(pointWidth / 2f)
+
+        if (area.isCircleArea() && area.AreaCenter != null) {
+            // Circle area: draw center point + radius label
+            val center = area.AreaCenter!!
+            var bitmap = bitmaps[center]
+            if (bitmap == null) {
+                var width = pointWidth
+                var height = pointWidth + 2
+                if (showNames) {
+                    val bounds = Rect()
+                    textPaint.getTextBounds(center.name, 0, center.name.length, bounds)
+                    bounds.inset(-2, -4)
+                    width += 5 + bounds.width()
+                    if (height < bounds.height()) height = bounds.height()
+                }
+                bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+                val bc = Canvas(bitmap)
+                bc.translate(half.toFloat(), half.toFloat())
+                if (showNames) bc.translate(0f, 2f)
+                bc.drawCircle(0f, 0f, half.toFloat(), fillPaint)
+                bc.drawCircle(0f, 0f, half.toFloat(), borderPaint)
+                if (showNames) {
+                    val rect = Rect()
+                    textPaint.getTextBounds(center.name, 0, center.name.length, rect)
+                    rect.inset(-2, -4)
+                    rect.offset(+half + 5, +half - 3)
+                    bc.drawRect(rect, textFillPaint)
+                    bc.drawText(center.name, +half + 6f, +half.toFloat(), textPaint)
+                }
+                bitmaps[center] = bitmap
+            }
+            val xy = application.getXYbyLatLon(center.latitude, center.longitude)
+            c.drawBitmap(bitmap, (xy[0] - half - cxy[0]).toFloat(), (xy[1] - half - cxy[1]).toFloat(), null)
+            return
+        }
+
+        // Polygon area: draw waypoint markers
         val waypoints = area.waypoints
         synchronized(waypoints) {
             for (wpt in waypoints) {

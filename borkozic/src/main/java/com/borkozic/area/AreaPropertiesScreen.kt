@@ -28,6 +28,8 @@ fun AreaPropertiesScreen(
     var lineColor by remember { mutableStateOf(Color(area.lineColor)) }
     var fillColor by remember { mutableStateOf(Color(area.fillColor)) }
     var transparency by remember { mutableStateOf(area.AreaTransperency.toFloat()) }
+    var radius by remember { mutableStateOf(area.AreaRadius) }
+    val isCircle = area.isCircleArea()
 
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -50,6 +52,36 @@ fun AreaPropertiesScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(checked = show, onCheckedChange = { show = it })
                 Text("Show", fontWeight = FontWeight.Bold)
+            }
+
+            // Radius field for circle areas
+            if (isCircle) {
+                Spacer(Modifier.height(12.dp))
+                Text("Radius (meters)", fontWeight = FontWeight.Bold)
+                Spacer(Modifier.height(4.dp))
+                OutlinedTextField(
+                    value = if (radius == 0.0) "" else radius.toLong().toString(),
+                    onValueChange = { value ->
+                        val filtered = value.filter { it.isDigit() || it == '.' }
+                        radius = filtered.toDoubleOrNull() ?: 0.0
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    placeholder = { Text("e.g. 500") }
+                )
+                // Quick presets
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    listOf("100", "500", "1000", "5000").forEach { preset ->
+                        FilterChip(
+                            selected = radius.toLong().toString() == preset,
+                            onClick = { radius = preset.toDouble() },
+                            label = { Text(preset + "m") }
+                        )
+                    }
+                }
             }
 
             Spacer(Modifier.height(12.dp))
@@ -98,6 +130,7 @@ fun AreaPropertiesScreen(
                 area.lineColor = lineColor.toArgb()
                 area.fillColor = fillColor.toArgb()
                 area.AreaTransperency = transparency.toInt()
+                if (isCircle) area.AreaRadius = radius
                 onSave(area)
             }) { Text("Done") }
         }
