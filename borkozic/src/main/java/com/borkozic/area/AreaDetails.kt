@@ -160,15 +160,13 @@ class AreaDetails : ComponentActivity() {
                             svc.setRouteWaypoint(adjusted)
                             refreshKey++
                         } else {
-                            // Start new navigation via area, jumping to this waypoint
-                            // (аналогично на RouteDetails, но за area)
-                            // NOTE: Area навигацията използва същия NavigationService
+                            // Start new navigation via area
                             val areaIdx = application.getAreaIndex(area)
                             val intent = Intent(this, NavigationService::class.java)
-                            intent.action = NavigationService.NAVIGATE_ROUTE
-                            intent.putExtra(NavigationService.EXTRA_ROUTE_INDEX, areaIdx)
+                            intent.action = NavigationService.NAVIGATE_AREA
+                            intent.putExtra(NavigationService.EXTRA_AREA_INDEX, areaIdx)
                             intent.putExtra(NavigationService.EXTRA_ROUTE_DIRECTION, BaseNavigationService.DIRECTION_FORWARD)
-                            intent.putExtra(NavigationService.EXTRA_ROUTE_START, idx)
+                            intent.putExtra(NavigationService.EXTRA_AREA_START, idx)
                             startService(intent)
                             setResult(RESULT_OK)
                             finish()

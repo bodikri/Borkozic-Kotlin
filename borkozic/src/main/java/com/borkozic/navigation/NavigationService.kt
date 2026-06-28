@@ -48,6 +48,7 @@ import com.borkozic.BaseApplication
 import com.borkozic.HSIActivity
 import com.borkozic.MapActivity
 import com.borkozic.R
+import com.borkozic.area.AreaDetails
 import com.borkozic.data.Area
 import com.borkozic.data.MapObject
 import com.borkozic.data.Route
@@ -326,6 +327,27 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                     PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
                 )
                 navigateTo(application!!.getRoute(index)!!, dir)
+                if (start != -1) setRouteWaypoint(start)
+            }
+            if (action == NAVIGATE_AREA) {
+                val index = extras!!.getInt(EXTRA_AREA_INDEX)
+                val dir = extras.getInt(EXTRA_ROUTE_DIRECTION, DIRECTION_FORWARD)
+                val start = extras.getInt(EXTRA_AREA_START, -1)
+                activity.putExtra("launch", AreaDetails::class.java)
+                activity.putExtra("INDEX", index)
+                activity.putExtra("nav", true)
+                contentIntent = PendingIntent.getActivity(
+                    this,
+                    NOTIFICATION_ID,
+                    activity,
+                    PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+                // Създаваме временен Route от Area waypoints за навигация
+                val area = application!!.getArea(index)!!
+                val tempRoute = Route(area.name, "", true)
+                tempRoute.waypoints.addAll(area.waypoints)
+                tempRoute.distance = area.distance
+                navigateTo(tempRoute, dir)
                 if (start != -1) setRouteWaypoint(start)
             }
             /*
