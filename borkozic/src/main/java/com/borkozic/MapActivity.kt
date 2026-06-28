@@ -1486,7 +1486,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         } catch (e: Exception) {
         }
 
-
         // Force movinginfo visible during navigation (regardless of movement)
         val movingInfo = findViewById<View>(R.id.movinginfo)
         if (isNavigating) {
@@ -1495,9 +1494,17 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
         }
 
-        // we hide elevation in Navigating mode and show Above/Below glide path
+        // При навигация по маршрут: показвай името на маршрута само в ландшафт режим.
+        // В портрет — скривай routename (GONE), за да освободим място за routeextra.
         if (isNavigatingViaRoute) {
-            routeName!!.setText("› " + navigationService!!.navRoute!!.name)
+            val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+            if (isLandscape) {
+                routeName!!.visibility = View.VISIBLE
+                routeName!!.setText("› " + navigationService!!.navRoute!!.name)
+            } else {
+                routeName!!.visibility = View.GONE
+                routeName!!.setText("")
+            }
         }
         if (isNavigating) {
             waypointName!!.setText("» " + navigationService!!.navWaypoint!!.name)

@@ -82,7 +82,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
 
         // ── Smooth Bearing Animation constants ──────────────────────────────
         /** Minimum bearing change (degrees) to trigger smooth animation instead of instant snap. */
-        private const val SMOOTH_BEAR_THRESHOLD = 5f
+        private const val SMOOTH_BEAR_THRESHOLD = 3f
         /** Maximum angular velocity during smooth bearing animation (°/frame). */
         private const val SMOOTH_BEAR_MAX_SPEED = 15f
         /** Angular acceleration increment (°/frame²). */
@@ -1001,7 +1001,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
      * Работи само когато compassMode == COMPASS.
      *
      * При първо активиране (превключване от GPS към COMPASS режим):
-     *   - Ако разликата с текущия bearing е > SMOOTH_BEAR_THRESHOLD (5°),
+     *   - Ако разликата с текущия bearing е > SMOOTH_BEAR_THRESHOLD (3°),
      *     се стартира плавна анимация (Layer 2: smoothBearActive).
      *   - Иначе bearing се обновява директно.
      *
