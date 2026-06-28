@@ -2353,6 +2353,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
             R.id.menuStopNavigation -> {
                 navigationService!!.stopNavigation()
+                updateNavigationStatus()
                 return true
             }
 
