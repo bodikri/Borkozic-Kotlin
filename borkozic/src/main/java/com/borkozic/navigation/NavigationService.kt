@@ -824,10 +824,13 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
             val nm = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
             nm.notify(NOTIFICATION_ID, notification!!)
         }
+        // Изпращаме explicit broadcast (с setPackage) за съвместимост с RECEIVER_NOT_EXPORTED
+        // на Android 13+ (Tiramisu). Implicit broadcast-и без package не се доставят до NOT_EXPORTED receivers.
         sendBroadcast(Intent(BROADCAST_NAVIGATION_STATE).putExtra("state", state).setPackage(packageName))
     }
 
     private fun updateNavigationStatus() {
+        // Explicit broadcast за съвместимост с RECEIVER_NOT_EXPORTED (Android 13+)
         sendBroadcast(Intent(BROADCAST_NAVIGATION_STATUS).setPackage(packageName))
     }
 

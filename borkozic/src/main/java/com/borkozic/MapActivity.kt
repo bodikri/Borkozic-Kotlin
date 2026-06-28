@@ -2352,6 +2352,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             }
 
             R.id.menuStopNavigation -> {
+                // Спиране на навигацията — stopNavigation() изпраща STATE_STOPED broadcast,
+                // но service може да се убие преди MapActivity да го получи.
+                // Затова викаме updateNavigationStatus() директно за веднага изчистване на UI-то.
                 navigationService!!.stopNavigation()
                 updateNavigationStatus()
                 return true
@@ -2483,14 +2486,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     }
 
                     qaNavigateToWaypoint -> {
-                        // Navigate directly to this waypoint (no route needed)
+                        // Навигация директно към точката (без маршрут)
+                        // При първа навигация service може да не е bind-нат още —
+                        // тогава стартираме чрез NAVIGATE_MAPOBJECT intent, който се
+                        // обработва в onStartCommand(). Ако service е вече bind-нат,
+                        // викаме navigateTo() директно.
                         val svc = navigationService
                         if (svc != null) {
-                            // Service already bound — navigate directly
+                            // Service вече bind-нат — навигираме директно
                             svc.navigateTo(wpt)
                         } else {
-                            // Service not bound yet — start via intent, service will bind on connect
-                            Log.d(TAG, "qNavigateToWaypoint: service not bound, starting NavigationService")
+                            // Service не е bind-нат — стартираме чрез intent,
+                            // service ще се bind-не и ще обработи навигацията в onStartCommand
                             val intent = Intent(this@MapActivity, NavigationService::class.java)
                             intent.action = NavigationService.NAVIGATE_MAPOBJECT
                             intent.putExtra(NavigationService.EXTRA_NAME, wpt.name)
