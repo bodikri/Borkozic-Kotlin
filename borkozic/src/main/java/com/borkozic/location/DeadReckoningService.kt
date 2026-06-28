@@ -62,6 +62,7 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
     private var gyroscope: Sensor? = null
     private var magnetometer: Sensor? = null
     private var barometer: Sensor? = null
+    private var rotationVector: Sensor? = null
 
     // DR калкулатор — изпълнява sensor fusion алгоритъма
     private val calculator = DeadReckoningCalculator()
@@ -132,6 +133,10 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
         gyroscope = sensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         magnetometer = sensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         barometer = sensorManager?.getDefaultSensor(Sensor.TYPE_PRESSURE)
+        // Rotation vector: TYPE_GAME_ROTATION_VECTOR (без magnetometer) е за предпочитане за превозни средства
+        // (не се влияе от магнитни смущения от мотор/рамка). Fallback към TYPE_ROTATION_VECTOR.
+        rotationVector = sensorManager?.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
+            ?: sensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
 
         // Създаване на notification channel (задължително за foreground service на Android 8+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -179,6 +184,9 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
             sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
         }
         barometer?.let {
+            sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+        rotationVector?.let {
             sensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
         }
     }
@@ -294,8 +302,9 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
         // Запис в файл за анализ след полет
         DRLogger.log(this, "DR_START: lat=$lat, lon=$lon, alt=$alt, speed=$speed, bearing=$bearing, acc=$accuracy")
         DRLogger.log(this, "DR_START: activation delay=${ACTIVATION_DELAY_MS}ms, max duration=${MAX_DURATION_MS}ms")
-        DRLogger.log(this, "DR_START: sensors — accel=${accelerometer != null} (${accelerometer?.name}), gyro=${gyroscope != null} (${gyroscope?.name}), mag=${magnetometer != null} (${magnetometer?.name}), baro=${barometer != null} (${barometer?.name})")
+        DRLogger.log(this, "DR_START: sensors — accel=${accelerometer != null} (${accelerometer?.name}), gyro=${gyroscope != null} (${gyroscope?.name}), mag=${magnetometer != null} (${magnetometer?.name}), baro=${barometer != null} (${barometer?.name}), rotVec=${rotationVector != null} (${rotationVector?.name})")
         DRLogger.log(this, "DR_START: accel type=${if (accelerometer?.type == Sensor.TYPE_LINEAR_ACCELERATION) "LINEAR_ACCELERATION" else "ACCELEROMETER"}")
+        DRLogger.log(this, "DR_START: rotVec type=${if (rotationVector?.type == Sensor.TYPE_GAME_ROTATION_VECTOR) "GAME_ROTATION_VECTOR" else "ROTATION_VECTOR"}")
     }
 
     /**
@@ -368,6 +377,8 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
             Sensor.TYPE_GYROSCOPE -> "GYRO"
             Sensor.TYPE_MAGNETIC_FIELD -> "MAG"
             Sensor.TYPE_PRESSURE -> "BARO"
+            Sensor.TYPE_GAME_ROTATION_VECTOR -> "GAME_ROT"
+            Sensor.TYPE_ROTATION_VECTOR -> "ROT_VEC"
             else -> "UNKNOWN($sensorType)"
         }
 
@@ -389,6 +400,9 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
             }
             Sensor.TYPE_PRESSURE -> {
                 calculator.processBarometer(event.values[0], event.timestamp)
+            }
+            Sensor.TYPE_GAME_ROTATION_VECTOR, Sensor.TYPE_ROTATION_VECTOR -> {
+                calculator.processRotationVector(event.values, event.timestamp)
             }
             else -> return
         }
@@ -505,6 +519,13 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
      */
     fun isManualMode(): Boolean {
         return manualMode
+    }
+
+    /**
+     * Връща калкулатора за директен достъп (за GPS correction в manual mode).
+     */
+    fun getCalculator(): DeadReckoningCalculator? {
+        return if (drState == DR_ACTIVE) calculator else null
     }
 
     override fun onDestroy() {

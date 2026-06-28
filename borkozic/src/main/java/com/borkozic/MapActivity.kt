@@ -136,7 +136,9 @@ import kotlin.Int
 import kotlin.Long
 import kotlin.String
 import kotlin.math.abs
+import kotlin.math.cos
 import kotlin.math.floor
+import kotlin.math.sin
 import kotlin.plus
 import kotlin.synchronized
 import kotlin.times
@@ -1213,11 +1215,30 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             if (!ready) return
 
             // Ако ръчният DR е активен, логвай реалните GPS данни за сравнение
+            // И подавай GPS данни към калкулатора за Kalman correction step
             if (deadReckoningService != null && deadReckoningService!!.isDeadReckoningActive() && deadReckoningService!!.isManualMode()) {
                 com.borkozic.location.DRLogger.log(this@MapActivity, String.format(java.util.Locale.US,
                     "GPS_REAL: lat=%.7f, lon=%.7f, alt=%.1f, speed=%.2f, bearing=%.1f, acc=%.1f",
                     location.latitude, location.longitude, location.altitude, location.speed, location.bearing, location.accuracy
                 ))
+                // Kalman correction: подаваме GPS позиция и скорост към калкулатора
+                // Това позволява на филтъра да коригира дрифта от IMU интеграцията
+                try {
+                    val calc = deadReckoningService!!.getCalculator()
+                    if (calc != null && calc.isActive()) {
+                        val rel = calc.gpsToRelative(location.latitude, location.longitude)
+                        val br = Math.toRadians(location.bearing.toDouble())
+                        val gpsVelN = location.speed * cos(br).toDouble()
+                        val gpsVelE = location.speed * sin(br).toDouble()
+                        calc.correctWithGPS(rel[0], rel[1], gpsVelN, gpsVelE, location.accuracy)
+                        com.borkozic.location.DRLogger.log(this@MapActivity, String.format(java.util.Locale.US,
+                            "DR_CORRECTION: gpsPosN=%.2f, gpsPosE=%.2f, gpsVelN=%.2f, gpsVelE=%.2f, acc=%.1f",
+                            rel[0], rel[1], gpsVelN, gpsVelE, location.accuracy
+                        ))
+                    }
+                } catch (e: Exception) {
+                    com.borkozic.location.DRLogger.log(this@MapActivity, "DR_CORRECTION_ERROR: ${e.message}")
+                }
             }
             val lastLocationMillis = location.getTime()
 
