@@ -3044,8 +3044,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     }
 
     override fun onWaypointRemove(waypoint: Waypoint) {
+        // Debug: проверка дали точката е в зона
+        val inArea = application!!.isWaypointInArea(waypoint)
+        val wpIndex = application!!.getWaypointIndex(waypoint)
+        Log.d(TAG, "onWaypointRemove: waypoint=${waypoint.name} inArea=$inArea wpIndex=$wpIndex areas=${application!!.areas.size}")
+        for ((i, area) in application!!.areas.withIndex()) {
+            Log.d(TAG, "  area[$i]=${area.name} waypoints=${area.waypoints.size}")
+            for ((j, aw) in area.waypoints.withIndex()) {
+                Log.d(TAG, "    area[$i].wpt[$j]=${aw.name} sameRef=${aw === waypoint}")
+            }
+        }
         // Забрана на изтриване ако точката е част от не-изтрита зона
-        if (application!!.isWaypointInArea(waypoint)) {
+        if (inArea) {
             Toast.makeText(this, R.string.waypoint_in_area, Toast.LENGTH_LONG).show()
             return
         }
