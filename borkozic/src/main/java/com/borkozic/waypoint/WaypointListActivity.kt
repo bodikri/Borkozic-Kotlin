@@ -3,6 +3,7 @@ package com.borkozic.waypoint
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -178,11 +179,27 @@ class WaypointListActivity : ComponentActivity(), OnWaypointActionListener {
     }
 
     override fun onWaypointRemove(waypoint: Waypoint) {
+        // Debug: проверка дали точката е в зона
+        val inArea = application.isWaypointInArea(waypoint)
+        val wpIndex = application.getWaypointIndex(waypoint)
+        Log.d("WaypointListActivity", "onWaypointRemove: waypoint=${waypoint.name} inArea=$inArea wpIndex=$wpIndex areas=${application.areas.size}")
+        for ((i, area) in application.areas.withIndex()) {
+            Log.d("WaypointListActivity", "  area[$i]=${area.name} waypoints=${area.waypoints.size}")
+            for ((j, aw) in area.waypoints.withIndex()) {
+                Log.d("WaypointListActivity", "    area[$i].wpt[$j]=${aw.name} sameRef=${aw === waypoint}")
+            }
+        }
         // Забрана на изтриване ако точката е част от не-изтрита зона
-        if (application.isWaypointInArea(waypoint)) {
+        if (inArea) {
             Toast.makeText(this, R.string.waypoint_in_area, Toast.LENGTH_LONG).show()
             return
         }
+        val wptset = waypoint.set
         application.removeWaypoint(waypoint)
+        if (wptset != null) {
+            application.saveWaypoints(wptset)
+        } else {
+            application.saveWaypoints()
+        }
     }
 }
