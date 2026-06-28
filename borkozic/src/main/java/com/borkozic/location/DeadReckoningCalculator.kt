@@ -165,6 +165,14 @@ class DeadReckoningCalculator {
     private var accelBiasE: Double = 0.0
     private var biasLearnRate: Double = 0.005 // бавно учене
 
+    // --- GPS correction tracking ---
+    private var lastGpsCorrectionTime: Long = 0  // System.currentTimeMillis()
+    private var gpsCorrectionCount: Int = 0
+
+    // --- Последни Earth-frame ускорения (след трансформация + bias) за debug ---
+    private var earthAccelN: Double = 0.0
+    private var earthAccelE: Double = 0.0
+
     // --- Стартова GPS точка ---
     private var refLatitude: Double = 0.0
     private var refLongitude: Double = 0.0
@@ -355,6 +363,10 @@ class DeadReckoningCalculator {
         val ACCEL_DEADZONE = 0.05
         val effectiveAccelN = if (kotlin.math.abs(correctedAccelN) < ACCEL_DEADZONE) 0.0 else correctedAccelN
         val effectiveAccelE = if (kotlin.math.abs(correctedAccelE) < ACCEL_DEADZONE) 0.0 else correctedAccelE
+
+        // Запазване за debug лог
+        earthAccelN = effectiveAccelN
+        earthAccelE = effectiveAccelE
 
         // Kalman prediction step
         predict(effectiveAccelN, effectiveAccelE, dt)
@@ -548,6 +560,10 @@ class DeadReckoningCalculator {
             val gpsBearing = Math.toDegrees(atan2(velEast, velNorth))
             heading = (gpsBearing + 360.0) % 360.0
         }
+
+        // Track GPS correction stats
+        lastGpsCorrectionTime = System.currentTimeMillis()
+        gpsCorrectionCount++
     }
 
     // ========================================================================
@@ -817,20 +833,27 @@ class DeadReckoningCalculator {
 
     /**
      * Връща текст с всички вътрешни стойности за debug.
+     * Включва: heading, velocity, position, Earth-frame acceleration,
+     * covariance diagonal (несигурност), bias, GPS correction stats.
      */
     fun getDebugState(): String {
+        val gpsAge = if (lastGpsCorrectionTime > 0) (System.currentTimeMillis() - lastGpsCorrectionTime) / 1000 else -1
         return String.format(
             java.util.Locale.US,
             "DR_DEBUG: heading=%.2f, compassHeading=%.2f, " +
             "velN=%.3f, velE=%.3f, posN=%.3f, posE=%.3f, " +
-            "altitude=%.1f, " +
+            "earthAccelN=%.4f, earthAccelE=%.4f, " +
+            "P_diag=[%.2f,%.2f,%.2f,%.2f], " +
             "biasN=%.4f, biasE=%.4f, " +
-            "rotMat=${rotMatrixInitialized[0]}, " +
+            "rotMat=${rotMatrixInitialized[0]}, gpsAge=${gpsAge}s, gpsCorr=#${gpsCorrectionCount}, " +
+            "altitude=%.1f, " +
             "accel=[%.4f,%.4f,%.4f], gyro=[%.4f,%.4f,%.4f], mag=[%.4f,%.4f,%.4f], rot=[%.4f,%.4f,%.4f]",
             heading, compassHeading,
             velNorth, velEast, posNorth, posEast,
-            altitude,
+            earthAccelN, earthAccelE,
+            P[0], P[5], P[10], P[15],
             accelBiasN, accelBiasE,
+            altitude,
             rawAccelX, rawAccelY, rawAccelZ,
             rawGyroX, rawGyroY, rawGyroZ,
             rawMagX, rawMagY, rawMagZ,
@@ -902,6 +925,10 @@ class DeadReckoningCalculator {
         rotMatrixInitialized[0] = false
         accelBiasN = 0.0
         accelBiasE = 0.0
+        lastGpsCorrectionTime = 0
+        gpsCorrectionCount = 0
+        earthAccelN = 0.0
+        earthAccelE = 0.0
         estimatedAccuracy = initialAccuracy
     }
 
