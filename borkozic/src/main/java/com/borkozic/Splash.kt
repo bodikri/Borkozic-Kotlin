@@ -456,6 +456,18 @@ class Splash : Activity(), OnClickListener {
                 }
             }
 
+            // read AreaWaypoints — waypoints created during area editing
+            val awWptFile = File(application.dataPath, "AreaWaypoints.wpt")
+            if (awWptFile.exists() && awWptFile.canRead()) {
+                try {
+                    val areaWpts = OziExplorerFiles.loadWaypointsFromFile(awWptFile, application.charset ?: "").toMutableList()
+                    val awSet = WaypointSet(awWptFile)
+                    application.addWaypoints(areaWpts, awSet)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
             // read track tail
             if (settings.getBoolean(getString(R.string.pref_showcurrenttrack), true)) {
                 val currentTrackOverlay = CurrentTrackOverlay(this@Splash)
