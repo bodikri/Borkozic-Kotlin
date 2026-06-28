@@ -825,12 +825,12 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
             nm.notify(NOTIFICATION_ID, notification!!)
         }
         sendBroadcast(Intent(BROADCAST_NAVIGATION_STATE).putExtra("state", state))
-        //Log.d(TAG, "State dispatched");
+        Log.d(TAG, "State dispatched: $state")
     }
 
     private fun updateNavigationStatus() {
         sendBroadcast(Intent(BROADCAST_NAVIGATION_STATUS))
-        //Log.d(TAG, "Status dispatched");
+        Log.d(TAG, "Status dispatched")
     }
 
     private val locationConnection: ServiceConnection = object : ServiceConnection {
