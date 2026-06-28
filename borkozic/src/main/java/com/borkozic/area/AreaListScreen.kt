@@ -150,7 +150,10 @@ fun AreaListScreen(
 ) {
     val context = LocalContext.current
     val application = BaseApplication.getApplication<Borkozic>()!! as Borkozic
-    val areas = application.areas
+
+    // Local copy of areas list — recomposes when contentVersion changes (e.g. after delete)
+    var localVersion by remember { mutableStateOf(0) }
+    val areas = remember(contentVersion, localVersion) { application.areas.toList() }
 
     // Single selection
     var selectedItemIndex by remember { mutableStateOf<Int?>(null) }
@@ -213,6 +216,7 @@ fun AreaListScreen(
             multiSelectedIndices = mutableSetOf()
             showMultiActionBar = false
             selectedItemIndex = null; showActionBar = false
+            localVersion++
         },
         ActionItem(101, "Hide", Icons.Default.VisibilityOff) {
             multiSelectedIndices.forEach { idx ->

@@ -143,6 +143,7 @@ class AreaListActivity : ComponentActivity(), OnAreaActionListener {
             }
             is AreaAction.Remove -> {
                 application.removeArea(area)
+                contentVersion++
             }
         }
     }
