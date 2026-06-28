@@ -251,8 +251,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private var lastGeoid = true
 
     private var animationSet = false
-    private var isFullscreen = false
-    private var isDRActiveState: Boolean = false
+    private var isFullscreen by mutableStateOf(false)
+    private var isDRActiveState by mutableStateOf(false)
     private var keepScreenOn = false
     private var activeActions: MutableList<String?>? = null
 
