@@ -146,7 +146,7 @@ class AreaDetails : ComponentActivity() {
                         startActivityForResult(
                             Intent(this, WaypointProperties::class.java)
                                 .putExtra("INDEX", idx)
-                                .putExtra("ROUTE", areaIdx + 1),
+                                .putExtra("AREA", areaIdx + 1),
                             RESULT_SAVE_WAYPOINT
                         )
                     },

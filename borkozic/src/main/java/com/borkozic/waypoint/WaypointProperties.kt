@@ -24,6 +24,7 @@ class WaypointProperties : ComponentActivity() {
 
     private var waypoint: Waypoint? = null
     private var route: Int = 0
+    private var area: Int = 0
     private var defMarkerColor: Int = 0
     private var defTextColor: Int = 0
 
@@ -32,10 +33,14 @@ class WaypointProperties : ComponentActivity() {
 
         val index = intent.extras!!.getInt("INDEX")
         route = intent.extras!!.getInt("ROUTE")
+        area = intent.extras!!.getInt("AREA")
 
         val application = BaseApplication.getApplication<Borkozic>()!!
 
-        waypoint = if (route > 0) {
+        waypoint = if (area > 0) {
+            // Точката е част от зона (area) — не от route
+            application.getArea(area - 1)!!.waypoints[index]
+        } else if (route > 0) {
             application.getRoute(route - 1)!!.waypoints[index]
         } else if (index >= 0) {
             application.getWaypoint(index)
