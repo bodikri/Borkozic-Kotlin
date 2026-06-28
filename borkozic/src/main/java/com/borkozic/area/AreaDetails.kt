@@ -180,6 +180,18 @@ class AreaDetails : ComponentActivity() {
                         setResult(RESULT_OK)
                         finish()
                     },
+                    onRemoveWaypoint = { idx ->
+                        // Премахва точка от зоната (но не от глобалния waypoint списък)
+                        area.removeWaypoint(area.getWaypoint(idx))
+                        // Пресмята дистанцията на зоната
+                        if (area.length() > 1) {
+                            area.distance = area.distanceBetween(0, area.length() - 1)
+                        } else {
+                            area.distance = 0.0
+                        }
+                        refreshKey++
+                        setResult(RESULT_OK)
+                    },
                     onAreaProperties = {
                         // TODO: AreaProperties activity (ако съществува)
                     },

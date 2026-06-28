@@ -51,6 +51,7 @@ fun AreaDetailsScreen(
     onEditWaypoint: (index: Int) -> Unit,
     onNavigateToWaypoint: (index: Int) -> Unit,
     onShowWaypoint: (index: Int) -> Unit,
+    onRemoveWaypoint: (index: Int) -> Unit = {},
     onBack: () -> Unit,
     onAreaProperties: () -> Unit = {},
     navCurrentIndex: Int = -1,
@@ -172,52 +173,75 @@ fun AreaDetailsScreen(
         }
     }
 
-    // Quick action меню — View/Edit или View/Navigate
-    showActionMenu?.let { selectedIndex ->
-        val wpt = waypointList.getOrNull(selectedIndex)
+    // Quick action меню — идентично с RouteDetails
+    showActionMenu?.let { idx ->
+        val wpt = area.getWaypoint(idx)
         if (wpt != null) {
             AlertDialog(
                 onDismissRequest = { showActionMenu = null },
                 title = { Text(wpt.name) },
                 text = {
-                    val coords = StringFormatter.coordinates(
-                        application.coordinateFormat,
-                        " ",
-                        wpt.latitude,
-                        wpt.longitude
-                    )
-                    Text("Lat/Lon: $coords")
-                    if (wpt.altitude > 0) {
-                        Text("Altitude: ${StringFormatter.distanceH(wpt.altitude.toDouble())}")
+                    Column {
+                        // Дистанция и курс от предходната точка
+                        if (idx > 0) {
+                            val dist = area.distanceBetween(idx - 1, idx)
+                            Text(
+                                "Distance: ${StringFormatter.distanceH(dist)}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            val crs = area.course(idx - 1, idx)
+                            Text(
+                                "Course: ${StringFormatter.bearingH(crs)}",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                        // Надморска височина
+                        val alt = StringFormatter.distanceC(wpt.altitude, 10000)
+                        Text(
+                            "Altitude: ${alt[0]}${alt[1]}",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 },
                 confirmButton = {
                     TextButton(onClick = {
-                        onShowWaypoint(selectedIndex)
+                        onShowWaypoint(idx)
                         showActionMenu = null
                     }) {
                         Text("View")
                     }
                 },
                 dismissButton = {
-                    Row {
-                        if (mode == AreaDetailsMode.NAVIGATION) {
+                    when (mode) {
+                        AreaDetailsMode.NAVIGATION -> {
                             TextButton(onClick = {
-                                onNavigateToWaypoint(selectedIndex)
+                                onNavigateToWaypoint(idx)
                                 showActionMenu = null
                             }) {
                                 Text("Navigate")
                             }
-                        } else {
-                            TextButton(onClick = {
-                                onEditWaypoint(selectedIndex)
-                                showActionMenu = null
-                            }) {
-                                Text("Edit")
-                            }
                         }
-                        TextButton(onClick = { showActionMenu = null }) {
-                            Text("Cancel")
+                        AreaDetailsMode.MANAGE -> {
+                            Row {
+                                IconButton(onClick = {
+                                    onNavigateToWaypoint(idx)
+                                    showActionMenu = null
+                                }) {
+                                    Icon(Icons.Default.NearMe, contentDescription = "Navigate", tint = MaterialTheme.colorScheme.primary)
+                                }
+                                TextButton(onClick = {
+                                    onEditWaypoint(idx)
+                                    showActionMenu = null
+                                }) {
+                                    Text("Edit")
+                                }
+                                TextButton(onClick = {
+                                    onRemoveWaypoint(idx)
+                                    showActionMenu = null
+                                }) {
+                                    Text("Remove")
+                                }
+                            }
                         }
                     }
                 }
