@@ -1328,9 +1328,14 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     } catch (_: Exception) {
                     }
                     scale = 1f
+                    // ВЗЕМИ позицията на ОСТАНАЛИЯ пръст (не на вдигнатия).
+                    // event.x/y при ACTION_POINTER_UP е позицията на вдигнатия пръст —
+                    // ако я ползваме за drag baseline, картата ще скочи при следващо движение.
+                    val upIdx = event.actionIndex
+                    val remainingIdx = if (upIdx == 0) 1 else 0
                     gestureMode = GESTURE_DRAG
-                    gestureDragX = event.x.toInt()
-                    gestureDragY = event.y.toInt()
+                    gestureDragX = event.getX(remainingIdx).toInt()
+                    gestureDragY = event.getY(remainingIdx).toInt()
                 }
             }
 
