@@ -1460,6 +1460,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     {
         val isNavigating = navigationService != null && navigationService!!.isNavigating()
         val isNavigatingViaRoute = isNavigating && navigationService!!.isNavigatingViaRoute()
+        Log.d(TAG, "updateNavigationStatus: isNavigating=$isNavigating, isNavigatingViaRoute=$isNavigatingViaRoute")
 
         // waypoint panel
         findViewById<View?>(R.id.waypointinfo).setVisibility(if (isNavigating) View.VISIBLE else View.GONE)
