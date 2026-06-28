@@ -151,6 +151,7 @@ class AreaDetails : ComponentActivity() {
                         )
                     },
                     onNavigateToWaypoint = { idx ->
+                        Log.d(TAG, "onNavigateToWaypoint: idx=$idx navigationService=${if (navigationService != null) "not null" else "null"}")
                         val svc = navigationService
                         if (svc != null) {
                             // Already navigating — just switch target
@@ -162,12 +163,14 @@ class AreaDetails : ComponentActivity() {
                         } else {
                             // Start new navigation via area
                             val areaIdx = application.getAreaIndex(area)
+                            Log.d(TAG, "onNavigateToWaypoint: starting NAVIGATE_AREA areaIdx=$areaIdx startIdx=$idx")
                             val intent = Intent(this, NavigationService::class.java)
                             intent.action = NavigationService.NAVIGATE_AREA
                             intent.putExtra(NavigationService.EXTRA_AREA_INDEX, areaIdx)
                             intent.putExtra(NavigationService.EXTRA_ROUTE_DIRECTION, BaseNavigationService.DIRECTION_FORWARD)
                             intent.putExtra(NavigationService.EXTRA_AREA_START, idx)
                             startService(intent)
+                            Log.d(TAG, "onNavigateToWaypoint: startService called, finishing AreaDetails")
                             setResult(RESULT_OK)
                             finish()
                         }

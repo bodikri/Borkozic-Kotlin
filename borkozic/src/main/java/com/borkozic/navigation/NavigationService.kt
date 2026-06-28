@@ -333,6 +333,7 @@ open class NavigationService : BaseNavigationService(), OnSharedPreferenceChange
                 val index = extras!!.getInt(EXTRA_AREA_INDEX)
                 val dir = extras.getInt(EXTRA_ROUTE_DIRECTION, DIRECTION_FORWARD)
                 val start = extras.getInt(EXTRA_AREA_START, -1)
+                Log.i(TAG, "NAVIGATE_AREA: index=$index dir=$dir start=$start")
                 activity.putExtra("launch", AreaDetails::class.java)
                 activity.putExtra("INDEX", index)
                 activity.putExtra("nav", true)
