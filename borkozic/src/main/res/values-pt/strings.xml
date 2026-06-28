@@ -71,6 +71,7 @@
   <string name="backQuit">Press Back again to quit</string>
   <string name="quitQuestion">Você quer sair?</string>
   <string name="removeWaypointQuestion">Remover waypoint?</string>
+  <string name="waypoint_in_area">Não é possível remover: o waypoint faz parte de uma área</string>
   <string name="quit">Sair</string>
   <string name="yes">Sim</string>
   <string name="no">Não</string>

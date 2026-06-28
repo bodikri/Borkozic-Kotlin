@@ -71,6 +71,7 @@
   <string name="backQuit">Stiskni znovu pro ukončení</string>
   <string name="quitQuestion">Opravdu ukončit?</string>
   <string name="removeWaypointQuestion">Odstranit bod?</string>
+  <string name="waypoint_in_area">Nelze smazat: bod je součástí oblasti</string>
   <string name="quit">Konec</string>
   <string name="yes">Ano</string>
   <string name="no">Ne</string>

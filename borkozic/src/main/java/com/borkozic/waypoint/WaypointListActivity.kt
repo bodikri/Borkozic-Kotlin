@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -177,6 +178,11 @@ class WaypointListActivity : ComponentActivity(), OnWaypointActionListener {
     }
 
     override fun onWaypointRemove(waypoint: Waypoint) {
+        // Забрана на изтриване ако точката е част от не-изтрита зона
+        if (application.isWaypointInArea(waypoint)) {
+            Toast.makeText(this, R.string.waypoint_in_area, Toast.LENGTH_LONG).show()
+            return
+        }
         application.removeWaypoint(waypoint)
     }
 }

@@ -71,6 +71,7 @@
   <string name="backQuit">Kilépéshez nyomd meg újra a vissza gombot</string>
   <string name="quitQuestion">Ki akarsz lépni?</string>
   <string name="removeWaypointQuestion">Törlöd az útpontot?</string>
+  <string name="waypoint_in_area">Nem törölhető: az útpont egy területhez tartozik</string>
   <string name="quit">Kilépés</string>
   <string name="yes">Igen</string>
   <string name="no">Nem</string>

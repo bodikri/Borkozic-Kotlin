@@ -1,138 +1,88 @@
-package com.borkozic.area
-import com.borkozic.navigation.BaseNavigationService
-import com.borkozic.BaseApplication
+/*
+ * Borkozic - android navigation client that uses OziExplorer maps (ozf2, ozfx3).
+ * Copyright (C) 2010-2012  Andrey Novikov <http://andreynovikov.info/>
+ * Copyright (C) 2024-2026  Borkozic contributors
+ *
+ * This file is part of Borkozic application.
+ *
+ * Borkozic is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
 
-import android.app.ListActivity
-import android.content.*
-import android.os.Build
-import androidx.core.content.ContextCompat
+ * Borkozic is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+
+ * You should have received a copy of the GNU General Public License
+ * along with Borkozic.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+package com.borkozic.area
+
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.os.Build
 import android.os.IBinder
-import androidx.preference.PreferenceManager
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.AdapterView
-import android.widget.BaseAdapter
-import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.core.content.ContextCompat
+import androidx.preference.PreferenceManager
+import com.borkozic.BaseApplication
 import com.borkozic.Borkozic
 import com.borkozic.R
-import com.borkozic.data.Area
-import com.borkozic.data.Waypoint
+import com.borkozic.navigation.BaseNavigationService
 import com.borkozic.navigation.NavigationService
-import com.borkozic.route.RouteDetails
-import com.borkozic.util.StringFormatter
+import com.borkozic.ui.BorkozicTheme
 import com.borkozic.waypoint.WaypointProperties
-import net.londatiga.android.ActionItem
-import net.londatiga.android.QuickAction
 
-class AreaDetails : ListActivity(), AdapterView.OnItemClickListener {
+/**
+ * Compose-based Area details screen.
+ *
+ * Показва списък с всички точки на зоната с:
+ * - Тап → View/Edit (или View/Navigate в навигационен режим)
+ * - Навигационна интеграция (progress indicator, ETE, ETA)
+ * - БЕЗ drag-and-drop / пренареждане (за разлика от RouteDetails)
+ */
+class AreaDetails : ComponentActivity() {
 
     private var navigationService: NavigationService? = null
-    private lateinit var adapter: WaypointListAdapter
-    private lateinit var quickAction: QuickAction
-
-    private lateinit var area: Area
     private var navigation = false
-    private var selectedPosition = 0
+    private var navCurrentIndex = -1
+    private var navDistance = 0.0
+    private var navETE = 0
+    private var navBearing = 0.0
+    private var navDirection = BaseNavigationService.DIRECTION_FORWARD
+    private var refreshKey by mutableStateOf(0)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        val index = intent.extras!!.getInt("index")
-        navigation = intent.extras!!.getBoolean("nav")
-
-        val application = application as Borkozic
-        area = application.getArea(index)!!
-
-        title = if (navigation) "› " + area.name else area.name
-
-        adapter = WaypointListAdapter(this, area)
-        listAdapter = adapter
-
-        val resources = resources
-        quickAction = QuickAction(this)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            quickAction.addActionItem(ActionItem(qaWaypointVisible, getString(R.string.menu_view), resources.getDrawable(R.drawable.ic_action_show, null)))
-        } else {
-            quickAction.addActionItem(ActionItem(qaWaypointVisible, getString(R.string.menu_view), resources.getDrawable(R.drawable.ic_action_show)))
-        }
-
-        if (navigation) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                quickAction.addActionItem(ActionItem(qaWaypointNavigate, getString(R.string.menu_navigate), resources.getDrawable(R.drawable.ic_action_show, null)))
-            } else {
-                quickAction.addActionItem(ActionItem(qaWaypointNavigate, getString(R.string.menu_navigate), resources.getDrawable(R.drawable.ic_action_show)))
-            }
-        } else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                quickAction.addActionItem(ActionItem(qaWaypointProperties, getString(R.string.menu_edit), resources.getDrawable(R.drawable.ic_action_show, null)))
-            } else {
-                quickAction.addActionItem(ActionItem(qaWaypointProperties, getString(R.string.menu_edit), resources.getDrawable(R.drawable.ic_action_show)))
-            }
-        }
-        quickAction.setOnActionItemClickListener(actionItemClickListener)
-        listView.onItemClickListener = this
-    }
-
-    override fun onResume() {
-        super.onResume()
-        if (navigation) {
-            bindService(Intent(this, NavigationService::class.java), navigationConnection, BIND_AUTO_CREATE)
-            val lock = PreferenceManager.getDefaultSharedPreferences(this).getBoolean(getString(R.string.pref_wakelock), resources.getBoolean(R.bool.def_wakelock))
-            if (lock) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        if (navigation) {
-            unregisterReceiver(navigationReceiver)
-            unbindService(navigationConnection)
-        }
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        if (!navigation) {
-            val inflater = menuInflater
-            inflater.inflate(R.menu.routedetails_menu, menu)
-        }
-        return true
-    }
-
-    override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-        selectedPosition = position
-        quickAction.show(view)
-    }
-
-    private val actionItemClickListener = object : QuickAction.OnActionItemClickListener {
-        override fun onItemClick(source: QuickAction, pos: Int, actionId: Int) {
-            val application: Borkozic = BaseApplication.getApplication<Borkozic>()!!
-            when (actionId) {
-                qaWaypointVisible -> {
-                    area.show = true
-                    application.ensureVisible(area.getWaypoint(selectedPosition))
-                    setResult(RESULT_OK)
-                    finish()
-                }
-                qaWaypointNavigate -> {
-                    val ns = navigationService
-                    if (ns != null) {
-                        if (ns.navDirection == BaseNavigationService.DIRECTION_REVERSE)
-                            selectedPosition = area.length() - selectedPosition - 1
-                        ns.setRouteWaypoint(selectedPosition)
-                        adapter.notifyDataSetChanged()
+    private val navigationUpdateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (intent.action == BaseNavigationService.BROADCAST_NAVIGATION_STATE) {
+                val state = intent.extras?.getInt("state") ?: return
+                if (state == BaseNavigationService.STATE_REACHED) {
+                    runOnUiThread {
+                        Toast.makeText(applicationContext, R.string.arrived, Toast.LENGTH_LONG).show()
+                        navigation = false
                     }
                 }
-                qaWaypointProperties -> {
-                    val index = application.getAreaIndex(area)
-                    startActivity(Intent(this@AreaDetails, WaypointProperties::class.java).putExtra("INDEX", selectedPosition).putExtra("ROUTE", index + 1))
+            }
+            // Навигационен статус — обновяваме данните и recompose
+            if (intent.action == BaseNavigationService.BROADCAST_NAVIGATION_STATUS) {
+                runOnUiThread {
+                    refreshKey++
                 }
             }
         }
@@ -141,152 +91,140 @@ class AreaDetails : ListActivity(), AdapterView.OnItemClickListener {
     private val navigationConnection = object : ServiceConnection {
         override fun onServiceConnected(className: ComponentName, service: IBinder) {
             navigationService = (service as NavigationService.LocalBinder).getService()
-            ContextCompat.registerReceiver(this@AreaDetails, navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS), ContextCompat.RECEIVER_NOT_EXPORTED)
-            ContextCompat.registerReceiver(this@AreaDetails, navigationReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE), ContextCompat.RECEIVER_NOT_EXPORTED)
-            Log.d(TAG, "Navigation broadcast receiver registered")
-            runOnUiThread { adapter.notifyDataSetChanged() }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE), RECEIVER_NOT_EXPORTED)
+                registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS), RECEIVER_NOT_EXPORTED)
+            } else {
+                registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATE))
+                registerReceiver(navigationUpdateReceiver, IntentFilter(BaseNavigationService.BROADCAST_NAVIGATION_STATUS))
+            }
+            Log.d(TAG, "Navigation service connected")
+            refreshKey++
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
-            unregisterReceiver(navigationReceiver)
+            try { unregisterReceiver(navigationUpdateReceiver) } catch (_: Exception) {}
             navigationService = null
+            Log.d(TAG, "Navigation service disconnected")
         }
     }
 
-    private val navigationReceiver = object : BroadcastReceiver() {
-        override fun onReceive(context: Context, intent: Intent) {
-            Log.e(TAG, "Broadcast: " + intent.action)
-            if (intent.action == BaseNavigationService.BROADCAST_NAVIGATION_STATE) {
-                val state = intent.extras!!.getInt("state")
-                runOnUiThread {
-                    if (state == BaseNavigationService.STATE_REACHED) {
-                        Toast.makeText(applicationContext, R.string.arrived, Toast.LENGTH_LONG).show()
-                        navigation = false
-                    }
-                    adapter.notifyDataSetChanged()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
+        val index = intent.extras!!.getInt("INDEX")
+        navigation = intent.extras!!.getBoolean("nav", false)
+
+        val application = BaseApplication.getApplication<Borkozic>()!!
+        val area = application.getArea(index)!!
+
+        if (navigation) {
+            bindService(Intent(this, NavigationService::class.java), navigationConnection, BIND_AUTO_CREATE)
+            val lock = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(getString(R.string.pref_wakelock), resources.getBoolean(R.bool.def_wakelock))
+            if (lock) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
+
+        setContent {
+            BorkozicTheme(listType = "area") {
+                val navSvc = navigationService
+                if (navSvc != null) {
+                    navCurrentIndex = navSvc.navRouteCurrentIndex()
+                    navDistance = navSvc.navDistance
+                    navETE = navSvc.navETE
+                    navBearing = navSvc.navBearing
+                    navDirection = navSvc.navDirection
                 }
-            }
-            if (intent.action == BaseNavigationService.BROADCAST_NAVIGATION_STATUS) {
-                runOnUiThread { adapter.notifyDataSetChanged() }
+
+                AreaDetailsScreen(
+                    area = area,
+                    mode = if (navigation) AreaDetailsMode.NAVIGATION else AreaDetailsMode.MANAGE,
+                    refreshKey = refreshKey,
+                    onEditWaypoint = { idx ->
+                        val areaIdx = application.getAreaIndex(area)
+                        startActivityForResult(
+                            Intent(this, WaypointProperties::class.java)
+                                .putExtra("INDEX", idx)
+                                .putExtra("ROUTE", areaIdx + 1),
+                            RESULT_SAVE_WAYPOINT
+                        )
+                    },
+                    onNavigateToWaypoint = { idx ->
+                        val svc = navigationService
+                        if (svc != null) {
+                            // Already navigating — just switch target
+                            var adjusted = idx
+                            if (svc.navDirection == BaseNavigationService.DIRECTION_REVERSE)
+                                adjusted = area.length() - idx - 1
+                            svc.setRouteWaypoint(adjusted)
+                            refreshKey++
+                        } else {
+                            // Start new navigation via area, jumping to this waypoint
+                            // (аналогично на RouteDetails, но за area)
+                            // NOTE: Area навигацията използва същия NavigationService
+                            val areaIdx = application.getAreaIndex(area)
+                            val intent = Intent(this, NavigationService::class.java)
+                            intent.action = NavigationService.NAVIGATE_ROUTE
+                            intent.putExtra(NavigationService.EXTRA_ROUTE_INDEX, areaIdx)
+                            intent.putExtra(NavigationService.EXTRA_ROUTE_DIRECTION, BaseNavigationService.DIRECTION_FORWARD)
+                            intent.putExtra(NavigationService.EXTRA_ROUTE_START, idx)
+                            startService(intent)
+                            setResult(RESULT_OK)
+                            finish()
+                        }
+                    },
+                    onShowWaypoint = { idx ->
+                        area.show = true
+                        application.ensureVisible(area.getWaypoint(idx))
+                        setResult(RESULT_OK)
+                        finish()
+                    },
+                    onAreaProperties = {
+                        // TODO: AreaProperties activity (ако съществува)
+                    },
+                    onBack = { finish() },
+                    navCurrentIndex = navCurrentIndex,
+                    navDistance = navDistance,
+                    navETE = navETE,
+                    navBearing = navBearing,
+                    navRouteDistanceLeft = { idx -> navigationService?.navRouteDistanceLeftTo(idx) ?: 0.0 },
+                    navRouteWaypointETE = { idx -> navigationService?.navRouteWaypointETE(idx) ?: 0 },
+                    navDirectionForward = navDirection == BaseNavigationService.DIRECTION_FORWARD
+                )
             }
         }
     }
 
-    inner class WaypointListAdapter(context: Context, private val mArea: Area) : BaseAdapter() {
-        private val mInflater: LayoutInflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
-        private val mItemLayout: Int = R.layout.area_waypoint_list
-
-        override fun getItem(position: Int): Waypoint {
-            var pos = position
-            if (navigation && navigationService != null && navigationService!!.navDirection == BaseNavigationService.DIRECTION_REVERSE)
-                pos = mArea.length() - pos - 1
-            return mArea.getWaypoint(pos)
+    override fun onPause() {
+        super.onPause()
+        if (navigation) {
+            try { unregisterReceiver(navigationUpdateReceiver) } catch (_: Exception) {}
+            try { unbindService(navigationConnection) } catch (_: Exception) {}
         }
+    }
 
-        override fun getItemId(position: Int): Long {
-            var pos = position
-            if (navigation && navigationService != null && navigationService!!.navDirection == BaseNavigationService.DIRECTION_REVERSE)
-                pos = mArea.length() - pos - 1
-            return pos.toLong()
-        }
-
-        override fun getCount(): Int {
-            return mArea.length()
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val v: View = if (convertView == null) {
-                mInflater.inflate(mItemLayout, parent, false)
-            } else {
-                convertView
-            }
-            val wpt = getItem(position)
-            var text: TextView? = v.findViewById<TextView>(R.id.name)
-            val txtAlt: TextView? = v.findViewById<TextView>(R.id.altitude)
-            if (text != null) {
-                text.text = wpt.name
-                val dist = StringFormatter.distanceC(wpt.altitude, 10000)
-                val alt = dist[0] + dist[1]
-                txtAlt?.text = alt
-            }
-            if (navigation && navigationService != null && navigationService!!.isNavigatingViaRoute()) {
-                val progress = position - navigationService!!.navRouteCurrentIndex()
-                if (position > 0) {
-                    val dist = if (progress == 0) navigationService!!.navDistance else mArea.distanceBetween(position - 1, position)
-                    val distance = StringFormatter.distanceH(dist)
-                    text = v.findViewById<TextView>(R.id.distance)
-                    text?.text = distance
-                    val crs: Double = if (progress == 0)
-                        navigationService!!.navBearing
-                    else if (navigationService!!.navDirection == BaseNavigationService.DIRECTION_FORWARD)
-                        mArea.course(position - 1, position)
-                    else
-                        mArea.course(position, position - 1)
-                    val course = StringFormatter.bearingH(crs)
-                    text = v.findViewById<TextView>(R.id.course)
-                    text?.text = course
-                }
-                if (progress >= 0) {
-                    var dist = navigationService!!.navDistance
-                    if (progress > 0)
-                        dist += navigationService!!.navRouteDistanceLeftTo(position)
-                    val distance = StringFormatter.distanceH(dist)
-                    text = v.findViewById<TextView>(R.id.total_distance)
-                    text?.text = distance
-                    val ete = if (progress == 0) navigationService!!.navETE else navigationService!!.navRouteWaypointETE(position)
-                    var s = StringFormatter.timeR(ete)
-                    text = v.findViewById<TextView>(R.id.ete)
-                    text?.text = s
-                    var eta = navigationService!!.navETE
-                    if (progress > 0 && eta < Integer.MAX_VALUE) {
-                        val t = navigationService!!.navRouteETETo(position)
-                        if (t < Integer.MAX_VALUE)
-                            eta += t
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            RESULT_SAVE_WAYPOINT -> {
+                if (resultCode == RESULT_OK) {
+                    // След редакция на waypoint — recalcul area distance
+                    val application = BaseApplication.getApplication<Borkozic>()!!
+                    val areaIdx = intent.extras!!.getInt("INDEX")
+                    val area = application.getArea(areaIdx)
+                    if (area != null && area.length() > 1) {
+                        area.distance = area.distanceBetween(0, area.length() - 1)
                     }
-                    s = StringFormatter.timeR(eta)
-                    text = v.findViewById<TextView>(R.id.eta)
-                    text?.text = s
-                    if (progress == 0) {
-                        text = v.findViewById<TextView>(R.id.name)
-                        text?.text = "» " + text?.text
-                    }
-                } else {
-                    text = v.findViewById<TextView>(R.id.name)
-                    text?.setTextColor(text.textColors.withAlpha(128))
-                    text = v.findViewById<TextView>(R.id.distance)
-                    text?.setTextColor(text.textColors.withAlpha(128))
-                    text = v.findViewById<TextView>(R.id.course)
-                    text?.setTextColor(text.textColors.withAlpha(128))
+                    refreshKey++
+                    setResult(RESULT_OK)
                 }
-            } else {
-                if (position > 0) {
-                    val dist = mArea.distanceBetween(position - 1, position)
-                    val distance = StringFormatter.distanceH(dist)
-                    text = v.findViewById<TextView>(R.id.distance)
-                    text?.text = distance
-                    val crs = mArea.course(position - 1, position)
-                    val course = StringFormatter.bearingH(crs)
-                    text = v.findViewById<TextView>(R.id.course)
-                    text?.text = course
-                }
-                val dist = if (position > 0) mArea.distanceBetween(0, position) else 0.0
-                val distance = StringFormatter.distanceH(dist)
-                text = v.findViewById<TextView>(R.id.total_distance)
-                text?.text = distance
             }
-            return v
-        }
-
-        override fun hasStableIds(): Boolean {
-            return true
         }
     }
 
     companion object {
         private const val TAG = "AreaDetails"
-        private const val RESULT_START_ROUTE = 1
-        private const val qaWaypointVisible = 1
-        private const val qaWaypointNavigate = 2
-        private const val qaWaypointProperties = 3
+        private const val RESULT_SAVE_WAYPOINT = 0x400
     }
 }

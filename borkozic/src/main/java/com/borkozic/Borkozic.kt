@@ -916,6 +916,22 @@ class Borkozic : BaseApplication() {
         return areas.size > 0
     }
 
+    /**
+     * Проверява дали даден waypoint принадлежи на някоя зона (area).
+     * Използва се за забрана на изтриване на точки, които са част от зона.
+     * @param wpt Waypoint за проверка
+     * @return true ако точката е част от някоя зона, false иначе
+     */
+    fun isWaypointInArea(wpt: Waypoint?): Boolean {
+        if (wpt == null) return false
+        for (area in areas) {
+            for (areaWpt in area.waypoints) {
+                if (areaWpt === wpt) return true
+            }
+        }
+        return false
+    }
+
 
     val declination: Double
         get() {

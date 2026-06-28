@@ -71,6 +71,7 @@
   <string name="backQuit">Naciśnij wstecz ponownie aby wyjść</string>
   <string name="quitQuestion">Czy chcesz zakończyć?</string>
   <string name="removeWaypointQuestion">Usunąć punkt trasy?</string>
+  <string name="waypoint_in_area">Nie można usunąć: punkt trasy jest częścią obszaru</string>
   <string name="quit">Zamknij</string>
   <string name="yes">Tak</string>
   <string name="no">Nie</string>

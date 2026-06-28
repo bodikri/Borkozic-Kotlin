@@ -71,6 +71,7 @@
   <string name="backQuit">Press Back again to quit</string>
   <string name="quitQuestion">Vill du avsluta?</string>
   <string name="removeWaypointQuestion">Remove waypoint?</string>
+  <string name="waypoint_in_area">Kan inte ta bort: waypoint är del av ett område</string>
   <string name="quit">Avsluta</string>
   <string name="yes">Ja</string>
   <string name="no">Nej</string>

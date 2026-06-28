@@ -71,6 +71,7 @@
   <string name="backQuit">\"Zurück\" erneut drücken zum Verlassen</string>
   <string name="quitQuestion">Wollen Sie wirklich beenden?</string>
   <string name="removeWaypointQuestion">Wegpunkt löschen?</string>
+  <string name="waypoint_in_area">Löschen nicht möglich: Wegpunkt gehört zu einem Gebiet</string>
   <string name="quit">Beenden</string>
   <string name="yes">Ja</string>
   <string name="no">Nein</string>

@@ -71,6 +71,7 @@
   <string name="backQuit">Ponovo stisnite nazad da izađete</string>
   <string name="quitQuestion">Da li želite da prekinete?</string>
   <string name="removeWaypointQuestion">Ukloniti orijentir?</string>
+  <string name="waypoint_in_area">Nije moguće obrisati: orijentir je deo oblasti</string>
   <string name="quit">Prekinuti</string>
   <string name="yes">Da</string>
   <string name="no">Ne</string>

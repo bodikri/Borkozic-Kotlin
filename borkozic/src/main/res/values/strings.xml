@@ -96,6 +96,7 @@
     <string name="backQuit">Press Back again to quit</string>
     <string name="quitQuestion">Do you want to quit?</string>
     <string name="removeWaypointQuestion">Remove waypoint?</string>
+    <string name="waypoint_in_area">Cannot delete: waypoint is part of an area</string>
 
     <string name="buttonEP">Emer</string>
     <string name="buttonNP">Norm</string>

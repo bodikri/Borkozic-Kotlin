@@ -72,6 +72,7 @@
   <string name="backQuit">Натиснете \"Back\" бутонът отново, за да излезете</string>
   <string name="quitQuestion">Искате да изключите програмата?</string>
   <string name="removeWaypointQuestion">Изтриване на точка</string>
+  <string name="waypoint_in_area">Не може да се изтрие: точката е част от зона</string>
   <string name="quit">Изключи</string>
   <string name="yes">Да</string>
   <string name="no">Не</string>

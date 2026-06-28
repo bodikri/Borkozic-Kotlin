@@ -71,6 +71,7 @@
   <string name="backQuit">Druk opnieuw op terug om te stoppen</string>
   <string name="quitQuestion">Wilt u stoppen?</string>
   <string name="removeWaypointQuestion">Verwijderen waypoint?</string>
+  <string name="waypoint_in_area">Kan niet verwijderen: waypoint is deel van een gebied</string>
   <string name="quit">Stoppen</string>
   <string name="yes">Ja</string>
   <string name="no">Nee</string>

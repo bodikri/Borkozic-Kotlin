@@ -3044,6 +3044,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     }
 
     override fun onWaypointRemove(waypoint: Waypoint) {
+        // Забрана на изтриване ако точката е част от не-изтрита зона
+        if (application!!.isWaypointInArea(waypoint)) {
+            Toast.makeText(this, R.string.waypoint_in_area, Toast.LENGTH_LONG).show()
+            return
+        }
         AlertDialog.Builder(this).setIcon(android.R.drawable.ic_dialog_alert)
             .setTitle(R.string.removeWaypointQuestion)
             .setPositiveButton(R.string.yes, object : DialogInterface.OnClickListener {

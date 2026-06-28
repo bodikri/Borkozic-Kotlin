@@ -71,6 +71,7 @@
   <string name="backQuit">再按一次按返回键将退出程序</string>
   <string name="quitQuestion">确定要退出?</string>
   <string name="removeWaypointQuestion">确定要删除航点吗？</string>
+  <string name="waypoint_in_area">无法删除：航点是区域的一部分</string>
   <string name="quit">退出</string>
   <string name="yes">是</string>
   <string name="no">否</string>

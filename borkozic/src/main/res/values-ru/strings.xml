@@ -68,6 +68,7 @@
   <string name="backQuit">Нажмите ещё раз Назад для выхода</string>
   <string name="quitQuestion">Хотите выйти?</string>
   <string name="removeWaypointQuestion">Удалить точку?</string>
+  <string name="waypoint_in_area">Нельзя удалить: точка является частью зоны</string>
   <string name="quit">Выход</string>
   <string name="yes">Да</string>
   <string name="no">Нет</string>

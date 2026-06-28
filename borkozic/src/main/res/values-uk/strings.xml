@@ -73,6 +73,7 @@
   <string name="backQuit">Натисніть \"Назад\" ще раз для виходу</string>
   <string name="quitQuestion">Бажаєте вийти?</string>
   <string name="removeWaypointQuestion">Видалити точку?</string>
+  <string name="waypoint_in_area">Не можна видалити: точка є частиною зони</string>
   <string name="quit">Вийти</string>
   <string name="yes">Так</string>
   <string name="no">Ні</string>

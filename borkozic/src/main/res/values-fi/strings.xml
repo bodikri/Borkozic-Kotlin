@@ -71,6 +71,7 @@
   <string name="backQuit">Paina takaisin uudestaan, niin ohjelma lopetetaan</string>
   <string name="quitQuestion">Haluatko lopettaa?</string>
   <string name="removeWaypointQuestion">Poista reittipiste?</string>
+  <string name="waypoint_in_area">Ei voi poistaa: reittipiste on osa aluetta</string>
   <string name="quit">Lopetus</string>
   <string name="yes">Kyllä</string>
   <string name="no">Ei</string>

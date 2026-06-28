@@ -72,6 +72,7 @@
   <string name="backQuit">Çıkmak için geri tuşuna tekrar basınız</string>
   <string name="quitQuestion">Programdan çıkmak istiyor musunuz?</string>
   <string name="removeWaypointQuestion">Yer imi kaldırılsın mı?</string>
+  <string name="waypoint_in_area">Silinemiyor: yer imi bir alanin parçasi</string>
   <string name="quit">Çıkış</string>
   <string name="yes">Evet</string>
   <string name="no">Hayır</string>
