@@ -1500,14 +1500,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             val isLandscape = resources.configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
             if (isLandscape) {
                 routeName!!.visibility = View.VISIBLE
-                routeName!!.setText("› " + navigationService!!.navRoute!!.name)
+                routeName!!.setText(navigationService!!.navRoute!!.name)
             } else {
                 routeName!!.visibility = View.GONE
                 routeName!!.setText("")
             }
         }
         if (isNavigating) {
-            waypointName!!.setText("» " + navigationService!!.navWaypoint!!.name)
+            waypointName!!.setText("»" + navigationService!!.navWaypoint!!.name)
             if (application!!.navigationOverlay == null) {
                 application!!.navigationOverlay = NavigationOverlay(this)
             }
@@ -1533,14 +1533,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         val distance = navigationService!!.navDistance
         val bearing = navigationService!!.navBearing
         var turn = navigationService!!.navTurn
-        val vmg = navigationService!!.avvmg * speedFactor
         val ete = navigationService!!.navETE
 
         val dist: Array<String> = distanceC(distance, precisionFormat)
-        var extra = dist[0] + " " + dist[1] + " | " + String.format(
-            precisionFormat,
-            vmg
-        ) + " " + speedAbbr + " | " + timeHSec(ete)
+        // Премахната е скоростта (vmg) от waypointextra — вече се показва в долния ред (inc_speed)
+        var extra = dist[0] + " " + dist[1] + " | " + timeHSec(ete)
 
         var trnsym = ""
         if (turn > 0) {
@@ -1589,7 +1586,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             val navDistance = navigationService!!.navRouteDistanceLeft()
             var eta = navigationService!!.navRouteETE(navDistance)
             if (eta < Int.Companion.MAX_VALUE) eta += navigationService!!.navETE
-            extra = distanceH(navDistance + distance, 1000) + " | " + timeHSec(eta)
+            extra = distanceH(navDistance + distance, 1000) + "|" + timeHSec(eta)
             routeExtra!!.setText(extra)
         }
     }
