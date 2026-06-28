@@ -398,6 +398,8 @@
     For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
     <string name="wrongClipboard">Клипборда съдържа погрешна стойност</string>
     <string name="pref_maprotation_title">Въртене на картата</string>
+    <string name="pref_compass_title">Компасна ориентация</string>
+    <string name="pref_compass_summary">Използвай магнитомер за ориентация на картата при неподвижно устройство</string>
     <string name="pref_panelogosize_title">Размер самолет</string>
     <string name="buttonEP">Процедури</string>
     <string name="pref_procedures_title">Процедури</string>

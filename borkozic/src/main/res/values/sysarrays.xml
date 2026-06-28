@@ -196,12 +196,22 @@
         <item>locate</item>
         <item>tracking</item>
         <item>expand</item>
+        <item>north</item>
     </string-array>
 
     <array name="panel_action_images">
-        <item>@drawable/arrow_left</item>
+        <item>@drawable/zoom_in</item>
+        <item>@drawable/zoom_out</item>
         <item>@drawable/arrow_right</item>
+        <item>@drawable/arrow_left</item>
+        <item>@drawable/globe</item>
+        <item>@drawable/flag</item>
+        <item>@drawable/info</item>
+        <item>@drawable/target</item>
+        <item>@drawable/pin_map</item>
+        <item>@drawable/doc_edit</item>
         <item>@drawable/expand</item>
+        <item>@drawable/compass_needle_north_blue</item>
     </array>
 
     <string-array name="online_maps">

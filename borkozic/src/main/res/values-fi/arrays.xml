@@ -125,5 +125,6 @@
     <item>Hae sijainti</item>
     <item>kirjoita polku</item>
     <item>Näytä / piilota tilarivi</item>
+    <item>North up</item>
   </string-array>
 </resources>

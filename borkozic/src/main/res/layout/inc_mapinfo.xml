@@ -6,6 +6,15 @@
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content">
 
+	<ImageView android:id="@+id/compass_icon"
+		android:layout_width="20dip"
+		android:layout_height="20dip"
+		android:layout_gravity="center_vertical"
+		android:padding="2dip"
+		android:visibility="gone"
+		android:src="@drawable/compass_needle_north_blue"
+		android:contentDescription="@string/pref_compass_title" />
+
 	<TextView android:id="@+id/currentfile"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"

@@ -125,5 +125,6 @@
     <item>Obtener la ubicación</item>
     <item>Registrar el track</item>
     <item>Mostrar/ocultar barra de estado</item>
+    <item>Norte arriba</item>
   </string-array>
 </resources>

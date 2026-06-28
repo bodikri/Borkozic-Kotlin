@@ -393,4 +393,6 @@
     copyright if you do not accept this License. Therefore, by modifying or propagating
     a covered work, you indicate your acceptance of this License to do so./n/n
     For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+  <string name="pref_compass_title">Оријентација компасом</string>
+  <string name="pref_compass_summary">Користити магнетометар за оријентацију карте у стационарном стању</string>
 </resources>

@@ -125,5 +125,6 @@
     <item>Standort ermitteln</item>
     <item>Track schreiben</item>
     <item>Show/hide status bar</item>
+    <item>North up</item>
   </string-array>
 </resources>

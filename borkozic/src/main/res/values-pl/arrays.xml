@@ -125,5 +125,6 @@
     <item>Uzyskaj lokalizację</item>
     <item>Zapisz trase</item>
     <item>Pokaż/ukryj pasek statusu</item>
+    <item>North up</item>
   </string-array>
 </resources>

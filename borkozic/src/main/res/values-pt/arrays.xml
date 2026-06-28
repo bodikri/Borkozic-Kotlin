@@ -125,5 +125,6 @@
     <item>Obter localização</item>
     <item>Escrever pista</item>
     <item>Mostrar/ocultar barra de status</item>
+    <item>Norte acima</item>
   </string-array>
 </resources>

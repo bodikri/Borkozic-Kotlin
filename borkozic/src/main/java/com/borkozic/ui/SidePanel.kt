@@ -28,7 +28,8 @@ enum class SidePanelAction {
     EP, NP,
     ZOOM_IN, ZOOM_OUT, NEXT_MAP, PREV_MAP, MAPS_AT_CURSOR, WAYPOINTS,
     INFO, FOLLOW, LOCATE, TRACKING, EXPAND,
-    ZERO_LEVEL, CLEAR
+    ZERO_LEVEL, CLEAR,
+    NORTH,
 }
 
 // ── Static button data ──────────────────────────────────────────────────────
@@ -56,6 +57,7 @@ private fun actionDrawableId(action: String): Int = when (action) {
     "maps"     -> R.drawable.globe
     "waypoints" -> R.drawable.flag
     "info"     -> R.drawable.info
+    "north"    -> R.drawable.compass_needle_north_blue
     else       -> R.drawable.zoom_in
 }
 
@@ -71,6 +73,7 @@ private fun actionToEnum(action: String): SidePanelAction = when (action) {
     "locate"    -> SidePanelAction.LOCATE
     "tracking"  -> SidePanelAction.TRACKING
     "expand"    -> SidePanelAction.EXPAND
+    "north"     -> SidePanelAction.NORTH
     else        -> SidePanelAction.ZOOM_IN
 }
 
@@ -202,6 +205,7 @@ private fun SidePanelContent(
         "zoomin", "zoomout", "nextmap", "prevmap",
         "maps", "waypoints", "info",
         "follow", "locate", "tracking", "expand",
+        "north",
     )
     val actionsToShow = activeActions.filter { it in allActions }
 

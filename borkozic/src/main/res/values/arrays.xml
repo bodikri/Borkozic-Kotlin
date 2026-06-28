@@ -124,6 +124,7 @@
         <item>Obtain location</item>
         <item>Write track</item>
         <item>Show/hide status bar</item>
+        <item>North up</item>
     </string-array>
     <string-array name="plane_types">
         <item>L-39 Albatros</item>

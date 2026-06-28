@@ -125,6 +125,7 @@
     <item>Получаване на местоположение</item>
     <item>Запис на маршрута</item>
     <item>Показване/скриване лентата на състоянието</item>
+    <item>Север нагоре</item>
   </string-array>
   <string-array name="plane_types">
     <item>L-39 Albatros</item>

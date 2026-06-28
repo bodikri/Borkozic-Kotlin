@@ -171,6 +171,17 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
      */
     var bearing = 0f
     /**
+     * Режим на компаса — определя източника на bearing за картата.
+     * - GPS:          bearing от Location.bearing (устройството се движи).
+     * - COMPASS:      bearing от магнитометър сензор (устройството е неподвижно).
+     * - NORTH_LOCK:   bearing заключен на 0° (натиснат North Up бутона).
+     *                 Изчиства се при: following ON или ръчно завъртане на картата.
+     */
+    enum class CompassMode { GPS, COMPASS, NORTH_LOCK }
+
+    /** Текущ режим на компаса — контролира как се определя bearing. */
+    var compassMode = CompassMode.GPS
+    /**
      * Track Up mode: when true (Settings → Display → Map Rotation → Track Up),
      * the map canvas rotates to keep the heading direction "up" on screen.
      * When false (North Up), the map stays fixed and only the cursor rotates.
@@ -538,31 +549,36 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             val lastLocationMillis = loc.time
 
             if (isFollowing) {
-                val gpsBearing = loc.bearing
+                // Only update bearing from GPS when compassMode is GPS.
+                // COMPASS mode: bearing is driven by magnetometer (setBearingFromCompass).
+                // NORTH_LOCK mode: bearing is locked to 0° (lockToNorth).
+                if (compassMode == CompassMode.GPS) {
+                    val gpsBearing = loc.bearing
 
-                // ── Smooth bearing: animate if jump > threshold ────────
-                if (smoothCenterActive) {
-                    // During smooth center animation, stash the target —
-                    // staggered bearing will converge toward it in calculateLookAhead
-                    smoothBearTarget = (gpsBearing / 10).toInt() * 10f
-                } else {
-                    val targetB = (gpsBearing / 10).toInt() * 10f
-                    val deltaB = ((targetB - bearing) % 360f + 540f) % 360f - 180f
-
-                    if (abs(deltaB) > SMOOTH_BEAR_THRESHOLD) {
-                        smoothBearTarget = targetB
-                        smoothBearCurrent = bearing
-                        smoothBearSpeed = 0f
-                        smoothBearActive = true
-                        // Don't overwrite bearing — animation handles it
+                    // ── Smooth bearing: animate if jump > threshold ────────
+                    if (smoothCenterActive) {
+                        // During smooth center animation, stash the target —
+                        // staggered bearing will converge toward it in calculateLookAhead
+                        smoothBearTarget = (gpsBearing / 10).toInt() * 10f
                     } else {
-                        bearing = gpsBearing
-                        smoothBearActive = false
+                        val targetB = (gpsBearing / 10).toInt() * 10f
+                        val deltaB = ((targetB - bearing) % 360f + 540f) % 360f - 180f
+
+                        if (abs(deltaB) > SMOOTH_BEAR_THRESHOLD) {
+                            smoothBearTarget = targetB
+                            smoothBearCurrent = bearing
+                            smoothBearSpeed = 0f
+                            smoothBearActive = true
+                            // Don't overwrite bearing — animation handles it
+                        } else {
+                            bearing = gpsBearing
+                            smoothBearActive = false
+                        }
                     }
-                }
-                // Update lookAheadB for calculateLookAhead to use (only when center is done)
-                if (!smoothCenterActive && !smoothBearActive) {
-                    lookAheadB = (bearing / 10).toInt() * 10f
+                    // Update lookAheadB for calculateLookAhead to use (only when center is done)
+                    if (!smoothCenterActive && !smoothBearActive) {
+                        lookAheadB = (bearing / 10).toInt() * 10f
+                    }
                 }
 
                 // ── Map center update: skip if smooth center animation is active ──
@@ -900,6 +916,9 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                     Toast.makeText(context, R.string.following_disabled, Toast.LENGTH_SHORT).show()
                     smoothCenterActive = false
                     smoothBearActive = false
+                    // Reset bearing to North when following is disabled
+                    bearing = 0f
+                    compassMode = CompassMode.GPS
                 }
                 isFollowing = follow
             }
@@ -974,6 +993,75 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
     fun setTrackUp(isTrUp: String) {
         synchronized(lock) {
             isTrackUp = isTrUp == "1"
+        }
+    }
+
+    /**
+     * Задава bearing от компас сензор (когато устройството е неподвижно).
+     * Работи само когато compassMode == COMPASS.
+     *
+     * При първо активиране (превключване от GPS към COMPASS режим):
+     *   - Ако разликата с текущия bearing е > SMOOTH_BEAR_THRESHOLD (5°),
+     *     се стартира плавна анимация (Layer 2: smoothBearActive).
+     *   - Иначе bearing се обновява директно.
+     *
+     * При последващи обновявания (компасът непрекъснато праща данни):
+     *   - Ако няма активна анимация, bearing се обновява директно.
+     *   - Low-pass филтърът в CompassSensorHelper вече изглажда стойностите.
+     */
+    fun setBearingFromCompass(compassBearing: Float) {
+        if (compassMode != CompassMode.COMPASS) return
+        synchronized(lock) {
+            if (!smoothBearActive) {
+                // Проверка дали има голям скок — ако да, стартирай плавна анимация
+                val deltaB = ((compassBearing - bearing) % 360f + 540f) % 360f - 180f
+                if (abs(deltaB) > SMOOTH_BEAR_THRESHOLD) {
+                    smoothBearTarget = (compassBearing / 10).toInt() * 10f
+                    smoothBearCurrent = bearing
+                    smoothBearSpeed = 0f
+                    smoothBearActive = true
+                    // Анимацията ще бъде обработена в calculateLookAhead()
+                } else {
+                    // Малка разлика — директно обновяване
+                    bearing = compassBearing
+                    lookAheadB = (bearing / 10).toInt() * 10f
+                }
+            } else {
+                // Анимацията е активна — обновяваме целта, за да следва компаса
+                smoothBearTarget = (compassBearing / 10).toInt() * 10f
+            }
+        }
+        postInvalidate()
+    }
+
+    /**
+     * Заключва картата на Север (bearing = 0°). Изиква се при натискане на North Up бутона.
+     * Превключва compassMode на NORTH_LOCK — компас и GPS bearing се игнорират
+     * докато не се изчисти чрез setFollowing(true) или ръчно завъртане (clearNorthLock).
+     * Спира всякакви активни анимации за незабавен ефект.
+     */
+    fun lockToNorth() {
+        synchronized(lock) {
+            compassMode = CompassMode.NORTH_LOCK
+            bearing = 0f
+            smoothBearActive = false
+            smoothBearSpeed = 0f
+            smoothBearCurrent = 0f
+            smoothBearTarget = 0f
+            smoothCenterActive = false
+        }
+        update()
+    }
+
+    /**
+     * Изчиства North Lock режим. Изиква се при:
+     * - Включване на following (setFollowing(true))
+     * - Ръчно завъртане на картата с двупръстен жест (GESTURE_PINCH)
+     * Връща compassMode към GPS режим.
+     */
+    fun clearNorthLock() {
+        if (compassMode == CompassMode.NORTH_LOCK) {
+            compassMode = CompassMode.GPS
         }
     }
 
@@ -1217,6 +1305,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                             }
 
                             if (!isFollowing) {
+                                clearNorthLock()
                                 val currentAngle = angleBetweenFingers(event)
                                 val deltaAngle = currentAngle - gestureStartAngle
                                 var normalized = deltaAngle % 360f

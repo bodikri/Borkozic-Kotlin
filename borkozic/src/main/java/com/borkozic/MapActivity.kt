@@ -49,6 +49,8 @@ import android.widget.SeekBar
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.widget.TextView
 import android.widget.Toast
+import com.borkozic.location.CompassSensorHelper
+import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
@@ -163,6 +165,17 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private var areaWaypointSet: WaypointSet? = null
     /** Global counter for unique waypoint names across all routes in this session. */
     private var routeWaypointNameCounter = 0
+
+    // Компас сензор
+    private var compassHelper: CompassSensorHelper? = null  // Helper за акселерометър + магнитометър
+    private var hasCompassSensor = false       // Дали устройството има магнитометър
+    private var compassEnabled = false          // От Settings (pref_compass)
+    private var compassIcon: ImageView? = null  // Иконка в долния инфо бар
+
+    // Праг на скоростта за превключване между GPS и компас bearing (m/s)
+    // Под прага → компас (неподвижно), над прага → GPS bearing (движение)
+    private val COMPASS_SPEED_THRESHOLD = 1.0f
+
     protected var exitConfirmation: Int = 0
     private var secondBack = false
     private var backToast: Toast? = null
@@ -342,6 +355,28 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         trackBar = findViewById<View?>(R.id.trackbar) as SeekBar?
         waitBar = findViewById<View?>(R.id.waitbar) as TextView
         map = findViewById<View?>(R.id.mapview) as MapView?
+
+        // Инициализация на компас сензор helper
+        // Иконката в долния инфо бар показва статуса на компаса
+        compassIcon = findViewById<View?>(R.id.compass_icon) as ImageView?
+        compassHelper = CompassSensorHelper(this, object : CompassSensorHelper.CompassListener {
+            override fun onCompassBearing(bearing: Float) {
+                // Компасът праща нов bearing — предава го на MapView ако е в COMPASS режим
+                runOnUiThread {
+                    if (map != null && map!!.compassMode == MapView.CompassMode.COMPASS) {
+                        map!!.setBearingFromCompass(bearing)
+                    }
+                }
+            }
+            override fun onCompassAvailabilityChanged(hasCompass: Boolean) {
+                // Сензорът стана наличен/недостъпен — обнови иконката
+                runOnUiThread {
+                    hasCompassSensor = hasCompass
+                    updateCompassIcon()
+                }
+            }
+        })
+        hasCompassSensor = compassHelper!!.hasCompass
 
         // set button actions for edit panels (side panel buttons handled by Compose)
         findViewById<View?>(R.id.finishedit).setOnClickListener(this)
@@ -586,7 +621,15 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         super.onResume()
         Log.e(TAG, "onResume()")
 
+        // Четене на компас preference от Settings
         val settings = PreferenceManager.getDefaultSharedPreferences(this)!!
+        compassEnabled = settings.getBoolean(getString(R.string.pref_compass), false)
+        // Стартирай компаса ако е включен, има сензор и following е активен
+        if (compassEnabled && hasCompassSensor && map != null && map!!.isFollowing()) {
+            compassHelper?.start()
+        }
+        updateCompassIcon()
+
         val resources = getResources()
 
         // update some preferences
@@ -818,6 +861,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     override fun onPause() {
         super.onPause()
         Log.e(TAG, "onPause()")
+
+        // Спри компас сензора при pause (батерия)
+        compassHelper?.stop()
 
         unregisterReceiver(broadcastReceiver)
         map!!.pause()
@@ -1073,6 +1119,28 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                 application!!.setLocation(location, magnetic)
                 map!!.setLocation(location)
+
+                // Превключване на източника на bearing според скоростта
+                if (map != null && map!!.isFollowing()) {
+                    if (location.speed < COMPASS_SPEED_THRESHOLD) {
+                        // Устройството е неподвижно — използвай компас ако е наличен
+                        if (compassEnabled && hasCompassSensor && map!!.compassMode != MapView.CompassMode.NORTH_LOCK) {
+                            if (map!!.compassMode != MapView.CompassMode.COMPASS) {
+                                map!!.compassMode = MapView.CompassMode.COMPASS
+                                compassHelper?.start()
+                                updateCompassIcon()
+                            }
+                        }
+                    } else {
+                        // Устройството се движи — използвай GPS bearing
+                        if (map!!.compassMode == MapView.CompassMode.COMPASS) {
+                            map!!.compassMode = MapView.CompassMode.GPS
+                            compassHelper?.stop()
+                            updateCompassIcon()
+                        }
+                    }
+                }
+
                 val enableFollowing = followOnLocation && lastKnownLocation == null
 
                 lastKnownLocation = location
@@ -1325,6 +1393,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             SidePanelAction.CLEAR -> {
                 zeroElevation = 0.0
                 application!!.setZeroLevelDouble(0.0)
+            }
+            SidePanelAction.NORTH -> {
+                // Заключи картата на Север (bearing = 0°)
+                // Изчиства се при: following ON или ръчно завъртане на картата
+                compassHelper?.stop()
+                map!!.lockToNorth()
+                updateCompassIcon()
             }
         }
     }
@@ -1833,7 +1908,47 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     application!!.distanceOverlay!!.setEnabled(false)
                 }
             }
+            if (follow) {
+                // Изчисти North Lock при включване на following
+                map?.clearNorthLock()
+                // Стартирай компаса ако е включен и устройството има сензор
+                if (compassEnabled && hasCompassSensor) {
+                    compassHelper?.start()
+                }
+            } else {
+                // Спри компаса при изключване на following
+                compassHelper?.stop()
+                // Върни се в GPS режим
+                if (map != null) {
+                    map!!.compassMode = MapView.CompassMode.GPS
+                }
+                updateCompassIcon()
+            }
             map!!.setFollowing(follow)
+        }
+    }
+
+    /**
+     * Обновява иконката на компаса в долния инфо бар.
+     * - Цветна иконка когато compassMode == COMPASS (компасът е активен)
+     * - Сива иконка когато компасът е наличен, но не е активен
+     * - Скрита когато няма магнитометър или компасът е изключен в Settings
+     */
+    private fun updateCompassIcon() {
+        if (compassIcon == null) return
+        if (!compassEnabled || !hasCompassSensor) {
+            compassIcon!!.visibility = View.GONE
+            return
+        }
+        compassIcon!!.visibility = View.VISIBLE
+        if (map != null && map!!.compassMode == MapView.CompassMode.COMPASS) {
+            // Компасът е активен — цветна иконка
+            compassIcon!!.setImageResource(R.drawable.compass_needle_north_blue)
+            compassIcon!!.clearColorFilter()
+        } else {
+            // Компасът е неактивен — сива иконка
+            compassIcon!!.setImageResource(R.drawable.compass_needle_north_blue)
+            compassIcon!!.setColorFilter(android.graphics.Color.GRAY, android.graphics.PorterDuff.Mode.SRC_IN)
         }
     }
 
@@ -3131,6 +3246,20 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             activeActions =
                 Arrays.asList<String?>(*pa.split(",".toRegex()).dropLastWhile { it.isEmpty() }
                     .toTypedArray())
+        } else if (getString(R.string.pref_compass) == key) {
+            // Компас preference е променен от Settings
+            compassEnabled = sharedPreferences.getBoolean(key, false)
+            if (compassEnabled && hasCompassSensor && map != null && map!!.isFollowing()) {
+                // Компасът е включен — стартирай ако following е активен
+                compassHelper?.start()
+            } else {
+                // Компасът е изключен — спри и върни в GPS режим
+                compassHelper?.stop()
+                if (map != null && map!!.compassMode == MapView.CompassMode.COMPASS) {
+                    map!!.compassMode = MapView.CompassMode.GPS
+                }
+            }
+            updateCompassIcon()
         } else if (getString(R.string.pref_waypoint_width) == key ||
             getString(R.string.pref_waypoint_textsize) == key ||
             getString(R.string.pref_waypoint_color) == key ||

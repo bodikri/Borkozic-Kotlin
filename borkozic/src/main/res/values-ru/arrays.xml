@@ -125,5 +125,6 @@
     <item>Получать местоположение</item>
     <item>Писать трек</item>
     <item>Показать/скрыть панель состояния</item>
+    <item>Север вверх</item>
   </string-array>
 </resources>

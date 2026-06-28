@@ -125,5 +125,6 @@
     <item>Obtenir la position</item>
     <item>Écrire la trace</item>
     <item>Afficher/masquer la barre d\'état</item>
+    <item>Nord en haut</item>
   </string-array>
 </resources>

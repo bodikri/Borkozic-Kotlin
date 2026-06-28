@@ -307,6 +307,9 @@
     <string name="pref_mapcropborder_summary">Mark to crop map along corner markers</string>
     <string name="pref_mapdrawborder_title">Draw map border</string>
     <string name="pref_maprotation_title">Map rotation</string>
+    <string name="pref_compass">pref_compass</string>
+    <string name="pref_compass_title">Compass orientation</string>
+    <string name="pref_compass_summary">Use magnetometer sensor to orient map when stationary</string>
     <string name="pref_mapdrawborder_summary">Mark to draw border along corner markers</string>
     <string name="pref_maphideondrag_title">Hide objects on drag</string>
     <string name="pref_maphideondrag_summary">Mark to hide map objects while dragging</string>

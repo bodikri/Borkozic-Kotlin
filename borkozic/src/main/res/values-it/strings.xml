@@ -392,4 +392,6 @@
     copyright if you do not accept this License. Therefore, by modifying or propagating
     a covered work, you indicate your acceptance of this License to do so./n/n
     For full copy of the GNU General Public License see http://www.gnu.org/licenses/gpl.html</string>
+  <string name="pref_compass_title">Orientamento bussola</string>
+  <string name="pref_compass_summary">Usa il magnetometro per orientare la mappa da fermo</string>
 </resources>

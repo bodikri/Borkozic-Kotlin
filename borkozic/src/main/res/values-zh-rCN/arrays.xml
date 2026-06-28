@@ -125,5 +125,6 @@
     <item>获取位置</item>
     <item>记录航迹</item>
     <item>显示/隐藏状态栏</item>
+    <item>北朝上</item>
   </string-array>
 </resources>
