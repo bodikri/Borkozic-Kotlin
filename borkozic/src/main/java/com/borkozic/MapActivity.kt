@@ -2483,7 +2483,21 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                     qaNavigateToWaypoint -> {
                         // Navigate directly to this waypoint (no route needed)
-                        navigationService?.navigateTo(wpt)
+                        val svc = navigationService
+                        if (svc != null) {
+                            // Service already bound — navigate directly
+                            svc.navigateTo(wpt)
+                        } else {
+                            // Service not bound yet — start via intent, service will bind on connect
+                            Log.d(TAG, "qNavigateToWaypoint: service not bound, starting NavigationService")
+                            val intent = Intent(this@MapActivity, NavigationService::class.java)
+                            intent.action = NavigationService.NAVIGATE_MAPOBJECT
+                            intent.putExtra(NavigationService.EXTRA_NAME, wpt.name)
+                            intent.putExtra(NavigationService.EXTRA_LATITUDE, wpt.latitude)
+                            intent.putExtra(NavigationService.EXTRA_LONGITUDE, wpt.longitude)
+                            intent.putExtra(NavigationService.EXTRA_PROXIMITY, wpt.proximity)
+                            startService(intent)
+                        }
                     }
 
                     qaAddWaypointToRoute -> {
