@@ -735,7 +735,7 @@ open class Map : Serializable {
         @JvmField var maxMPP: Int = 0
     }
 
-    class Bounds {
+    class Bounds : Serializable {
         @JvmField
         var minLat = Double.MAX_VALUE
         @JvmField
