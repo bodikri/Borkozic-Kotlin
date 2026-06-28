@@ -201,5 +201,7 @@ class WaypointListActivity : ComponentActivity(), OnWaypointActionListener {
         } else {
             application.saveWaypoints()
         }
+        // Force recomposition so the list updates immediately
+        contentVersion++
     }
 }

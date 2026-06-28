@@ -350,7 +350,7 @@ fun WaypointListScreen(
             }
         } else {
             // Build flat list from groups + expanded children
-            val flatItems = remember(waypointSets.size, expandedGroups) {
+            val flatItems = remember(waypointSets.size, expandedGroups, contentVersion) {
                 buildList {
                     waypointSets.forEachIndexed { si, set ->
                         add(FlatItem.GroupHeader(si, set))
