@@ -403,6 +403,12 @@
             android:icon="@drawable/widget_icon"
             android:process=":widget" />
 
+        <!-- Dead Reckoning Service — автономно изчисляване на позиция при GPS загуба -->
+        <service
+            android:name=".location.DeadReckoningService"
+            android:exported="false"
+            android:foregroundServiceType="location" />
+
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIQMCPbh1CGZy5QovaZA_o6cJgv-SaYlYVxGQ5MQ" />

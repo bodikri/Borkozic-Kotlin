@@ -68,6 +68,7 @@ import com.borkozic.location.BaseLocationService
 import com.borkozic.location.ILocationListener
 import com.borkozic.location.ILocationService
 import com.borkozic.location.LocationService
+import com.borkozic.location.DeadReckoningService
 import com.borkozic.map.MapInformation
 import com.borkozic.navigation.BaseNavigationService
 import com.borkozic.navigation.NavigationService
@@ -240,6 +241,8 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
     private var locationService: ILocationService? = null
     var navigationService: NavigationService? = null
+    var deadReckoningService: DeadReckoningService? = null
+    private var drBound = false
 
     private var lastKnownLocation: Location? = null
     protected var lastRenderTime: Long = 0
@@ -249,6 +252,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
     private var animationSet = false
     private var isFullscreen = false
+    private var isDRActiveState: Boolean = false
     private var keepScreenOn = false
     private var activeActions: MutableList<String?>? = null
 
@@ -409,6 +413,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 isLocating = isLocatingState,
                 isTracking = isTrackingState,
                 isFullscreen = isFullscreen,
+                isDRActive = isDRActiveState,
                 onAction = { action -> onSidePanelAction(action) },
             )
         }
@@ -790,6 +795,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             BIND_AUTO_CREATE
         )
 
+        // Dead Reckoning service — bind за автономно изчисляване на позиция при GPS загуба
+        bindService(Intent(this, DeadReckoningService::class.java), deadReckoningConnection, BIND_AUTO_CREATE)
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             registerReceiver(
                 broadcastReceiver,
@@ -821,6 +829,17 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 IntentFilter(Intent.ACTION_SCREEN_ON),
                 RECEIVER_NOT_EXPORTED
             )
+            // Dead Reckoning receivers
+            registerReceiver(
+                broadcastReceiver,
+                IntentFilter(DeadReckoningService.BROADCAST_DR_STATE),
+                RECEIVER_NOT_EXPORTED
+            )
+            registerReceiver(
+                broadcastReceiver,
+                IntentFilter(DeadReckoningService.BROADCAST_DR_LOCATION),
+                RECEIVER_NOT_EXPORTED
+            )
         } else {
             registerReceiver(
                 broadcastReceiver,
@@ -840,6 +859,9 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             )
             registerReceiver(broadcastReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
             registerReceiver(broadcastReceiver, IntentFilter(Intent.ACTION_SCREEN_ON))
+            // Dead Reckoning receivers
+            registerReceiver(broadcastReceiver, IntentFilter(DeadReckoningService.BROADCAST_DR_STATE))
+            registerReceiver(broadcastReceiver, IntentFilter(DeadReckoningService.BROADCAST_DR_LOCATION))
         }
         if (application!!.hasEnsureVisible()) {
             setFollowing(false)
@@ -903,6 +925,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         if (navigationService != null) {
             unbindService(navigationConnection)
             navigationService = null
+        }
+        // Dead Reckoning — unbind при pause
+        if (deadReckoningService != null) {
+            unbindService(deadReckoningConnection)
+            deadReckoningService = null
         }
         if (locationService != null) {
             locationService!!.unregisterLocationCallback(locationListener)
@@ -988,6 +1015,19 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         }
     }
 
+    // Dead Reckoning service connection — управление на връзката с DR сервиса
+    private val deadReckoningConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(className: ComponentName?, service: IBinder) {
+            deadReckoningService = (service as DeadReckoningService.LocalBinder).getService()
+            Log.d(TAG, "Dead Reckoning service connected")
+        }
+
+        override fun onServiceDisconnected(className: ComponentName?) {
+            deadReckoningService = null
+            Log.d(TAG, "Dead Reckoning service disconnected")
+        }
+    }
+
     //Какво да прави при обновяване на информацията за местоположението
     private val broadcastReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent) {
@@ -1024,6 +1064,55 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 map!!.pause()
             } else if (action == Intent.ACTION_SCREEN_ON) {
                 map!!.resume()
+            } else if (action == DeadReckoningService.BROADCAST_DR_STATE) {
+                // DR състояние се промени — активиран/спрян
+                val state = intent.getExtras()!!.getInt("state")
+                runOnUiThread {
+                    if (!ready) return@runOnUiThread
+                    if (state == DeadReckoningService.DR_ACTIVE) {
+                        isDRActiveState = true
+                        // DR е активен — покажи индикация
+                        Log.d(TAG, "Dead Reckoning activated")
+                    } else if (state == DeadReckoningService.DR_STOPPED) {
+                        isDRActiveState = false
+                        // DR спрян — скрий индикация
+                        Log.d(TAG, "Dead Reckoning stopped")
+                    }
+                }
+            } else if (action == DeadReckoningService.BROADCAST_DR_LOCATION) {
+                // DR е изчислил нова позиция — използвай я като текуща локация
+                val lat = intent.getExtras()!!.getDouble("latitude")
+                val lon = intent.getExtras()!!.getDouble("longitude")
+                val alt = intent.getExtras()!!.getDouble("altitude")
+                val speed = intent.getExtras()!!.getFloat("speed")
+                val bearing = intent.getExtras()!!.getFloat("bearing")
+                val accuracy = intent.getExtras()!!.getFloat("accuracy")
+
+                runOnUiThread {
+                    if (!ready) return@runOnUiThread
+                    // Създаване на синтетична Location от DR данни
+                    val loc = Location("dead_reckoning")
+                    loc.latitude = lat
+                    loc.longitude = lon
+                    loc.altitude = alt
+                    loc.speed = speed
+                    loc.bearing = bearing
+                    loc.accuracy = accuracy
+                    loc.time = System.currentTimeMillis()
+
+                    // Подаване към map по същия начин като GPS location
+                    // isFixed остава false (сив cursor) но isMoving=true (самолетчето се вижда)
+                    map!!.setMoving(true)
+                    application!!.setLocation(loc, false)
+                    map!!.setLocation(loc)
+
+                    // Обновяване на инфо бара (скорост, курс, височина)
+                    updateMovingInfo(loc, false)
+                    updateGPSStatus()
+
+                    // Обновяване на картата
+                    map!!.update()
+                }
             }
         }
     }
@@ -1061,6 +1150,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                     map!!.isFixed = true
                                     updateGPSStatus()
                                 }
+                                // GPS възстановен — спиране на Dead Reckoning (само ако не е ръчен режим)
+                                if (deadReckoningService != null && deadReckoningService!!.isDeadReckoningActive() && !deadReckoningService!!.isManualMode()) {
+                                    com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_RECOVERED: stopping Dead Reckoning (automatic mode)")
+                                    deadReckoningService!!.stopDeadReckoning()
+                                }
                                 satInfo!!.setText(fsats.toString() + "/" + tsats.toString())
                             }
 
@@ -1072,6 +1166,20 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                         R.color.gpsdisabled
                                     )
                                 )
+                                // GPS загубен — стартиране на Dead Reckoning с последните данни
+                                if (deadReckoningService != null && !deadReckoningService!!.isDeadReckoningActive()) {
+                                    val lastLoc = lastKnownLocation
+                                    if (lastLoc != null && !java.lang.Double.isNaN(lastLoc.latitude) && !java.lang.Double.isNaN(lastLoc.longitude)) {
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: starting Dead Reckoning")
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: lat=" + lastLoc.latitude + ", lon=" + lastLoc.longitude + ", alt=" + lastLoc.altitude + ", speed=" + lastLoc.speed + ", bearing=" + lastLoc.bearing)
+                                        deadReckoningService!!.startDeadReckoning(
+                                            lastLoc.latitude, lastLoc.longitude, lastLoc.altitude,
+                                            lastLoc.speed, lastLoc.bearing, lastLoc.accuracy
+                                        )
+                                    } else {
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: no last known location, cannot start DR")
+                                    }
+                                }
                                 map!!.setMoving(false)
                                 map!!.isFixed = false
                                 updateGPSStatus()
@@ -1104,7 +1212,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         ) {
             if (!ready) return
 
-            //Log.d(TAG, "Location arrived");
+            // Ако ръчният DR е активен, логвай реалните GPS данни за сравнение
+            if (deadReckoningService != null && deadReckoningService!!.isDeadReckoningActive() && deadReckoningService!!.isManualMode()) {
+                com.borkozic.location.DRLogger.log(this@MapActivity, String.format(java.util.Locale.US,
+                    "GPS_REAL: lat=%.7f, lon=%.7f, alt=%.1f, speed=%.2f, bearing=%.1f, acc=%.1f",
+                    location.latitude, location.longitude, location.altitude, location.speed, location.bearing, location.accuracy
+                ))
+            }
             val lastLocationMillis = location.getTime()
 
             var magnetic = false
@@ -1208,9 +1322,24 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                 R.color.gpsdisabled
                             )
                         ) //gpsdisabled
-                        map!!.setMoving(false)
+                        // GPS изключен — не скриваме самолетчето, а го правим сиво (isFixed=false)
+                        // isMoving остава true, за да се вижда самолетчето и инфо бара
                         map!!.isFixed = false
-                        updateGPSStatus()
+                        // НЕ викаме setMoving(false) и updateGPSStatus() — DR ще поддържа позицията
+                        // GPS доставчик изключен (ръчно от Settings) — стартиране на Dead Reckoning
+                        if (deadReckoningService != null && !deadReckoningService!!.isDeadReckoningActive()) {
+                            val lastLoc = lastKnownLocation
+                            if (lastLoc != null && !java.lang.Double.isNaN(lastLoc.latitude) && !java.lang.Double.isNaN(lastLoc.longitude)) {
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: starting Dead Reckoning")
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: lat=" + lastLoc.latitude + ", lon=" + lastLoc.longitude + ", alt=" + lastLoc.altitude + ", speed=" + lastLoc.speed + ", bearing=" + lastLoc.bearing)
+                                deadReckoningService!!.startDeadReckoning(
+                                    lastLoc.latitude, lastLoc.longitude, lastLoc.altitude,
+                                    lastLoc.speed, lastLoc.bearing, lastLoc.accuracy
+                                )
+                            } else {
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: no last known location, cannot start DR")
+                            }
+                        }
                     }
                 })
             }
@@ -1231,6 +1360,11 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                     R.color.gpsenabled
                                 )
                             )
+                        }
+                        // GPS доставчик включен — спиране на Dead Reckoning (само ако не е ръчен режим)
+                        if (deadReckoningService != null && deadReckoningService!!.isDeadReckoningActive() && !deadReckoningService!!.isManualMode()) {
+                            com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_ENABLED: stopping Dead Reckoning (automatic mode)")
+                            deadReckoningService!!.stopDeadReckoning()
                         }
                     }
                 })
@@ -1400,6 +1534,29 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 compassHelper?.stop()
                 map!!.lockToNorth()
                 updateCompassIcon()
+            }
+            SidePanelAction.DR -> {
+                if (deadReckoningService != null) {
+                    if (!deadReckoningService!!.isDeadReckoningActive()) {
+                        // Включване на ръчен DR
+                        val lastLoc = lastKnownLocation
+                        if (lastLoc != null && !java.lang.Double.isNaN(lastLoc.latitude) && !java.lang.Double.isNaN(lastLoc.longitude)) {
+                            com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: user activated Dead Reckoning")
+                            deadReckoningService!!.startManualDeadReckoning(
+                                lastLoc.latitude, lastLoc.longitude, lastLoc.altitude,
+                                lastLoc.speed, lastLoc.bearing, lastLoc.accuracy
+                            )
+                            isDRActiveState = true
+                        } else {
+                            com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: cannot start — no last known location")
+                        }
+                    } else {
+                        // Изключване на ръчен DR
+                        com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: user deactivated Dead Reckoning")
+                        deadReckoningService!!.stopDeadReckoning()
+                        isDRActiveState = false
+                    }
+                }
             }
         }
     }

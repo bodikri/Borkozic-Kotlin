@@ -110,6 +110,7 @@
     <string name="pref_procedures_norm_folder_dialog">Navigate to the folder containing normal procedures (Norm.txt + procedure files) and tap SELECT FOLDER</string>
     <string name="buttonZeroLevel">Set0</string>
     <string name="buttonClear">SetN</string>
+    <string name="buttonDR">DR</string>
     <string name="quit">Quit</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
@@ -311,6 +312,10 @@
     <string name="pref_compass">pref_compass</string>
     <string name="pref_compass_title">Compass orientation</string>
     <string name="pref_compass_summary">Use magnetometer sensor to orient map when stationary</string>
+    <!-- Dead Reckoning settings -->
+    <string name="pref_deadreckoning">pref_deadreckoning</string>
+    <string name="pref_deadreckoning_title">Dead reckoning</string>
+    <string name="pref_deadreckoning_summary">Use phone sensors to estimate position when GPS is lost</string>
     <string name="pref_mapdrawborder_summary">Mark to draw border along corner markers</string>
     <string name="pref_maphideondrag_title">Hide objects on drag</string>
     <string name="pref_maphideondrag_summary">Mark to hide map objects while dragging</string>
@@ -451,6 +456,11 @@
     <string name="notif_nav_short">Navigating</string>
     <string name="notif_nav_started">Borkozic is navigating you</string>
     <string name="notif_nav_to">Borkozic is navigating to %s</string>
+
+    <!-- Dead Reckoning notification strings -->
+    <string name="notif_dr_short">Dead Reckoning</string>
+    <string name="notif_dr_started">Dead Reckoning activated</string>
+    <string name="notif_dr_stopped">Dead Reckoning stopped</string>
 
     <string name="notif_sharing">Sharing location in real-time</string>
     <string name="notif_error">Unable to share location</string>
