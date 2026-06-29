@@ -76,7 +76,7 @@ object DRLogger {
             if (!dir.exists()) {
                 dir.mkdirs()
             }
-            val dateStr = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            val dateStr = SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(Date())
             logFile = File(dir, "$LOG_PREFIX$dateStr.txt")
             writer = PrintWriter(FileWriter(logFile, true), true) // append mode, auto-flush
             log("=== DRLogger initialized ===")

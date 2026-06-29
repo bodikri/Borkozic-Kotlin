@@ -69,12 +69,14 @@ import com.borkozic.location.ILocationListener
 import com.borkozic.location.ILocationService
 import com.borkozic.location.LocationService
 import com.borkozic.location.DeadReckoningService
+import com.borkozic.location.GpsRingBuffer
 import com.borkozic.map.MapInformation
 import com.borkozic.navigation.BaseNavigationService
 import com.borkozic.navigation.NavigationService
 import com.borkozic.overlay.AccuracyOverlay
 import com.borkozic.overlay.AreaOverlay
 import com.borkozic.overlay.CurrentTrackOverlay
+import com.borkozic.overlay.DROverlay
 import com.borkozic.overlay.DistanceOverlay
 import com.borkozic.overlay.MapObjectsOverlay
 import com.borkozic.overlay.NavigationOverlay
@@ -246,7 +248,13 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     var deadReckoningService: DeadReckoningService? = null
     private var drBound = false
 
+    // Ring buffer за последните 3 GPS позиции (начални вектори за DR)
+    private val gpsRingBuffer = GpsRingBuffer()
+    // DR overlay — сиво самолетче + сива следа
+    private var drOverlay: DROverlay? = null
+
     private var lastKnownLocation: Location? = null
+    private var lastFsats: Int = 0  // брой сателити от последния fix (за ring buffer)
     protected var lastRenderTime: Long = 0
     protected var lastDim: Long = 0
     protected var lastMagnetic: Long = 0
@@ -1082,37 +1090,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                     }
                 }
             } else if (action == DeadReckoningService.BROADCAST_DR_LOCATION) {
-                // DR е изчислил нова позиция — използвай я като текуща локация
+                // DR е изчислил нова позиция — добавяне към сивия overlay
                 val lat = intent.getExtras()!!.getDouble("latitude")
                 val lon = intent.getExtras()!!.getDouble("longitude")
                 val alt = intent.getExtras()!!.getDouble("altitude")
                 val speed = intent.getExtras()!!.getFloat("speed")
                 val bearing = intent.getExtras()!!.getFloat("bearing")
-                val accuracy = intent.getExtras()!!.getFloat("accuracy")
+                val time = intent.getExtras()!!.getLong("timestamp")
 
                 runOnUiThread {
                     if (!ready) return@runOnUiThread
-                    // Създаване на синтетична Location от DR данни
-                    val loc = Location("dead_reckoning")
-                    loc.latitude = lat
-                    loc.longitude = lon
-                    loc.altitude = alt
-                    loc.speed = speed
-                    loc.bearing = bearing
-                    loc.accuracy = accuracy
-                    loc.time = System.currentTimeMillis()
-
-                    // Подаване към map по същия начин като GPS location
-                    // isFixed остава false (сив cursor) но isMoving=true (самолетчето се вижда)
-                    map!!.setMoving(true)
-                    application!!.setLocation(loc, false)
-                    map!!.setLocation(loc)
-
-                    // Обновяване на инфо бара (скорост, курс, височина)
-                    updateMovingInfo(loc, false)
-                    updateGPSStatus()
-
-                    // Обновяване на картата
+                    // Добавяне на DR точка към сивия overlay (следа + самолетче)
+                    drOverlay?.addDRPoint(lat, lon, alt, speed, bearing, time)
                     map!!.update()
                 }
             }
@@ -1134,6 +1123,7 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
     private val locationListener: ILocationListener = object : ILocationListener {
         override fun onGpsStatusChanged(provider: String, status: Int, fsats: Int, tsats: Int) {
+            lastFsats = fsats  // за ring buffer
             if (LocationManager.GPS_PROVIDER == provider)  //при обновяване на информация получена от GPS
             {
                 runOnUiThread(object : Runnable {
@@ -1168,18 +1158,20 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                         R.color.gpsdisabled
                                     )
                                 )
-                                // GPS загубен — стартиране на Dead Reckoning с последните данни
+                                // GPS загубен — стартиране на Dead Reckoning с усреднени данни от ring buffer
                                 if (deadReckoningService != null && !deadReckoningService!!.isDeadReckoningActive()) {
-                                    val lastLoc = lastKnownLocation
-                                    if (lastLoc != null && !java.lang.Double.isNaN(lastLoc.latitude) && !java.lang.Double.isNaN(lastLoc.longitude)) {
+                                    val avg = gpsRingBuffer.average()
+                                    if (avg != null) {
                                         com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: starting Dead Reckoning")
-                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: lat=" + lastLoc.latitude + ", lon=" + lastLoc.longitude + ", alt=" + lastLoc.altitude + ", speed=" + lastLoc.speed + ", bearing=" + lastLoc.bearing)
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: avg lat=${avg.lat}, lon=${avg.lon}, alt=${avg.alt}, speed=${avg.speed}, bearing=${avg.bearing}")
                                         deadReckoningService!!.startDeadReckoning(
-                                            lastLoc.latitude, lastLoc.longitude, lastLoc.altitude,
-                                            lastLoc.speed, lastLoc.bearing, lastLoc.accuracy
+                                            avg.lat, avg.lon, avg.alt,
+                                            avg.speed, avg.bearing, avg.accuracy
                                         )
+                                        ensureDROverlay()
+                                        drOverlay!!.startNewSession()
                                     } else {
-                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: no last known location, cannot start DR")
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: ring buffer empty, cannot start DR")
                                     }
                                 }
                                 map!!.setMoving(false)
@@ -1280,6 +1272,12 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
 
                 lastKnownLocation = location
 
+                // Обновяване на ring buffer за DR начални вектори
+                gpsRingBuffer.add(
+                    location.latitude, location.longitude, location.altitude,
+                    location.speed, location.bearing, location.accuracy, lastFsats
+                )
+
                 if (application!!.accuracyOverlay != null && location.hasAccuracy()) {
                     application!!.accuracyOverlay!!.setAccuracy(location.getAccuracy())
                 }
@@ -1349,16 +1347,18 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                         // НЕ викаме setMoving(false) и updateGPSStatus() — DR ще поддържа позицията
                         // GPS доставчик изключен (ръчно от Settings) — стартиране на Dead Reckoning
                         if (deadReckoningService != null && !deadReckoningService!!.isDeadReckoningActive()) {
-                            val lastLoc = lastKnownLocation
-                            if (lastLoc != null && !java.lang.Double.isNaN(lastLoc.latitude) && !java.lang.Double.isNaN(lastLoc.longitude)) {
+                            val avg = gpsRingBuffer.average()
+                            if (avg != null) {
                                 com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: starting Dead Reckoning")
-                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: lat=" + lastLoc.latitude + ", lon=" + lastLoc.longitude + ", alt=" + lastLoc.altitude + ", speed=" + lastLoc.speed + ", bearing=" + lastLoc.bearing)
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: avg lat=${avg.lat}, lon=${avg.lon}, alt=${avg.alt}, speed=${avg.speed}, bearing=${avg.bearing}")
                                 deadReckoningService!!.startDeadReckoning(
-                                    lastLoc.latitude, lastLoc.longitude, lastLoc.altitude,
-                                    lastLoc.speed, lastLoc.bearing, lastLoc.accuracy
+                                    avg.lat, avg.lon, avg.alt,
+                                    avg.speed, avg.bearing, avg.accuracy
                                 )
+                                ensureDROverlay()
+                                drOverlay!!.startNewSession()
                             } else {
-                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: no last known location, cannot start DR")
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: ring buffer empty, cannot start DR")
                             }
                         }
                     }
@@ -1559,23 +1559,29 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
             SidePanelAction.DR -> {
                 if (deadReckoningService != null) {
                     if (!deadReckoningService!!.isDeadReckoningActive()) {
-                        // Включване на ръчен DR
-                        val lastLoc = lastKnownLocation
-                        if (lastLoc != null && !java.lang.Double.isNaN(lastLoc.latitude) && !java.lang.Double.isNaN(lastLoc.longitude)) {
+                        // Включване на ръчен DR — използвай усреднени стойности от ring buffer
+                        val avg = gpsRingBuffer.average()
+                        if (avg != null) {
                             com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: user activated Dead Reckoning")
+                            com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: ring buffer size=${gpsRingBuffer.size()}, avg lat=${avg.lat}, lon=${avg.lon}, speed=${avg.speed}, bearing=${avg.bearing}")
                             deadReckoningService!!.startManualDeadReckoning(
-                                lastLoc.latitude, lastLoc.longitude, lastLoc.altitude,
-                                lastLoc.speed, lastLoc.bearing, lastLoc.accuracy
+                                avg.lat, avg.lon, avg.alt,
+                                avg.speed, avg.bearing, avg.accuracy
                             )
                             isDRActiveState = true
+                            // Стартиране на нова DR сесия в overlay-я
+                            ensureDROverlay()
+                            drOverlay!!.startNewSession()
                         } else {
-                            com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: cannot start — no last known location")
+                            com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: cannot start — ring buffer empty (need 5+ satellites)")
                         }
                     } else {
                         // Изключване на ръчен DR
                         com.borkozic.location.DRLogger.log(this@MapActivity, "DR_MANUAL: user deactivated Dead Reckoning")
                         deadReckoningService!!.stopDeadReckoning()
                         isDRActiveState = false
+                        // Спиране на overlay сесията (следата остава, но не добавя нови точки)
+                        drOverlay?.stopSession()
                     }
                 }
             }
@@ -3568,6 +3574,21 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
         application!!.addWaypoint(wpt)
         wpt.set = areaWaypointSet
         application!!.saveWaypoints(areaWaypointSet!!)
+    }
+
+    /**
+     * Създава DROverlay ако още не съществува.
+     * Overlay-ят остава в Borkozic.overlays дори след DR стоп.
+     */
+    private fun ensureDROverlay() {
+        if (drOverlay != null) return
+        drOverlay = DROverlay(this)
+        // Зареждане на plane icon според текущите настройки
+        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
+        val planeType = prefs.getString(getString(R.string.pref_plane_type), "L39") ?: "L39"
+        val planeSize = prefs.getString(getString(R.string.pref_planelogosize), "100")?.toIntOrNull() ?: 100
+        drOverlay!!.updatePlaneIcon(planeType, planeSize)
+        application!!.drOverlay = drOverlay
     }
 
     companion object {
