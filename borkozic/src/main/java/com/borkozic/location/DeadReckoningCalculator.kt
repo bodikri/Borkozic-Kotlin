@@ -339,8 +339,9 @@ class DeadReckoningCalculator {
             // Използваме rotation matrix за точна трансформация
             // Android: R трансформира device→world, world = [East, North, Up]
             // earthAccel = R * deviceAccel
-            val deviceAccel = floatArrayOf(linearAccelX.toFloat(), linearAccelY.toFloat(), linearAccelZ.toFloat())
-            val earthAccel = FloatArray(3)
+            // Matrix.multiplyMV работи с 4D хомогенни координати (4x4 mat × 4-vec = 4-vec)
+            val deviceAccel = floatArrayOf(linearAccelX.toFloat(), linearAccelY.toFloat(), linearAccelZ.toFloat(), 0f)
+            val earthAccel = FloatArray(4)
             android.opengl.Matrix.multiplyMV(earthAccel, 0, rotMatrix, 0, deviceAccel, 0)
 
             // Android rotation matrix: earthAccel[0]=East, earthAccel[1]=North, earthAccel[2]=Up
