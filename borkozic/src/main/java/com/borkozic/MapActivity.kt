@@ -3583,11 +3583,6 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
     private fun ensureDROverlay() {
         if (drOverlay != null) return
         drOverlay = DROverlay(this)
-        // Зареждане на plane icon според текущите настройки
-        val prefs = PreferenceManager.getDefaultSharedPreferences(this)
-        val planeType = prefs.getString(getString(R.string.pref_plane_type), "L39") ?: "L39"
-        val planeSize = prefs.getString(getString(R.string.pref_planelogosize), "100")?.toIntOrNull() ?: 100
-        drOverlay!!.updatePlaneIcon(planeType, planeSize)
         application!!.drOverlay = drOverlay
     }
 

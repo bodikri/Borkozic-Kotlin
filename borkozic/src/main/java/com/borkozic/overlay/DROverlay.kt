@@ -3,13 +3,8 @@ package com.borkozic.overlay
 import android.app.Activity
 import android.content.SharedPreferences
 import android.graphics.Canvas
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffColorFilter
-import android.graphics.drawable.Drawable
-import androidx.core.content.ContextCompat
 import com.borkozic.Borkozic
 import com.borkozic.MapView
-import com.borkozic.R
 import com.borkozic.data.Track
 
 /**
@@ -27,15 +22,24 @@ import com.borkozic.data.Track
  */
 class DROverlay(mapActivity: Activity) : TrackOverlay(mapActivity) {
 
-    // Последна DR позиция за чертане на самолетче
+    // Последна DR позиция за чертане на триъгълниче
     private var lastDRLat: Double = Double.NaN
     private var lastDRLon: Double = Double.NaN
     private var lastDRBearing: Float = 0f
     private var lastDRXY: IntArray = intArrayOf(0, 0)
 
-    // Сив plane icon — същият като основния, но с GRAY color filter
-    private var grayPlaneIcon: Drawable? = null
-    private var planeIconSize: Int = 100 // default
+    // Paint за сивото триъгълниче
+    private val trianglePaint = android.graphics.Paint().apply {
+        color = 0xFF888888.toInt()
+        style = android.graphics.Paint.Style.FILL
+        isAntiAlias = true
+    }
+    private val triangleOutline = android.graphics.Paint().apply {
+        color = 0xFF666666.toInt()
+        style = android.graphics.Paint.Style.STROKE
+        strokeWidth = 1.5f
+        isAntiAlias = true
+    }
 
     // Флаг дали overlay-ят е активен (получава нови точки)
     @Volatile
@@ -97,45 +101,6 @@ class DROverlay(mapActivity: Activity) : TrackOverlay(mapActivity) {
         lastDRXY = app.getXYbyLatLon(lastDRLat, lastDRLon)
     }
 
-    /**
-     * Зарежда сивия plane icon според текущите настройки.
-     */
-    fun updatePlaneIcon(planeLogo: String?, planeLogoSize: Int) {
-        this.planeIconSize = planeLogoSize
-        val resId = when (planeLogo) {
-            "MiG29" -> when (planeLogoSize) {
-                60 -> R.drawable.pic_mig29_60
-                80 -> R.drawable.pic_mig29_80
-                100 -> R.drawable.pic_mig29_100
-                120 -> R.drawable.pic_mig29_120
-                140 -> R.drawable.pic_mig29_140
-                160 -> R.drawable.pic_mig29_160
-                else -> R.drawable.pic_mig29
-            }
-            "L39" -> when (planeLogoSize) {
-                60 -> R.drawable.pic_l39_60
-                80 -> R.drawable.pic_l39_80
-                100 -> R.drawable.pic_l39_100
-                120 -> R.drawable.pic_l39_120
-                140 -> R.drawable.pic_l39_140
-                160 -> R.drawable.pic_l39_160
-                else -> R.drawable.pic_l39
-            }
-            else -> when (planeLogoSize) {
-                60 -> R.drawable.pic_mig29_60
-                80 -> R.drawable.pic_mig29_80
-                100 -> R.drawable.pic_mig29_100
-                120 -> R.drawable.pic_mig29_120
-                140 -> R.drawable.pic_mig29_140
-                160 -> R.drawable.pic_mig29_160
-                else -> R.drawable.pic_mig29
-            }
-        }
-        grayPlaneIcon = ContextCompat.getDrawable(context, resId)
-        // Преоцветяване в сиво
-        grayPlaneIcon?.colorFilter = PorterDuffColorFilter(0xFF888888.toInt(), PorterDuff.Mode.SRC_IN)
-    }
-
     override fun onMapChanged() {
         super.onMapChanged()
         updateDRXY()
@@ -147,9 +112,8 @@ class DROverlay(mapActivity: Activity) : TrackOverlay(mapActivity) {
     }
 
     override fun onDrawFinished(c: Canvas, mapView: MapView, centerX: Int, centerY: Int) {
-        // Чертане на сивото самолетче на последната DR позиция
+        // Чертане на сиво триъгълниче на последната DR позиция
         if (!isActive || lastDRLat.isNaN() || lastDRLon.isNaN()) return
-        val icon = grayPlaneIcon ?: return
 
         val cxy = mapView.mapCenterXY
         val x = (lastDRXY[0] - cxy[0]).toFloat()
@@ -162,15 +126,21 @@ class DROverlay(mapActivity: Activity) : TrackOverlay(mapActivity) {
         c.save()
         c.translate(x, y)
 
-        // Завъртане според bearing (ако е Track Up, самолетчето сочи нагоре без завъртане)
+        // Завъртане според bearing (ако е Track Up, триъгълничето сочи нагоре без завъртане)
         if (!mapView.isTrackUp) {
             c.rotate(lastDRBearing)
         }
 
-        val hw = icon.intrinsicWidth / 2
-        val hh = icon.intrinsicHeight / 2
-        icon.setBounds(-hw, -hh - 25, hw, hh - 25)
-        icon.draw(c)
+        // Триъгълниче: връх нагоре (0° bearing = север/нагоре)
+        val size = 12f
+        val path = android.graphics.Path()
+        path.moveTo(0f, -size)           // връх
+        path.lineTo(-size * 0.7f, size * 0.7f)  // долен ляв
+        path.lineTo(size * 0.7f, size * 0.7f)   // долен десен
+        path.close()
+
+        c.drawPath(path, trianglePaint)
+        c.drawPath(path, triangleOutline)
 
         c.restore()
     }
