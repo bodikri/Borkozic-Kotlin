@@ -132,7 +132,7 @@ class DROverlay(mapActivity: Activity) : TrackOverlay(mapActivity) {
         }
 
         // Триъгълниче: връх нагоре (0° bearing = север/нагоре)
-        val size = 12f
+        val size = 24f
         val path = android.graphics.Path()
         path.moveTo(0f, -size)           // връх
         path.lineTo(-size * 0.7f, size * 0.7f)  // долен ляв

@@ -480,6 +480,11 @@ open class Map : Serializable {
                             val src = Rect(0, 0, tile_dx, tile_dy)
                             val dst = Rect(tx, ty, tx + src.right, ty + src.bottom)
                             c.drawBitmap(tile, src, dst, null)
+                        } else if (tile_w > tile.width || tile_h > tile.height) {
+                            // Zoom > 100%: мащабирай тайла да запълни tile_w × tile_h
+                            val src = Rect(0, 0, tile.width, tile.height)
+                            val dst = Rect(tx, ty, tx + tile_w, ty + tile_h)
+                            c.drawBitmap(tile, src, dst, null)
                         } else {
                             c.drawBitmap(tile, tx.toFloat(), ty.toFloat(), null)
                         }
