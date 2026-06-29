@@ -115,7 +115,10 @@ class DeadReckoningCalculator {
 
     // --- Rotation matrix (device → Earth) ---
     // Обновява се при всеки rotation vector sensor event
-    private val rotMatrix = FloatArray(9)
+    // rotMatrix3x3: от SensorManager.getRotationMatrixFromVector (3×3, 9 елемента)
+    // rotMatrix4x4: конвертирана 4×4 за Matrix.multiplyMV (16 елемента)
+    private val rotMatrix3x3 = FloatArray(9)
+    private val rotMatrix4x4 = FloatArray(16)
     private val rotMatrixInitialized = BooleanArray(1)
 
     // --- Compass heading (fallback, от magnetometer + accel) ---
@@ -342,7 +345,7 @@ class DeadReckoningCalculator {
             // Matrix.multiplyMV работи с 4D хомогенни координати (4x4 mat × 4-vec = 4-vec)
             val deviceAccel = floatArrayOf(linearAccelX.toFloat(), linearAccelY.toFloat(), linearAccelZ.toFloat(), 0f)
             val earthAccel = FloatArray(4)
-            android.opengl.Matrix.multiplyMV(earthAccel, 0, rotMatrix, 0, deviceAccel, 0)
+            android.opengl.Matrix.multiplyMV(earthAccel, 0, rotMatrix4x4, 0, deviceAccel, 0)
 
             // Android rotation matrix: earthAccel[0]=East, earthAccel[1]=North, earthAccel[2]=Up
             accelE = earthAccel[0].toDouble()
@@ -597,13 +600,18 @@ class DeadReckoningCalculator {
 
         // Изчисляване на rotation matrix от rotation vector
         try {
-            SensorManager.getRotationMatrixFromVector(rotMatrix, values)
+            SensorManager.getRotationMatrixFromVector(rotMatrix3x3, values)
+            // Конвертиране 3×3 → 4×4 хомогенна матрица за Matrix.multiplyMV
+            rotMatrix4x4[0] = rotMatrix3x3[0]; rotMatrix4x4[1] = rotMatrix3x3[1]; rotMatrix4x4[2] = rotMatrix3x3[2]; rotMatrix4x4[3] = 0f
+            rotMatrix4x4[4] = rotMatrix3x3[3]; rotMatrix4x4[5] = rotMatrix3x3[4]; rotMatrix4x4[6] = rotMatrix3x3[5]; rotMatrix4x4[7] = 0f
+            rotMatrix4x4[8] = rotMatrix3x3[6]; rotMatrix4x4[9] = rotMatrix3x3[7]; rotMatrix4x4[10] = rotMatrix3x3[8]; rotMatrix4x4[11] = 0f
+            rotMatrix4x4[12] = 0f; rotMatrix4x4[13] = 0f; rotMatrix4x4[14] = 0f; rotMatrix4x4[15] = 1f
             rotMatrixInitialized[0] = true
             lastRotVectorTimestamp = timestamp
 
             // Heading от rotation matrix (азимут)
             val orientation = FloatArray(3)
-            SensorManager.getOrientation(rotMatrix, orientation)
+            SensorManager.getOrientation(rotMatrix3x3, orientation)
             // orientation[0] = azimuth в радиани [-π, π]
             val azimuthDeg = Math.toDegrees(orientation[0].toDouble())
             // Нормализиране към [0, 360)
