@@ -1,6 +1,0 @@
-[2026-06-28 23:51:51.644] === DRLogger initialized ===
-[2026-06-28 23:51:51.645] Device: samsung SM-M236B
-[2026-06-28 23:51:51.646] Android: 14 (API 34)
-[2026-06-28 23:51:51.646] DR_STOP: state=2
-[2026-06-28 23:51:51.647] DR_STOP: duration=0ms
-[2026-06-28 23:51:51.647] === DR session ended ===

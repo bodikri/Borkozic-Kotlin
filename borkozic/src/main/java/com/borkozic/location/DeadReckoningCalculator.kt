@@ -892,7 +892,7 @@ class DeadReckoningCalculator {
      * Нулиране на калкулатора.
      */
     fun reset() {
-        fillZero(x, 4)
+        x.fill(0.0)
         fillZero(P, 4)
         posNorth = 0.0
         posEast = 0.0
