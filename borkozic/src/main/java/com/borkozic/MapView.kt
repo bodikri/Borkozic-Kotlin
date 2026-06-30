@@ -422,7 +422,14 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
      *    - North Up: cursor.rotate(+bearing) rotates the plane to the heading angle.
      * 7. Crosshair (when !isFollowing): centered, drawn in rotated canvas.
      */
+    private var drawLogCounter = 0
+
     protected fun doDraw(canvas: Canvas) {
+        drawLogCounter++
+        if (drawLogCounter % 30 == 0) {
+            val mapZoom = application?.currentMap?.zoom ?: 0.0
+            android.util.Log.d("MapView", "doDraw: mapZoom=$mapZoom, pinchScale=$scale, mpp=$mpp")
+        }
         val scaled = scale > 1.1f || scale < 0.9f
         if (scaled) {
             val dx = width * (1 - scale) / 2

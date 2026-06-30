@@ -378,6 +378,7 @@ open class Map : Serializable {
     fun zoomBy(factor: Double) {
         android.util.Log.d("Map", "zoomBy: factor=$factor, currentZoom=$zoom, newZoom=${zoom * factor}")
         setZoom(zoom * factor)
+        android.util.Log.d("Map", "zoomBy: AFTER setZoom, zoom=$zoom")
     }
 
     @Synchronized
