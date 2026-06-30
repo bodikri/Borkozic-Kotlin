@@ -2,6 +2,8 @@ package com.borkozic.map.online
 
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Rect
+import android.graphics.RectF
 import android.util.Log
 import android.view.View
 import com.borkozic.map.Map
@@ -339,6 +341,14 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         //
         // Това позиционира tile-овете така, че map_xy точката
         // (lookAhead курсорът) да е точно в центъра на екрана.
+        //
+        // Ако zoom > 2^(srcZoom−defZoom) (надхвърляме max zoom нивото на provider-а),
+        // прилагаме допълнителен мащаб (tileScale) върху тайловете.
+        val tileScale = zoom / 2.0.pow((srcZoom - defZoom).toDouble())
+        val drawTileW = (TILE_WIDTH * tileScale).toFloat()
+        val drawTileH = (TILE_HEIGHT * tileScale).toFloat()
+        val useScaledDraw = abs(tileScale - 1.0) > 0.001
+
         for (tx in tMinX..tMaxX) {
             for (ty in tMinY..tMaxY) {
                 // Екранна позиция на горния ляв ъгъл на tile-а
@@ -348,8 +358,16 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
                 // Зареждане на tile от кеша/мрежата
                 val tile = getTile(tx, ty)
                 if (tile != null && !tile.isRecycled()) {
-                    // Рисуване на tile bitmap върху Canvas
-                    c.drawBitmap(tile, sx.toFloat(), sy.toFloat(), null)
+                    if (useScaledDraw) {
+                        // Мащабиране на tile-а за над-max zoom
+                        val src = Rect(0, 0, tile.width, tile.height)
+                        val dst = RectF(sx.toFloat(), sy.toFloat(),
+                                        (sx + drawTileW).toFloat(), (sy + drawTileH).toFloat())
+                        c.drawBitmap(tile, src, dst, null)
+                    } else {
+                        // Нормално рисуване 1:1
+                        c.drawBitmap(tile, sx.toFloat(), sy.toFloat(), null)
+                    }
                 }
             }
         }
