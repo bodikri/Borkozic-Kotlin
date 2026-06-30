@@ -376,17 +376,23 @@ open class Map : Serializable {
     }
 
     fun zoomBy(factor: Double) {
-        android.util.Log.d("Map", "zoomBy: factor=$factor, currentZoom=$zoom, newZoom=${zoom * factor}")
-        setZoom(zoom * factor)
-        android.util.Log.d("Map", "zoomBy: AFTER setZoom, zoom=$zoom")
+        android.util.Log.d("Map", "zoomBy: factor=$factor, currentZoom=$zoom, newZoom=${zoom * factor}, class=${this.javaClass.simpleName}")
+        doSetZoom(zoom * factor)
+        android.util.Log.d("Map", "zoomBy: AFTER doSetZoom, zoom=$zoom")
     }
 
     @Synchronized
     open fun setZoom(z: Double) {
-        android.util.Log.d("Map", "setZoom: requested=$z, before=$zoom")
+        android.util.Log.d("Map", "setZoom: requested=$z, before=$zoom, class=${this.javaClass.simpleName}")
+        doSetZoom(z)
+    }
+
+    @Synchronized
+    private fun doSetZoom(z: Double) {
+        android.util.Log.d("Map", "doSetZoom: z=$z, ozf=${ozf != null}")
         //Log.e("OZI", "setZoom: " + z);
         zoom = ozf!!.setZoom(z)
-        android.util.Log.d("Map", "setZoom: after ozf.setZoom, zoom=$zoom")
+        android.util.Log.d("Map", "doSetZoom: after ozf.setZoom, zoom=$zoom")
         if (cache != null) cache!!.destroy()
         val cacheSize = Math.ceil((pixels * 1.0 / (ozf!!.tile_dx() * ozf!!.tile_dy()) * 3)).toInt()
         //Log.e("OZI", "Cache size: " + cacheSize);
@@ -402,7 +408,7 @@ open class Map : Serializable {
     fun setTemporaryZoom(zoom: Double) {
         savedZoom = this.zoom
         //Log.e("MAP", "setTemporaryZoom: " + zoom);
-        setZoom(zoom)
+        doSetZoom(zoom)
     }
 
     open val scaledWidth: Int
