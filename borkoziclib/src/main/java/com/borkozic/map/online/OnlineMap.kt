@@ -339,6 +339,18 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         //
         // Това позиционира tile-овете така, че map_xy точката
         // (lookAhead курсорът) да е точно в центъра на екрана.
+        //
+        // Ако zoom > 2^(srcZoom−defZoom) (надхвърляме max native zoom),
+        // прилагаме допълнителен canvas scale за плавно мащабиране без шевове.
+        val tileScale = zoom / 2.0.pow((srcZoom - defZoom).toDouble())
+        val useCanvasScale = abs(tileScale - 1.0) > 0.001
+
+        if (useCanvasScale) {
+            // Мащабираме целия canvas около центъра на екрана
+            c.save()
+            c.scale(tileScale.toFloat(), tileScale.toFloat(), width / 2f, height / 2f)
+        }
+
         for (tx in tMinX..tMaxX) {
             for (ty in tMinY..tMaxY) {
                 // Екранна позиция на горния ляв ъгъл на tile-а
@@ -352,6 +364,10 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
                     c.drawBitmap(tile, sx.toFloat(), sy.toFloat(), null)
                 }
             }
+        }
+
+        if (useCanvasScale) {
+            c.restore()
         }
 
         return result
@@ -631,9 +647,11 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
             srcZoom = tileProvider.minZoom
         }
 
-        // Запазване на реалния zoom фактор
-        zoom = z
-        android.util.Log.d("OnlineMap", "setZoom: AFTER, zoom=$zoom, srcZoom=$srcZoom, zDiff=$zDiff")
+        // Запазване на реалния zoom фактор, ограничен до 200% над max native zoom
+        val nativeZoom = 2.0.pow((srcZoom - defZoom).toDouble())
+        val maxOverZoom = nativeZoom * 2.0 // максимум 200% над native
+        zoom = minOf(z, maxOverZoom)
+        android.util.Log.d("OnlineMap", "setZoom: AFTER, zoom=$zoom, srcZoom=$srcZoom, zDiff=$zDiff, nativeZoom=$nativeZoom, maxOverZoom=$maxOverZoom")
         // Log.e("ONLINE", "z: " + srcZoom + " zoom: " + zoom + " diff: " + zDiff)
 
         // Нулиране на tile controller — изчиства кеша и презарежда с новото zoom
