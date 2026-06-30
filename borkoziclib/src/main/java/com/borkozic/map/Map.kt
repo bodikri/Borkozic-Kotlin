@@ -376,17 +376,13 @@ open class Map : Serializable {
     }
 
     fun zoomBy(factor: Double) {
-        android.util.Log.d("Map", "zoomBy: factor=$factor, currentZoom=$zoom, newZoom=${zoom * factor}, class=${this.javaClass.simpleName}")
         setZoom(zoom * factor)
-        android.util.Log.d("Map", "zoomBy: AFTER setZoom, zoom=$zoom")
     }
 
     @Synchronized
     open fun setZoom(z: Double) {
-        android.util.Log.d("Map", "setZoom(base): z=$z, before=$zoom, class=${this.javaClass.simpleName}, ozf=${ozf != null}")
         //Log.e("OZI", "setZoom: " + z);
         zoom = ozf!!.setZoom(z)
-        android.util.Log.d("Map", "setZoom(base): after ozf.setZoom, zoom=$zoom")
         if (cache != null) cache!!.destroy()
         val cacheSize = Math.ceil((pixels * 1.0 / (ozf!!.tile_dx() * ozf!!.tile_dy()) * 3)).toInt()
         //Log.e("OZI", "Cache size: " + cacheSize);
@@ -420,7 +416,6 @@ open class Map : Serializable {
     @Synchronized
     open fun drawMap(bearing: Float, loc: DoubleArray, lookAhead: IntArray, width: Int, height: Int, cropBorder: Boolean, drawBorder: Boolean, c: Canvas): Boolean {
         if (ozf == null) return false
-        android.util.Log.d("Map", "drawMap: zoom=$zoom, ozf.zoom=${ozf!!.zoom}, ozf.factor=${ozf!!.factor}")
         val map_xy = IntArray(2)
         getXYByLatLon(loc[0], loc[1], map_xy)
         map_xy[0] -= lookAhead[0]

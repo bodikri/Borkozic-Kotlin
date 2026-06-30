@@ -257,7 +257,6 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         drawBorder: Boolean,
         c: Canvas
     ): Boolean {
-        android.util.Log.d("OnlineMap", "drawMap: zoom=$zoom, srcZoom=$srcZoom")
         // ── Стъпка 0: Конвертиране на lat/lon → пикселни координати ──
         // map_xy е позицията на lookAhead курсора в глобалната tile пикселна мрежа.
         // Глобалната мрежа е с размери (2^zoom * TILE_WIDTH) × (2^zoom * TILE_HEIGHT).
@@ -622,13 +621,17 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
      * 2. srcZoom = defZoom + zDiff
      * 3. Ограничава srcZoom в [minZoom, maxZoom] на tileProvider
      * 4. Коригира zDiff спрямо реалното srcZoom
-     * 5. Обновява zoom фактора и заглавието
+     * 5. Обновява zoom фактора (ограничен до 200% над native zoom)
      * 6. Reset-ва tileController (изчиства кеша за старото zoom)
+     *
+     * При надхвърляне на maxZoom на tileProvider-а, srcZoom се клампва
+     * към maxZoom, а zoom фактора продължава да расте до 200% над native.
+     * Това позволява плавно мащабиране чрез canvas scale в drawMap()
+     * без да се натоварва системата с прекомерно разтягане на тайлове.
      *
      * @param z  нов zoom фактор (1.0 = базово, 2.0 = 2×, 0.5 = ½×)
      */
     public override fun setZoom(z: Double) {
-        android.util.Log.d("OnlineMap", "setZoom: z=$z, before zoom=$zoom, srcZoom=$srcZoom, defZoom=$defZoom")
         // Изчисляване на разликата в zoom нива чрез натурален логаритъм
         // zDiff = колко нива сме от defZoom (положително = по-детайлно, отрицателно = по-общо)
         var zDiff = (ln(z) / ln(2.0)).toInt()
@@ -648,10 +651,12 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         }
 
         // Запазване на реалния zoom фактор, ограничен до 200% над max native zoom
+        // Когато srcZoom е клампнато към maxZoom (напр. 18 = max),
+        // nativeZoom = 2^(18-18) = 1.0, така maxOverZoom = 2.0 (200%)
+        // Това предотвратява прекомерно мащабиране което натоварва системата
         val nativeZoom = 2.0.pow((srcZoom - defZoom).toDouble())
         val maxOverZoom = nativeZoom * 2.0 // максимум 200% над native
         zoom = minOf(z, maxOverZoom)
-        android.util.Log.d("OnlineMap", "setZoom: AFTER, zoom=$zoom, srcZoom=$srcZoom, zDiff=$zDiff, nativeZoom=$nativeZoom, maxOverZoom=$maxOverZoom")
         // Log.e("ONLINE", "z: " + srcZoom + " zoom: " + zoom + " diff: " + zDiff)
 
         // Нулиране на tile controller — изчиства кеша и презарежда с новото zoom

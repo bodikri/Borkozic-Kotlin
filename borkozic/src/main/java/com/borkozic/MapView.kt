@@ -422,14 +422,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
      *    - North Up: cursor.rotate(+bearing) rotates the plane to the heading angle.
      * 7. Crosshair (when !isFollowing): centered, drawn in rotated canvas.
      */
-    private var drawLogCounter = 0
-
     protected fun doDraw(canvas: Canvas) {
-        drawLogCounter++
-        if (drawLogCounter % 30 == 0) {
-            val mapZoom = application?.currentMap?.zoom ?: 0.0
-            android.util.Log.d("MapView", "doDraw: mapZoom=$mapZoom, pinchScale=$scale, mpp=$mpp")
-        }
         val scaled = scale > 1.1f || scale < 0.9f
         if (scaled) {
             val dx = width * (1 - scale) / 2
@@ -1309,7 +1302,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                                 } else {
                                     1f / (kotlin.math.log10(1.0 / ratio).toFloat() + 1f)
                                 }
-                                android.util.Log.d("MapView", "PINCH: ratio=$ratio, scale=$scale, startDist=$gestureStartPinchDist, currentDist=$currentDist")
                             }
 
                             if (!isFollowing) {
@@ -1330,7 +1322,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
 
             MotionEvent.ACTION_POINTER_UP -> {
                 if (pointerCount == 2) {
-                    android.util.Log.d("MapView", "PINCH END (POINTER_UP): scale=$scale, currentMapZoom=${application?.currentMap?.zoom}")
                     try {
                         val borkozic = context as MapActivity
                         borkozic.zoomMap(scale)
@@ -1353,7 +1344,6 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 upEvent = MotionEvent.obtain(event)
 
                 if (gestureMode == GESTURE_PINCH) {
-                    android.util.Log.d("MapView", "PINCH END (ACTION_UP): scale=$scale, currentMapZoom=${application?.currentMap?.zoom}")
                     try {
                         val borkozic = context as MapActivity
                         borkozic.zoomMap(scale)
