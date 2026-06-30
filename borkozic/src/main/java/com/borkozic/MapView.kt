@@ -1302,6 +1302,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                                 } else {
                                     1f / (kotlin.math.log10(1.0 / ratio).toFloat() + 1f)
                                 }
+                                android.util.Log.d("MapView", "PINCH: ratio=$ratio, scale=$scale, startDist=$gestureStartPinchDist, currentDist=$currentDist")
                             }
 
                             if (!isFollowing) {
@@ -1322,6 +1323,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
 
             MotionEvent.ACTION_POINTER_UP -> {
                 if (pointerCount == 2) {
+                    android.util.Log.d("MapView", "PINCH END (POINTER_UP): scale=$scale, currentMapZoom=${application?.currentMap?.zoom}")
                     try {
                         val borkozic = context as MapActivity
                         borkozic.zoomMap(scale)
@@ -1344,6 +1346,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
                 upEvent = MotionEvent.obtain(event)
 
                 if (gestureMode == GESTURE_PINCH) {
+                    android.util.Log.d("MapView", "PINCH END (ACTION_UP): scale=$scale, currentMapZoom=${application?.currentMap?.zoom}")
                     try {
                         val borkozic = context as MapActivity
                         borkozic.zoomMap(scale)

@@ -376,13 +376,16 @@ open class Map : Serializable {
     }
 
     fun zoomBy(factor: Double) {
+        android.util.Log.d("Map", "zoomBy: factor=$factor, currentZoom=$zoom, newZoom=${zoom * factor}")
         setZoom(zoom * factor)
     }
 
     @Synchronized
     open fun setZoom(z: Double) {
+        android.util.Log.d("Map", "setZoom: requested=$z, before=$zoom")
         //Log.e("OZI", "setZoom: " + z);
         zoom = ozf!!.setZoom(z)
+        android.util.Log.d("Map", "setZoom: after ozf.setZoom, zoom=$zoom")
         if (cache != null) cache!!.destroy()
         val cacheSize = Math.ceil((pixels * 1.0 / (ozf!!.tile_dx() * ozf!!.tile_dy()) * 3)).toInt()
         //Log.e("OZI", "Cache size: " + cacheSize);

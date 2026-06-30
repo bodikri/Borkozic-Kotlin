@@ -53,6 +53,7 @@ class OzfReader(file: File) {
     }
 
     fun setZoom(zoom: Double): Double {
+        android.util.Log.d("OZF", "setZoom ENTER: requested=$zoom, ozf.scales=${ozf.scales}")
         this.zoom = zoom
 
         val b = ozf.height().toDouble()
