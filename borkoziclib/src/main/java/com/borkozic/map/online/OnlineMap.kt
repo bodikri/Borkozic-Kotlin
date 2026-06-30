@@ -257,6 +257,7 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         drawBorder: Boolean,
         c: Canvas
     ): Boolean {
+        android.util.Log.d("OnlineMap", "drawMap: zoom=$zoom, srcZoom=$srcZoom")
         // ── Стъпка 0: Конвертиране на lat/lon → пикселни координати ──
         // map_xy е позицията на lookAhead курсора в глобалната tile пикселна мрежа.
         // Глобалната мрежа е с размери (2^zoom * TILE_WIDTH) × (2^zoom * TILE_HEIGHT).
@@ -611,6 +612,7 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
      * @param z  нов zoom фактор (1.0 = базово, 2.0 = 2×, 0.5 = ½×)
      */
     public override fun setZoom(z: Double) {
+        android.util.Log.d("OnlineMap", "setZoom: z=$z, before zoom=$zoom, srcZoom=$srcZoom, defZoom=$defZoom")
         // Изчисляване на разликата в zoom нива чрез натурален логаритъм
         // zDiff = колко нива сме от defZoom (положително = по-детайлно, отрицателно = по-общо)
         var zDiff = (ln(z) / ln(2.0)).toInt()
@@ -631,6 +633,7 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
 
         // Запазване на реалния zoom фактор
         zoom = z
+        android.util.Log.d("OnlineMap", "setZoom: AFTER, zoom=$zoom, srcZoom=$srcZoom, zDiff=$zDiff")
         // Log.e("ONLINE", "z: " + srcZoom + " zoom: " + zoom + " diff: " + zDiff)
 
         // Нулиране на tile controller — изчиства кеша и презарежда с новото zoom
