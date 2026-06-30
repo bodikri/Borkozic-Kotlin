@@ -1115,9 +1115,10 @@ class Borkozic : BaseApplication() {
         }
 
     fun zoomBy(factor: Float): Boolean {
-        android.util.Log.d("Borkozic", "zoomBy: factor=$factor, currentMap=${currentMap?.zoom}")
+        android.util.Log.d("Borkozic", "zoomBy: factor=$factor, currentMap=${currentMap?.javaClass?.simpleName}, currentMap.zoom=${currentMap?.zoom}")
         if (currentMap != null) {
             currentMap!!.zoomBy(factor.toDouble())
+            android.util.Log.d("Borkozic", "zoomBy: AFTER, currentMap.zoom=${currentMap?.zoom}")
             coveringMaps = null
             return true
         }

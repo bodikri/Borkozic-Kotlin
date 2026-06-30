@@ -420,6 +420,7 @@ open class Map : Serializable {
     @Synchronized
     open fun drawMap(bearing: Float, loc: DoubleArray, lookAhead: IntArray, width: Int, height: Int, cropBorder: Boolean, drawBorder: Boolean, c: Canvas): Boolean {
         if (ozf == null) return false
+        android.util.Log.d("Map", "drawMap: zoom=$zoom, ozf.zoom=${ozf!!.zoom}, ozf.factor=${ozf!!.factor}")
         val map_xy = IntArray(2)
         getXYByLatLon(loc[0], loc[1], map_xy)
         map_xy[0] -= lookAhead[0]
