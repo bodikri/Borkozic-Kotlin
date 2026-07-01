@@ -32,6 +32,8 @@ import android.view.View
 import com.jhlabs.Point2D
 import com.jhlabs.map.proj.Projection
 import com.jhlabs.map.proj.ProjectionException
+import com.borkozic.map.viewport.TileBounds
+import com.borkozic.map.viewport.ViewportTileBounds
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -447,7 +449,7 @@ open class Map : Serializable {
             val txb = tb.txb
             val tyb = tb.tyb
 
-            val result = tb.cMin != 0 && tb.rMin != 0 && tb.cMax != ozf!!.tiles_per_x() && tb.rMax != ozf!!.tiles_per_y()
+            var result = tb.cMin != 0 && tb.rMin != 0 && tb.cMax != ozf!!.tiles_per_x() && tb.rMax != ozf!!.tiles_per_y()
 
             for (i in r_min until r_max) {
                 for (j in c_min until c_max) {
