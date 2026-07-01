@@ -438,33 +438,16 @@ open class Map : Serializable {
                 return false
             }
 
-            var c_min = Math.floor(ozf!!.map_x_to_c(map_xy[0] - width / 2)).toInt()
-            var c_max = Math.ceil(ozf!!.map_x_to_c(map_xy[0] + width / 2)).toInt()
+            val vb = ViewportTileBounds(ozf!!, map_xy, width, height, bearing)
+            val tb: TileBounds = vb.calculate()
+            val c_min = tb.cMin
+            val c_max = tb.cMax
+            val r_min = tb.rMin
+            val r_max = tb.rMax
+            val txb = tb.txb
+            val tyb = tb.tyb
 
-            var r_min = Math.floor(ozf!!.map_y_to_r(map_xy[1] - height / 2)).toInt()
-            var r_max = Math.ceil(ozf!!.map_y_to_r(map_xy[1] + height / 2)).toInt()
-
-            var result = true
-
-            if (c_min < 0) {
-                c_min = 0
-                result = false
-            }
-            if (r_min < 0) {
-                r_min = 0
-                result = false
-            }
-            if (c_max > ozf!!.tiles_per_x()) {
-                c_max = ozf!!.tiles_per_x()
-                result = false
-            }
-            if (r_max > ozf!!.tiles_per_y()) {
-                r_max = ozf!!.tiles_per_y()
-                result = false
-            }
-
-            val txb = width / 2 - xy[0] - (cr[0] - c_min) * tile_w
-            val tyb = height / 2 - xy[1] - (cr[1] - r_min) * tile_h
+            val result = tb.cMin != 0 && tb.rMin != 0 && tb.cMax != ozf!!.tiles_per_x() && tb.rMax != ozf!!.tiles_per_y()
 
             for (i in r_min until r_max) {
                 for (j in c_min until c_max) {
