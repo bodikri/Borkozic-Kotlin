@@ -13,7 +13,9 @@ class ViewportTileBounds(
     mapCenterXY: IntArray,
     screenWidth: Int,
     screenHeight: Int,
-    bearingRad: Float = 0f
+    bearingRad: Float = 0f,
+    lookAheadX: Int = 0,
+    lookAheadY: Int = 0
 ) {
     private val mapX: Float
     private val mapY: Float
@@ -24,6 +26,8 @@ class ViewportTileBounds(
     private val bearingDeg: Double
     private val sw: Int
     private val sh: Int
+    private val lax: Float
+    private val lay: Float
 
     init {
         mapX = mapCenterXY[0].toFloat()
@@ -35,6 +39,8 @@ class ViewportTileBounds(
         cosB = Math.cos(bearingRad.toDouble()).toFloat()
         sinB = Math.sin(bearingRad.toDouble()).toFloat()
         bearingDeg = Math.toDegrees(bearingRad.toDouble())
+        lax = lookAheadX.toFloat()
+        lay = lookAheadY.toFloat()
     }
 
     fun calculate(): TileBounds {
@@ -55,11 +61,12 @@ class ViewportTileBounds(
             val sx = corner[0]
             val sy = corner[1]
 
-            // Canvas is rotated CCW by -bearing around rotation center.
-            // To find map coords of a screen corner, we need INVERSE rotation (CW).
-            // CW rotation by bearing: x' = x*cos + y*sin, y' = -x*sin + y*cos
-            val mapPx = mapX + sx * cosB + sy * sinB
-            val mapPy = mapY - sx * sinB + sy * cosB
+            // Canvas is rotated CCW by -bearing around rotation center
+            // (at +lookAhead from canvas center).  Convert corner from
+            // canvas-center-relative to rotation-center-relative, apply
+            // CW inverse rotation, then add back rotation center in map space.
+            val mapPx = mapX + lax + (sx - lax) * cosB + (sy - lay) * sinB
+            val mapPy = mapY + lay - (sx - lax) * sinB + (sy - lay) * cosB
 
             val c = ozf.map_x_to_c(mapPx.toInt())
             val r = ozf.map_y_to_r(mapPy.toInt())

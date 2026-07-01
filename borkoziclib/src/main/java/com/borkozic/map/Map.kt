@@ -441,7 +441,7 @@ open class Map : Serializable {
                 return false
             }
 
-            val vb = ViewportTileBounds(ozf!!, map_xy, width, height, bearing)
+            val vb = ViewportTileBounds(ozf!!, map_xy, width, height, bearing, lookAhead[0], lookAhead[1])
             val tb: TileBounds = vb.calculate()
             val c_min = tb.cMin
             val c_max = tb.cMax
