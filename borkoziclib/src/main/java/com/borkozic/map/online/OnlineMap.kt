@@ -279,10 +279,9 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         // 2D rotation matrix около origin (0,0):
         //   x' = x·cos(θ) − y·sin(θ)
         //   y' = x·sin(θ) + y·cos(θ)
-        // bearing е в градуси: 0° = север (екранен Y нагоре ↑),
-        // 90° = изток, 180° = юг, 270° = запад.
-        val cosB = cos(Math.toRadians(bearing.toDouble()))
-        val sinB = sin(Math.toRadians(bearing.toDouble()))
+        // bearing е вече в РАДИАНИ (подава се от MapView.doDraw чрез Math.toRadians)
+        val cosB = cos(bearing.toDouble())
+        val sinB = sin(bearing.toDouble())
 
         // 4-те ъгъла на екрана преди завъртане (top-left, top-right, bottom-right, bottom-left)
         // Координатите са спрямо map_xy (origin = център на екрана)
