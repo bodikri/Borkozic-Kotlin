@@ -276,15 +276,20 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         val hh = height / 2f  // половина височина на екрана
 
         // ── Стъпка 2: Завъртане на ъглите с bearing ──
-        // Canvas-ът се ротира CCW около rotation центъра
-        // (lookAheadX + width/2, lookAheadY + height/2).
-        // Ъглите първо се превръщат в координати спрямо rotation центъра,
-        // после се прилага CW inverse ротация за да се получи global pixel позиция.
-        // bearing е вече в РАДИАНИ (подава се от MapView.doDraw чрез Math.toRadians)
+        // 🔧 ФИКС (2026-07-01): Canvas-ът се ротира CCW около rotation центъра
+        // който е отместен с lookAhead спрямо map_xy позицията на екрана.
+        // Rotation център = (map_xy + lookAhead) в глобални пиксели.
+        // За да намерим глобалните позиции на ъглите на екрана, първо
+        // ги превръщаме в координати спрямо rotation центъра, после
+        // прилагаме CW inverse ротация (обратна на CCW ротацията на canvas-а).
+        //
+        // ВАЖНО: bearing идва вече в РАДИАНИ от MapView.doDraw (Math.toRadians).
+        // НЕ прави втора конверсия с Math.toRadians() — това беше бъг #2
+        // който правеше ротация ≈0° и tile range-ът не се разширяваше никога.
         val cosB = cos(bearing.toDouble())
         val sinB = sin(bearing.toDouble())
 
-        // 4-те ъгъла на екрана спрямо canvas центъра (map_xy позицията)
+        // 4-те ъгъла на екрана спрямо canvas центъра (= map_xy позицията)
         val corners = arrayOf(
             -hw to -hh,   // горе-ляво  (↖)
              hw to -hh,   // горе-дясно (↗)
@@ -292,17 +297,20 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
             -hw to  hh    // долу-ляво  (↙)
         )
 
-        // Convert corners from canvas-center-relative to rotation-center-relative,
-        // apply CW inverse rotation, then add mapCenter to get global pixel coords.
-        // map_xy + lookAhead = mapCenter (the true map center in global pixels)
+        // Преобразуване на ъглите: от екранни координати → глобални пиксели
+        // 1. Преместваме спрямо rotation център (той е с +lookAhead отместване)
+        // 2. CW inverse ротация (canvas-ът ротира CCW => ние ротираме CW обратно)
+        // 3. Добавяме глобалната позиция на rotation центъра
         val rotatedCorners = corners.map { (px, py) ->
-            // Offset from rotation center (which is at +lookAhead from canvas center)
+            // Отместване спрямо rotation центъра (map_xy + lookAhead)
             val rcX = px - lookAhead[0]
             val rcY = py - lookAhead[1]
-            // CW rotation (inverse of CCW canvas rotation)
+            // CW ротация (обратна на CCW ротацията на canvas-а)
+            // x' = x·cos(θ) + y·sin(θ)
+            // y' = −x·sin(θ) + y·cos(θ)
             val rx = rcX * cosB + rcY * sinB
             val ry = -rcX * sinB + rcY * cosB
-            // Global pixel = map_xy + lookAhead + rotated offset
+            // Глобална позиция = rotation център + ротирано отместване
             (map_xy[0] + lookAhead[0] + rx) to (map_xy[1] + lookAhead[1] + ry)
         }
 

@@ -61,10 +61,13 @@ class ViewportTileBounds(
             val sx = corner[0]
             val sy = corner[1]
 
-            // Canvas is rotated CCW by -bearing around rotation center
-            // (at +lookAhead from canvas center).  Convert corner from
-            // canvas-center-relative to rotation-center-relative, apply
-            // CW inverse rotation, then add back rotation center in map space.
+            // 🔧 ФИКС (2026-07-01): Canvas-ът се ротира CCW около rotation центъра
+            // който е с +lookAhead отместване спрямо mapX/mapY.
+            // Ъглите на екрана първо се превръщат в координати спрямо
+            // rotation центъра (чрез изваждане на lookAhead), после се прилага
+            // CW обратна ротация за да се получи глобалната map позиция.
+            // Без lookAhead компенсацията tile range-ът се изместваше грешно
+            // при едновременно завъртане и lookAhead (особено при 180°).
             val mapPx = mapX + lax + (sx - lax) * cosB + (sy - lay) * sinB
             val mapPy = mapY + lay - (sx - lax) * sinB + (sy - lay) * cosB
 
@@ -91,10 +94,11 @@ class ViewportTileBounds(
                 cMin, cMax, rMin, rMax,
                 (cMax - cMin) * (rMax - rMin), tileW.toInt(), tileH.toInt()))
 
-        // Tile positions are in the already-rotated canvas coordinate system.
-        // The canvas is rotated by -bearing before drawMap is called, so tiles
-        // should be drawn at their direct map→canvas positions. No extra rotation
-        // needed here — the canvas handles the visual rotation.
+        // 🔧 ФИКС (2026-07-01): Позициите на тайловете (txb, tyb) се изчисляват
+        // без допълнителна ротация, защото canvas-ът ВЕЧЕ е ротиран преди
+        // drawMap да бъде извикан (MapView.doDraw прави c.rotate(-bearing)).
+        // Старият код прилагаше cos/sin върху txb/tyb => двойна ротация
+        // и тайловете се показваха на грешни позиции при bearing ≠ 0.
         val txb = (sw / 2f + cMin * tileW - mapX).toInt()
         val tyb = (sh / 2f + rMin * tileH - mapY).toInt()
 
