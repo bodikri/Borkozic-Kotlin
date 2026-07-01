@@ -276,15 +276,15 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         val hh = height / 2f  // половина височина на екрана
 
         // ── Стъпка 2: Завъртане на ъглите с bearing ──
-        // 2D rotation matrix около origin (0,0):
-        //   x' = x·cos(θ) − y·sin(θ)
-        //   y' = x·sin(θ) + y·cos(θ)
+        // Canvas-ът се ротира CCW около rotation центъра
+        // (lookAheadX + width/2, lookAheadY + height/2).
+        // Ъглите първо се превръщат в координати спрямо rotation центъра,
+        // после се прилага CW inverse ротация за да се получи global pixel позиция.
         // bearing е вече в РАДИАНИ (подава се от MapView.doDraw чрез Math.toRadians)
         val cosB = cos(bearing.toDouble())
         val sinB = sin(bearing.toDouble())
 
-        // 4-те ъгъла на екрана преди завъртане (top-left, top-right, bottom-right, bottom-left)
-        // Координатите са спрямо map_xy (origin = център на екрана)
+        // 4-те ъгъла на екрана спрямо canvas центъра (map_xy позицията)
         val corners = arrayOf(
             -hw to -hh,   // горе-ляво  (↖)
              hw to -hh,   // горе-дясно (↗)
@@ -292,20 +292,24 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
             -hw to  hh    // долу-ляво  (↙)
         )
 
-        // Прилагаме rotation matrix към всеки ъгъл
+        // Convert corners from canvas-center-relative to rotation-center-relative,
+        // apply CW inverse rotation, then add mapCenter to get global pixel coords.
+        // map_xy + lookAhead = mapCenter (the true map center in global pixels)
         val rotatedCorners = corners.map { (px, py) ->
-            val rx = px * cosB - py * sinB
-            val ry = px * sinB + py * cosB
-            rx to ry
+            // Offset from rotation center (which is at +lookAhead from canvas center)
+            val rcX = px - lookAhead[0]
+            val rcY = py - lookAhead[1]
+            // CW rotation (inverse of CCW canvas rotation)
+            val rx = rcX * cosB + rcY * sinB
+            val ry = -rcX * sinB + rcY * cosB
+            // Global pixel = map_xy + lookAhead + rotated offset
+            (map_xy[0] + lookAhead[0] + rx) to (map_xy[1] + lookAhead[1] + ry)
         }
 
-        // ── Стъпка 3: Конвертиране на завъртени пикселни координати → tile индекси ──
-        // Добавяме map_xy (глобалната позиция на курсора) към завъртените
-        // пикселни координати и делим на TILE_WIDTH/HEIGHT за tile индекс.
-        // Целочисленото деление (/ TILE_WIDTH).toInt() дава tile колона/ред.
+        // ── Стъпка 3: Конвертиране на pixel координати → tile индекси ──
+        // Деление на TILE_WIDTH/HEIGHT за tile колона/ред.
         val tileCorners = rotatedCorners.map { (px, py) ->
-            ((map_xy[0] + px) / TILE_WIDTH).toInt() to
-            ((map_xy[1] + py) / TILE_HEIGHT).toInt()
+            (px / TILE_WIDTH).toInt() to (py / TILE_HEIGHT).toInt()
         }
 
         // ── Стъпка 4: Bounding box + uniform padding ──
