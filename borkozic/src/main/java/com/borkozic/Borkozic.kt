@@ -59,7 +59,6 @@ import com.borkozic.navigation.NavigationService
 import com.borkozic.overlay.AccuracyOverlay
 import com.borkozic.overlay.AreaOverlay
 import com.borkozic.overlay.CurrentTrackOverlay
-import com.borkozic.overlay.DROverlay
 import com.borkozic.overlay.DistanceOverlay
 import com.borkozic.overlay.LatLonGridOverlay
 import com.borkozic.overlay.MapObjectsOverlay
@@ -155,7 +154,6 @@ class Borkozic : BaseApplication() {
     var distanceOverlay: DistanceOverlay? = null
     var accuracyOverlay: AccuracyOverlay? = null
     var scaleOverlay: ScaleOverlay? = null
-    var drOverlay: DROverlay? = null
     var fileTrackOverlays: MutableList<TrackOverlay> = ArrayList<TrackOverlay>()
     var routeOverlays: MutableList<RouteOverlay> = ArrayList<RouteOverlay>()
 
@@ -240,7 +238,6 @@ class Borkozic : BaseApplication() {
             if (accuracyOverlay != null) overlays.add(accuracyOverlay!!)
             overlays.addAll(fileTrackOverlays)
             if (currentTrackOverlay != null) overlays.add(currentTrackOverlay!!)
-            if (drOverlay != null) overlays.add(drOverlay!!)
             overlays.addAll(routeOverlays)
             overlays.addAll(areaOverlays) // todo - eto
             if (navigationOverlay != null) overlays.add(navigationOverlay!!)
@@ -254,7 +251,6 @@ class Borkozic : BaseApplication() {
             if (scaleOverlay != null) overlays.add(scaleOverlay!!)
             if (navigationOverlay != null) overlays.add(navigationOverlay!!)
             if (currentTrackOverlay != null) overlays.add(currentTrackOverlay!!)
-            if (drOverlay != null) overlays.add(drOverlay!!)
             overlays.addAll(routeOverlays)
             overlays.addAll(areaOverlays) //todo
             if (waypointsOverlay != null) overlays.add(waypointsOverlay!!)

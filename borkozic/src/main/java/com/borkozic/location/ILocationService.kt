@@ -16,4 +16,6 @@ interface ILocationService {
     fun clearTrack()
     fun getTrackStartTime(): Long
     fun getTrackEndTime(): Long
+    fun addPoint(continous: Boolean, latitude: Double, longitude: Double, elevation: Double,
+                 speed: Float, bearing: Float, accuracy: Float, time: Long)
 }

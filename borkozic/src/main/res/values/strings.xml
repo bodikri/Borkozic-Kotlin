@@ -110,7 +110,6 @@
     <string name="pref_procedures_norm_folder_dialog">Navigate to the folder containing normal procedures (Norm.txt + procedure files) and tap SELECT FOLDER</string>
     <string name="buttonZeroLevel">Set0</string>
     <string name="buttonClear">SetN</string>
-    <string name="buttonDR">DR</string>
     <string name="quit">Quit</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>

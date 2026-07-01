@@ -981,5 +981,10 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         override fun getTrackEndTime(): Long {
             return this@LocationService.getTrackEndTime()
         }
+
+        override fun addPoint(continous: Boolean, latitude: Double, longitude: Double, elevation: Double,
+                              speed: Float, bearing: Float, accuracy: Float, time: Long) {
+            this@LocationService.addPoint(continous, latitude, longitude, elevation, speed, bearing, accuracy, time)
+        }
     }
 }

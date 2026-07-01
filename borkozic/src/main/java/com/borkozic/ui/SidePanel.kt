@@ -4,9 +4,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -32,7 +29,7 @@ enum class SidePanelAction {
     ZOOM_IN, ZOOM_OUT, NEXT_MAP, PREV_MAP, MAPS_AT_CURSOR, WAYPOINTS,
     INFO, FOLLOW, LOCATE, TRACKING, EXPAND,
     ZERO_LEVEL, CLEAR,
-    NORTH, DR,
+    NORTH,
 }
 
 // ── Static button data ──────────────────────────────────────────────────────
@@ -49,7 +46,6 @@ private val staticTopButtons = listOf(
 private val staticBottomButtons = listOf(
     StaticButton(R.string.buttonZeroLevel, SidePanelAction.ZERO_LEVEL),
     StaticButton(R.string.buttonClear, SidePanelAction.CLEAR),
-    StaticButton(R.string.buttonDR, SidePanelAction.DR),
 )
 
 // ── Action → drawable mapping ──────────────────────────────────────────────
@@ -102,7 +98,6 @@ fun SidePanel(
     isLocating: Boolean,
     isTracking: Boolean,
     isFullscreen: Boolean,
-    isDRActive: Boolean = false,
     onAction: (SidePanelAction) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -189,7 +184,6 @@ fun SidePanel(
                     isLocating = isLocating,
                     isTracking = isTracking,
                     isFullscreen = isFullscreen,
-                    isDRActive = isDRActive,
                     onAction = onAction,
                 )
             }
@@ -205,7 +199,6 @@ private fun SidePanelContent(
     isLocating: Boolean,
     isTracking: Boolean,
     isFullscreen: Boolean,
-    isDRActive: Boolean = false,
     onAction: (SidePanelAction) -> Unit,
 ) {
     val allActions = listOf(
@@ -229,10 +222,8 @@ private fun SidePanelContent(
             items(staticTopButtons.size) { index ->
                 val btn = staticTopButtons[index]
                 StaticActionButton(
-                    labelId = btn.labelId, 
+                    labelId = btn.labelId,
                     onClick = { onAction(btn.action) },
-                    isDRButton = btn.action == SidePanelAction.DR,
-                    isDRActive = isDRActive,
                 )
             }
 
@@ -250,10 +241,8 @@ private fun SidePanelContent(
             items(staticBottomButtons.size) { index ->
                 val btn = staticBottomButtons[index]
                 StaticActionButton(
-                    labelId = btn.labelId, 
+                    labelId = btn.labelId,
                     onClick = { onAction(btn.action) },
-                    isDRButton = btn.action == SidePanelAction.DR,
-                    isDRActive = isDRActive,
                 )
             }
         }
@@ -263,53 +252,27 @@ private fun SidePanelContent(
 // ── Static text button (EP, NP, Zero, Clear) ───────────────────────────────
 @Composable
 private fun StaticActionButton(
-    labelId: Int, 
+    labelId: Int,
     onClick: () -> Unit,
-    isDRButton: Boolean = false,
-    isDRActive: Boolean = false,
 ) {
-    if (isDRButton) {
-        // Special DR button styling
-        val shape = if (isDRActive) CircleShape else RectangleShape
-        val color = if (isDRActive) Color(0xFFD32F2F) else Color(0xFF212121)
-        
-        IconButton(
-            onClick = onClick,
-            modifier = Modifier
-                .size(48.dp)
-                .clip(shape)
-                .background(color),
-        ) {
-            // Small circle or square in the center
-            val innerShape = if (isDRActive) CircleShape else RectangleShape
-            val innerSize = if (isDRActive) 8.dp else 10.dp
-            Box(
-                modifier = Modifier
-                    .size(innerSize)
-                    .clip(innerShape)
-                    .background(Color.White)
-            )
-        }
-    } else {
-        Button(
-            onClick = onClick,
-            modifier = Modifier
-                .width(69.dp)
-                .padding(vertical = 2.dp),
-            contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF555555),
-                contentColor = Color.White,
-            ),
-        ) {
-            Text(
-                text = stringResource(labelId),
-                fontSize = 11.sp,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                maxLines = 2,
-            )
-        }
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .width(69.dp)
+            .padding(vertical = 2.dp),
+        contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
+        colors = ButtonDefaults.buttonColors(
+            containerColor = Color(0xFF555555),
+            contentColor = Color.White,
+        ),
+    ) {
+        Text(
+            text = stringResource(labelId),
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
     }
 }
 
