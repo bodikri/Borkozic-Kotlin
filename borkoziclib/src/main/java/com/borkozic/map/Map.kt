@@ -417,6 +417,7 @@ open class Map : Serializable {
 
     @Synchronized
     open fun drawMap(bearing: Float, loc: DoubleArray, lookAhead: IntArray, width: Int, height: Int, cropBorder: Boolean, drawBorder: Boolean, c: Canvas): Boolean {
+        android.util.Log.d("DrawMap", "ENTER bearing=%.1f° ozf=%s".format(Math.toDegrees(bearing.toDouble()), ozf != null))
         if (ozf == null) return false
         val map_xy = IntArray(2)
         getXYByLatLon(loc[0], loc[1], map_xy)
