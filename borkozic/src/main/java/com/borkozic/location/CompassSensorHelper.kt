@@ -6,6 +6,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.view.Surface
+import kotlin.math.abs
 
 /**
  * Compass sensor helper — използва акселерометър + магнитометър за изчисляване
@@ -64,6 +65,10 @@ class CompassSensorHelper(
     private var filteredAzimuth = 0f
     private var hasFilteredAzimuth = false
 
+    // Dead zone: последна докладвана стойност (за елиминиране на микро-трептене)
+    private var lastReportedAzimuth = -1f
+    private var hasReportedAzimuth = false
+
     // Корекция за магнитна деклинация (в градуси), задава се от caller-а
     var declination: Float = 0f
 
@@ -102,6 +107,7 @@ class CompassSensorHelper(
         hasAccelData = false
         hasMagData = false
         hasFilteredAzimuth = false
+        hasReportedAzimuth = false
     }
 
     override fun onSensorChanged(event: SensorEvent?) {
@@ -187,6 +193,14 @@ class CompassSensorHelper(
             hasFilteredAzimuth = true
         }
 
+        // Dead zone: докладвай само ако промяната надвишава DEAD_ZONE градуса
+        if (hasReportedAzimuth) {
+            val reportDelta = ((filteredAzimuth - lastReportedAzimuth + 540f) % 360f) - 180f
+            if (abs(reportDelta) < DEAD_ZONE) return
+        }
+        lastReportedAzimuth = filteredAzimuth
+        hasReportedAzimuth = true
+
         listener.onCompassBearing(filteredAzimuth)
     }
 
@@ -196,6 +210,7 @@ class CompassSensorHelper(
     }
 
     companion object {
-        private const val ALPHA = 0.15f // Коефициент на low-pass филтъра (по-малко = по-гладко)
+        private const val ALPHA = 0.05f // Коефициент на low-pass филтъра (по-малко = по-гладко)
+        private const val DEAD_ZONE = 2.0f // Минимална промяна в градуси за докладване (елиминира микро-трептене)
     }
 }

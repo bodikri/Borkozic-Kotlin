@@ -519,7 +519,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
             canvas.drawLine(0f, -20f, 0f, -120f, crossPaint!!)
         }
 
-        if (isMoving && isFollowing && isFixed) {
+        if (isMoving && isFollowing) {
             lookAheadC = lookAhead.toFloat()
         } else {
             lookAheadC = 0f
