@@ -714,7 +714,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
         try {
             trackDB!!.insertOrThrow("track", null, values)
-            if (!continous) {
+            if (drActive) {
                 drLog("TRACK_DR: point written lat=$latitude lon=$longitude speed=$speed")
             }
         } catch (e: SQLException) {
@@ -793,9 +793,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         val handler = Handler(Looper.getMainLooper())
 
         if (trackingEnabled) {
-            if (!continous) {
-                drLog("TRACK_DR: writeTrack called via updateLocation (DR point)")
-            }
             handler.post { writeTrack(location, continous) }
         }
         for (callback in locationCallbacks) {
@@ -1447,7 +1444,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
                     // Подаване през съществуващия pipeline
                     lastKnownLocation = location
-                    isContinous = false
+                    isContinous = true
                     updateLocation()
                 }
             }
