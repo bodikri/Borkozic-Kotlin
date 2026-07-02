@@ -1075,24 +1075,55 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                 runOnUiThread {
                     if (!ready) return@runOnUiThread
                     if (state == DeadReckoningService.DR_ACTIVE) {
-                        // DR е активен
+                        // DR активиран — показваме, че позицията е валидна
                         Log.d(TAG, "Dead Reckoning activated")
+                        if (!map!!.isFixed) {
+                            map!!.isFixed = true
+                            map!!.setMoving(true)
+                            updateGPSStatus()
+                        }
                     } else if (state == DeadReckoningService.DR_STOPPED) {
-                        // DR спрян
                         Log.d(TAG, "Dead Reckoning stopped")
                     }
                 }
             } else if (action == DeadReckoningService.BROADCAST_DR_LOCATION) {
-                // DR е изчислил нова позиция — запис в стандартния track
+                // DR е изчислил нова позиция — обновяване на картата
                 val lat = intent.getExtras()!!.getDouble("latitude")
                 val lon = intent.getExtras()!!.getDouble("longitude")
                 val alt = intent.getExtras()!!.getDouble("altitude")
                 val speed = intent.getExtras()!!.getFloat("speed")
                 val bearing = intent.getExtras()!!.getFloat("bearing")
+                val acc = intent.getExtras()!!.getFloat("accuracy")
                 val time = intent.getExtras()!!.getLong("timestamp")
 
                 runOnUiThread {
                     if (!ready) return@runOnUiThread
+
+                    // Създаване на Location обект за map.setLocation()
+                    val drLoc = Location("dead_reckoning")
+                    drLoc.latitude = lat
+                    drLoc.longitude = lon
+                    drLoc.altitude = alt
+                    drLoc.speed = speed
+                    drLoc.bearing = bearing
+                    drLoc.accuracy = acc
+                    drLoc.time = time
+
+                    // Обновяване на позицията на курсора върху картата
+                    application!!.setLocation(drLoc, false)
+                    map!!.setLocation(drLoc)
+
+                    // Възстановяване на isFixed ако е било изключено от GPS_OFF
+                    if (!map!!.isFixed) {
+                        map!!.isFixed = true
+                        map!!.setMoving(true)
+                        satInfo!!.setText("DR")
+                        satInfo!!.setTextColor(
+                            ContextCompat.getColor(getApplicationContext(), R.color.gpsworking)
+                        )
+                        updateGPSStatus()
+                    }
+
                     // Запис на DR точка в стандартния track (ако tracking е включен)
                     locationService?.addPoint(true, lat, lon, alt, speed, bearing, 0f, time)
                     map!!.update()
