@@ -288,8 +288,8 @@ private fun DynamicActionButton(
 ) {
     val drawableId = when (action) {
         "follow"   -> if (isFollowing) R.drawable.cursor_drag_arrow else R.drawable.target
-        "locate"   -> if (isLocating) R.drawable.pin_map_no else R.drawable.pin_map
-        "tracking" -> if (isTracking) R.drawable.doc_delete else R.drawable.doc_edit
+        "locate"   -> if (isLocating) R.drawable.pin_map else R.drawable.pin_map_no
+        "tracking" -> if (isTracking) R.drawable.doc_edit else R.drawable.doc_delete
         "expand"   -> if (isFullscreen) R.drawable.collapse else R.drawable.expand
         else       -> actionDrawableId(action)
     }
