@@ -259,13 +259,15 @@ class DeadReckoningCalculator {
         estimatedAccuracy = accuracy
         startTime = System.currentTimeMillis()
 
-        // Нулиране на сензорно състояние
-        lastAccelTimestamp = 0
-        lastGyroTimestamp = 0
-        lastMagTimestamp = 0
-        lastBaroTimestamp = 0
-        lastRotVectorTimestamp = 0
-        lastUpdateTimestamp = 0
+        // Инициализация на сензорни таймстампове с текущото време
+        // (използваме наносекунди, съвместими със SensorEvent.timestamp)
+        val now = System.nanoTime()
+        lastAccelTimestamp = now
+        lastGyroTimestamp = now
+        lastMagTimestamp = now
+        lastBaroTimestamp = now
+        lastRotVectorTimestamp = now
+        lastUpdateTimestamp = now
         filteredAccelX = 0.0
         filteredAccelY = 0.0
         filteredAccelZ = 0.0
@@ -571,6 +573,9 @@ class DeadReckoningCalculator {
         if (hasAccelForCompass && hasMagForCompass) {
             computeCompassHeading()
         }
+
+        // Придвижване на позицията със същия heading (за телефони без gyro/rotVector)
+        advanceWithCommonTimestamp(timestamp)
     }
 
     private fun computeCompassHeading() {

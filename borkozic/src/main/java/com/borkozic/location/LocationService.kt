@@ -1055,29 +1055,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         val sensorType = event.sensor?.type ?: return
 
         try {
-            when (sensorType) {
-                Sensor.TYPE_LINEAR_ACCELERATION -> {
-                    drCalculator.processAccelerometer(event.values, event.timestamp, true)
-                }
-                Sensor.TYPE_ACCELEROMETER -> {
-                    drCalculator.processAccelerometer(event.values, event.timestamp, false)
-                }
-                Sensor.TYPE_GYROSCOPE -> {
-                    drCalculator.processGyroscope(event.values, event.timestamp)
-                }
-                Sensor.TYPE_MAGNETIC_FIELD -> {
-                    drCalculator.processMagnetometer(event.values, event.timestamp)
-                }
-                Sensor.TYPE_PRESSURE -> {
-                    drCalculator.processBarometer(event.values[0], event.timestamp)
-                }
-                Sensor.TYPE_GAME_ROTATION_VECTOR, Sensor.TYPE_ROTATION_VECTOR -> {
-                    drCalculator.processRotationVector(event.values, event.timestamp)
-                }
-                else -> return
-            }
-
-            // Активиране след delay
+            // ============================================================
+            // 1. Активиране на DR (ПРЕДИ обработка на сензорните данни)
+            //    Така сензорното събитие което тригерира активацията
+            //    се обработва от ВЕЧЕ инициализиран калкулатор.
+            // ============================================================
             if (drState == DR_IDLE && SystemClock.elapsedRealtime() >= drActivationTime) {
                 val snapshots = gpsRingBuffer.getAll()
                 if (snapshots.isNotEmpty()) {
@@ -1090,8 +1072,44 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 }
             }
 
-            // Изпращане на DR позиция през нормалния location pipeline
-            if (drState == DR_ACTIVE && drCalculator.isActive()) {
+            // ============================================================
+            // 2. Обработка на сензорните данни
+            //    Активацията вече е станала (ако е било време) → initialized=true
+            //    и advancePosition ще работи веднага.
+            // ============================================================
+            val isDrSensor = when (sensorType) {
+                Sensor.TYPE_LINEAR_ACCELERATION -> {
+                    drCalculator.processAccelerometer(event.values, event.timestamp, true)
+                    true
+                }
+                Sensor.TYPE_ACCELEROMETER -> {
+                    drCalculator.processAccelerometer(event.values, event.timestamp, false)
+                    true
+                }
+                Sensor.TYPE_GYROSCOPE -> {
+                    drCalculator.processGyroscope(event.values, event.timestamp)
+                    true
+                }
+                Sensor.TYPE_MAGNETIC_FIELD -> {
+                    drCalculator.processMagnetometer(event.values, event.timestamp)
+                    true
+                }
+                Sensor.TYPE_PRESSURE -> {
+                    drCalculator.processBarometer(event.values[0], event.timestamp)
+                    true
+                }
+                Sensor.TYPE_GAME_ROTATION_VECTOR, Sensor.TYPE_ROTATION_VECTOR -> {
+                    drCalculator.processRotationVector(event.values, event.timestamp)
+                    true
+                }
+                else -> false
+            }
+
+            // ============================================================
+            // 3. Изпращане на DR позиция през нормалния location pipeline
+            //    (само ако сензорът е DR-релевантен)
+            // ============================================================
+            if (isDrSensor && drState == DR_ACTIVE && drCalculator.isActive()) {
                 // Проверка за timeout
                 if (SystemClock.elapsedRealtime() - drStartTime > DR_MAX_DURATION_MS) {
                     Log.i(TAG, "DR max duration reached")
