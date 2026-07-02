@@ -269,6 +269,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         when {
             action == ENABLE_LOCATIONS && !locationsEnabled -> {
                 locationsEnabled = true
+                // Ако DR е бил активен, спираме го преди connect
+                if (drActive) {
+                    drLog("ENABLE_LOCATIONS: stopping active DR")
+                    stopDeadReckoning()
+                }
                 connect()
                 sendBroadcast(Intent(BROADCAST_LOCATING_STATUS))
                 if (trackingEnabled) {
@@ -880,16 +885,36 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 drLog("RINGBUF: add #${gpsRingBuffer.size()} lat=${location.latitude} lon=${location.longitude} speed=${location.speed} fsats=$lastFsats")
             }
 
-            // Kalman GPS update — lazy init при първи GPS fix, после update всеки път
-            // Това учи accelerometer bias дори преди GPS да се изключи
+            // Kalman GPS update
             if (!drKalman.isActive()) {
+                // Lazy init при първи GPS fix
                 drKalman.initialize(
                     location.latitude, location.longitude, location.altitude,
                     location.speed.toDouble(), location.bearing.toDouble(),
                     location.accuracy
                 )
                 drLog("KALMAN_INIT: lazy init from GPS fix, speed=${location.speed}")
+            } else if (drActive) {
+                // GPS се е върнал по време на активен DR
+                // ПЪРВО спираме DR dispatch, ПОСЛЕ реинициализираме
+                drLog("GPS_RECOVERY: GPS fix arrived during active DR, stopping...")
+                drActive = false
+                drState = DR_STOPPED
+                drToast("GPS recovered")
+                DRLogger.log(this, "GPS_RECOVERY: reinitializing Kalman")
+                DRLogger.close()
+                drKalman.initialize(
+                    location.latitude, location.longitude, location.altitude,
+                    location.speed.toDouble(), location.bearing.toDouble(),
+                    location.accuracy
+                )
+                drLog("GPS_RECOVERY: Kalman reinitialized, GPS will take over")
             } else {
+                // Нормален режим: GPS е наличен, DR не е активен → учим bias и обновяваме
+                drKalman.estimateBiasFromVelocity(
+                    location.speed.toDouble(),
+                    location.bearing.toDouble()
+                )
                 val relPos = drKalman.gpsToRelative(location.latitude, location.longitude)
                 val velN = location.speed.toDouble() * kotlin.math.cos(Math.toRadians(location.bearing.toDouble()))
                 val velE = location.speed.toDouble() * kotlin.math.sin(Math.toRadians(location.bearing.toDouble()))

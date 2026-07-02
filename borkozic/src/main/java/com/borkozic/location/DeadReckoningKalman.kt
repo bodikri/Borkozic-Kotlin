@@ -231,6 +231,10 @@ class DeadReckoningKalman {
         P[5][5] += qb2
 
         predictCount++
+
+        // Clamp covariance — предотвратява numerical explosion при дълъг DR
+        // Без clamp, P расте до 10^13-10^20 за 50s и inversion-ът дава NaN
+        clampCovariance()
     }
 
     // ========================================================================
@@ -413,6 +417,57 @@ class DeadReckoningKalman {
     }
 
     // ========================================================================
+    // Bias estimation (velocity innovation running average)
+    // ========================================================================
+
+    /**
+     * Оценява accelerometer bias от velocity innovation (GPS - predicted velocity).
+     * Трябва да се вика при всеки GPS fix, преди updateWithGPS.
+     * Работи само когато скоростта > 1 m/s (статичният телефон не дава полезна информация).
+     */
+    fun estimateBiasFromVelocity(gpsSpeed: Double, gpsBearing: Double) {
+        if (!initialized || gpsSpeed < 1.0) return
+
+        val headingRad = Math.toRadians(gpsBearing)
+        val gpsVelN = gpsSpeed * cos(headingRad)
+        val gpsVelE = gpsSpeed * sin(headingRad)
+
+        // Innovation = measured - predicted velocity
+        val innovN = gpsVelN - x[2]
+        val innovE = gpsVelE - x[3]
+
+        // Running average с голяма инерция (bias се мени бавно)
+        val alpha = 0.01  // learn rate: 1% per GPS fix (~1Hz)
+        x[4] += alpha * innovN
+        x[5] += alpha * innovE
+
+        // Clamp bias — realistic MEMS bias range
+        x[4] = x[4].coerceIn(-1.0, 1.0)
+        x[5] = x[5].coerceIn(-1.0, 1.0)
+    }
+
+    // ========================================================================
+    // Covariance clamp — предотвратява numerical explosion
+    // ========================================================================
+
+    /**
+     * Ограничава P елементите до разумни стойности.
+     * Без това, след 40-50s DR, P расте до 10^13-10^15 и matrix inversion дава NaN.
+     * Covariance cap от 10^6 значи позиционна несигурност до ~1 km.
+     */
+    private fun clampCovariance() {
+        val maxCov = 1_000_000.0  // ~1 km² variance ceiling
+        for (i in 0..5) {
+            for (j in 0..5) {
+                if (P[i][j].isNaN() || P[i][j].isInfinite()) {
+                    P[i][j] = 0.0
+                }
+                P[i][j] = P[i][j].coerceIn(-maxCov, maxCov)
+            }
+        }
+    }
+
+    // ========================================================================
     // 4x4 Matrix Inversion (Gaussian elimination)
     // ========================================================================
 
@@ -422,6 +477,12 @@ class DeadReckoningKalman {
         a20: Double, a21: Double, a22: Double, a23: Double,
         a30: Double, a31: Double, a32: Double, a33: Double
     ): DoubleArray {
+        // NaN/Inf guard — връща identity ако входът е numerical garbage
+        val allElements = doubleArrayOf(a00, a01, a02, a03, a10, a11, a12, a13, a20, a21, a22, a23, a30, a31, a32, a33)
+        if (allElements.any { it.isNaN() || it.isInfinite() }) {
+            return doubleArrayOf(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+        }
+
         // Augmented matrix [A | I]
         val m = arrayOf(
             doubleArrayOf(a00, a01, a02, a03, 1.0, 0.0, 0.0, 0.0),
@@ -456,12 +517,16 @@ class DeadReckoningKalman {
             }
         }
 
-        // Return the right half (4x4 inverse)
-        return doubleArrayOf(
+        // NaN check след inversion — ако нещо се е счупило, връща identity
+        val result = doubleArrayOf(
             m[0][4], m[0][5], m[0][6], m[0][7],
             m[1][4], m[1][5], m[1][6], m[1][7],
             m[2][4], m[2][5], m[2][6], m[2][7],
             m[3][4], m[3][5], m[3][6], m[3][7]
         )
+        if (result.any { it.isNaN() || it.isInfinite() }) {
+            return doubleArrayOf(1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0)
+        }
+        return result
     }
 }
