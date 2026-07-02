@@ -441,7 +441,7 @@ open class MapView : SurfaceView, SurfaceHolder.Callback {
         // Android Canvas.rotate() is clockwise. We need counter-clockwise rotation
         // so that GPS heading (bearing) points UP on screen in Track Up mode.
         val rotBearingDeg = if (isTrackUp) bearing else 0f
-        android.util.Log.d("DrawMap", "doDraw bearing=%.1f° rotBearingDeg=%.1f° isTrackUp=%s".format(bearing, rotBearingDeg, isTrackUp))
+        // android.util.Log.d("DrawMap", "doDraw bearing=%.1f° rotBearingDeg=%.1f° isTrackUp=%s".format(bearing, rotBearingDeg, isTrackUp))
         if (rotBearingDeg != 0f) {
             canvas.rotate(-rotBearingDeg, (lookAheadXY[0] + cx).toFloat(), (lookAheadXY[1] + cy).toFloat())
         }

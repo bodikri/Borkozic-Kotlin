@@ -89,10 +89,10 @@ class ViewportTileBounds(
         val tileH = ozf.tile_dy().toFloat()
 
         // Debug: tile range for rotated viewport
-        android.util.Log.d("VTB", "bearing=%.1f° hw=%.0f hh=%.0f mapXY=(%.0f,%.0f) tiles: c[%d..%d] r[%d..%d] (total=%d) tileW=%d tileH=%d"
-            .format(bearingDeg, hw, hh, mapX, mapY,
-                cMin, cMax, rMin, rMax,
-                (cMax - cMin) * (rMax - rMin), tileW.toInt(), tileH.toInt()))
+        // android.util.Log.d("VTB", "bearing=%.1f° hw=%.0f hh=%.0f mapXY=(%.0f,%.0f) tiles: c[%d..%d] r[%d..%d] (total=%d) tileW=%d tileH=%d"
+        //     .format(bearingDeg, hw, hh, mapX, mapY,
+        //         cMin, cMax, rMin, rMax,
+        //         (cMax - cMin) * (rMax - rMin), tileW.toInt(), tileH.toInt()))
 
         // 🔧 ФИКС (2026-07-01): Позициите на тайловете (txb, tyb) се изчисляват
         // без допълнителна ротация, защото canvas-ът ВЕЧЕ е ротиран преди
@@ -102,7 +102,7 @@ class ViewportTileBounds(
         val txb = (sw / 2f + cMin * tileW - mapX).toInt()
         val tyb = (sh / 2f + rMin * tileH - mapY).toInt()
 
-        android.util.Log.d("VTB", "txb=%d tyb=%d (first tile at canvas pos)".format(txb, tyb))
+        // android.util.Log.d("VTB", "txb=%d tyb=%d (first tile at canvas pos)".format(txb, tyb))
 
         return TileBounds(cMin, cMax, rMin, rMax, txb, tyb)
     }
