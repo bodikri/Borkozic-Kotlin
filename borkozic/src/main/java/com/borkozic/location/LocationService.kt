@@ -18,6 +18,10 @@ import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.graphics.Color
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.location.GpsStatus.NmeaListener
 import android.location.Location
 import android.location.LocationListener
@@ -38,7 +42,7 @@ import com.borkozic.Splash
 import com.borkozic.data.Track
 import java.io.File
 
-open class LocationService : BaseLocationService(), LocationListener, OnNmeaMessageListener, OnSharedPreferenceChangeListener {
+open class LocationService : BaseLocationService(), LocationListener, OnNmeaMessageListener, OnSharedPreferenceChangeListener, SensorEventListener {
     private val TAG = "Location"
     private val NOTIFICATION_ID = 24161
     private val NOTIFICATION_CHANNEL_ID = "com.borkozic.location"
@@ -51,6 +55,14 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         const val ENABLE_TRACK = "enableTrack"
         const val DISABLE_TRACK = "disableTrack"
         const val BROADCAST_TRACKING_STATUS = "com.borkozic.trackingStatusChanged"
+
+        // DR константи
+        private const val DR_MAX_DURATION_MS = 180_000L     // 3 минути
+        private const val DR_ACTIVATION_DELAY_MS = 5_000L   // 5 секунди
+        private const val DR_BROADCAST_INTERVAL_MS = 200L   // 5Hz
+        const val DR_IDLE = 0
+        const val DR_ACTIVE = 1
+        const val DR_STOPPED = 2
     }
 
     private var locationsEnabled = false
@@ -100,6 +112,29 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private var minDistance = 3 // 3 meters (default)
 
     private val binder = LocalBinder()
+
+    // ========================================================================
+    // Dead Reckoning (автономно изчисление при GPS загуба)
+    // ========================================================================
+
+    // Сензори за DR
+    private var drSensorManager: SensorManager? = null
+    private var drAccelerometer: Sensor? = null
+    private var drGyroscope: Sensor? = null
+    private var drMagnetometer: Sensor? = null
+    private var drBarometer: Sensor? = null
+    private var drRotationVector: Sensor? = null
+
+    // DR калкулатор и ring buffer
+    private val drCalculator = DeadReckoningCalculator()
+    private val gpsRingBuffer = GpsRingBuffer()
+    private var drActive = false
+    private var drStartTime: Long = 0
+    private var drActivationTime: Long = 0
+    private var drLastBroadcastTime: Long = 0
+
+    private var drState = DR_IDLE
+    private var lastFsats: Int = 0  // брояч за ring buffer
     private val locationRemoteCallbacks = RemoteCallbackList<ILocationCallback>()
     private val locationCallbacks = HashSet<ILocationListener>()
     private val trackingRemoteCallbacks = RemoteCallbackList<ITrackingCallback>()
@@ -118,6 +153,16 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         onSharedPreferenceChanged(sharedPreferences, getString(R.string.pref_tracking_mindistance))
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
+
+        // Инициализация на DR сензори
+        drSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        drAccelerometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
+            ?: drSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        drGyroscope = drSensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
+        drMagnetometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        drBarometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_PRESSURE)
+        drRotationVector = drSensorManager?.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
+            ?: drSensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startMyOwnForeground()
@@ -172,6 +217,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
     override fun onDestroy() {
         super.onDestroy()
+        unregisterDrSensors()
         getSharedPreferences(packageName + "_preferences", Context.MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this)
         disconnect()
         closeDatabase()
@@ -723,6 +769,12 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 lastKnownLocation!!.bearing = prevTrack
             }
             lastLocationMillis = time
+
+            // Обновяване на ring buffer за DR (последни 3 GPS точки)
+            gpsRingBuffer.add(
+                location.latitude, location.longitude, location.altitude,
+                location.speed, location.bearing, location.accuracy, lastFsats
+            )
             sendUpdate = true
             if (!nmeaGeoidHeight.isNaN()) {
                 lastKnownLocation!!.altitude = lastKnownLocation!!.altitude + nmeaGeoidHeight
@@ -892,6 +944,8 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             updateNotification()
         }
 
+        lastFsats = fsats  // за DR ring buffer
+
         // Dispatch to local in-process callbacks (Information, MapActivity, HSI, NavigationService)
         for (callback in locationCallbacks) {
             callback.onGpsStatusChanged(LocationManager.GPS_PROVIDER, gpsStatus, fsats, tsats)
@@ -912,10 +966,16 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
     override fun onProviderDisabled(provider: String) {
         updateProvider(provider, false)
+        if (LocationManager.GPS_PROVIDER == provider && !drActive) {
+            startDeadReckoning()
+        }
     }
 
     override fun onProviderEnabled(provider: String) {
         updateProvider(provider, true)
+        if (LocationManager.GPS_PROVIDER == provider && drActive) {
+            stopDeadReckoning()
+        }
     }
 
     override fun onStatusChanged(provider: String, status: Int, extras: Bundle) {
@@ -925,6 +985,152 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 updateNotification()
             }
         }
+    }
+
+    // ========================================================================
+    // Dead Reckoning — автономно изчисление при GPS загуба
+    // ========================================================================
+
+    private fun registerDrSensors() {
+        drAccelerometer?.let {
+            drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+        drGyroscope?.let {
+            drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+        drMagnetometer?.let {
+            drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+        drBarometer?.let {
+            drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+        drRotationVector?.let {
+            drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+        }
+    }
+
+    private fun unregisterDrSensors() {
+        drSensorManager?.unregisterListener(this)
+    }
+
+    private fun startDeadReckoning() {
+        val snapshots = gpsRingBuffer.getAll()
+        if (snapshots.isEmpty()) {
+            Log.w(TAG, "DR: ring buffer empty, cannot start")
+            return
+        }
+
+        val latest = snapshots[0]
+        drState = DR_IDLE
+        drActivationTime = SystemClock.elapsedRealtime() + DR_ACTIVATION_DELAY_MS
+        drStartTime = SystemClock.elapsedRealtime()
+        drLastBroadcastTime = 0
+
+        // Запазване за backward compat
+        lastFsats = fsats
+
+        registerDrSensors()
+
+        Log.i(TAG, "DR started: ${snapshots.size} snapshots, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}")
+        DRLogger.log(this, "DR_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
+        DRLogger.log(this, "DR_START: sensors — accel=${drAccelerometer != null}, gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
+    }
+
+    private fun stopDeadReckoning() {
+        unregisterDrSensors()
+        drCalculator.reset()
+
+        if (drState != DR_STOPPED) {
+            drState = DR_STOPPED
+        }
+        drActive = false
+
+        Log.i(TAG, "DR stopped")
+        DRLogger.log(this, "DR_STOP: duration=${if (drStartTime > 0) SystemClock.elapsedRealtime() - drStartTime else 0}ms")
+        DRLogger.log(this, "=== DR session ended ===")
+        DRLogger.close()
+    }
+
+    override fun onSensorChanged(event: SensorEvent) {
+        val sensorType = event.sensor?.type ?: return
+
+        try {
+            when (sensorType) {
+                Sensor.TYPE_LINEAR_ACCELERATION -> {
+                    drCalculator.processAccelerometer(event.values, event.timestamp, true)
+                }
+                Sensor.TYPE_ACCELEROMETER -> {
+                    drCalculator.processAccelerometer(event.values, event.timestamp, false)
+                }
+                Sensor.TYPE_GYROSCOPE -> {
+                    drCalculator.processGyroscope(event.values, event.timestamp)
+                }
+                Sensor.TYPE_MAGNETIC_FIELD -> {
+                    drCalculator.processMagnetometer(event.values, event.timestamp)
+                }
+                Sensor.TYPE_PRESSURE -> {
+                    drCalculator.processBarometer(event.values[0], event.timestamp)
+                }
+                Sensor.TYPE_GAME_ROTATION_VECTOR, Sensor.TYPE_ROTATION_VECTOR -> {
+                    drCalculator.processRotationVector(event.values, event.timestamp)
+                }
+                else -> return
+            }
+
+            // Активиране след delay
+            if (drState == DR_IDLE && SystemClock.elapsedRealtime() >= drActivationTime) {
+                val snapshots = gpsRingBuffer.getAll()
+                if (snapshots.isNotEmpty()) {
+                    drCalculator.initialize(snapshots, snapshots[0].accuracy)
+                    drState = DR_ACTIVE
+                    drActive = true
+                    drStartTime = SystemClock.elapsedRealtime()
+                    Log.i(TAG, "DR activated")
+                    DRLogger.log(this, "DR_ACTIVATED: ${snapshots.size} snapshots, sensors initialized")
+                }
+            }
+
+            // Изпращане на DR позиция през нормалния location pipeline
+            if (drState == DR_ACTIVE && drCalculator.isActive()) {
+                // Проверка за timeout
+                if (SystemClock.elapsedRealtime() - drStartTime > DR_MAX_DURATION_MS) {
+                    Log.i(TAG, "DR max duration reached")
+                    DRLogger.log(this, "DR_TIMEOUT: max duration reached")
+                    stopDeadReckoning()
+                    return
+                }
+
+                val now = SystemClock.elapsedRealtime()
+                if (now - drLastBroadcastTime >= DR_BROADCAST_INTERVAL_MS) {
+                    drLastBroadcastTime = now
+
+                    val drLoc = drCalculator.getCurrentLocation()
+                    val location = Location("dead_reckoning")
+                    location.latitude = drLoc.latitude
+                    location.longitude = drLoc.longitude
+                    location.altitude = drLoc.altitude
+                    location.speed = drLoc.speed
+                    location.bearing = drLoc.bearing
+                    location.accuracy = drLoc.accuracy
+                    location.time = drLoc.timestamp
+
+                    // Подаване през съществуващия pipeline
+                    // lastKnownLocation се обновява и updateLocation() праща на всички слушатели
+                    lastKnownLocation = location
+                    isContinous = false
+                    updateLocation()
+
+                    DRLogger.logLocation(this, drLoc.latitude, drLoc.longitude, drLoc.altitude, drLoc.speed, drLoc.bearing, drLoc.accuracy)
+                    DRLogger.log(this, drCalculator.getDebugState())
+                }
+            }
+        } catch (e: Exception) {
+            DRLogger.log(this, "DR_SENSOR_ERROR: ${e.javaClass.simpleName}: ${e.message}")
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        // Не се изисква действие
     }
 
     inner class LocalBinder : Binder(), ILocationService {
