@@ -1,7 +1,7 @@
 # Dead Reckoning — Автономно изчисление на позиция
 
-> **Status:** 🚀 v3 — 6-state Kalman Filter + continuous sensors + heading sanity filter
-> **Last updated:** 2026-07-02 (commit `55c632e`)
+> **Status:** 🚀 v3.1 — 6-state Kalman Filter + continuous sensors + adaptive bias noise
+> **Last updated:** 2026-07-02 (commit `68d0894`)
 > **Files:** `borkozic/src/main/java/com/borkozic/location/`
 
 ---
@@ -89,13 +89,28 @@ z = [gpsPosN, gpsPosE, gpsVelN, gpsVelE]
 ### 3.5 Process Noise (Q)
 
 ```kotlin
-ACCEL_NOISE_DENSITY = 0.3    // m/s²/√Hz — типичен phone MEMS шум
-BIAS_NOISE_DENSITY  = 0.001  // m/s³/√Hz — много бавна промяна на bias
+// Adaptive process noise:
+ACCEL_NOISE_DENSITY_CRUISE   = 0.02   // m/s²/√Hz — плавно движение
+ACCEL_NOISE_DENSITY_MANEUVER = 0.3    // m/s²/√Hz — маневри
+HIGH_ACCEL_THRESHOLD         = 0.5    // m/s² (~0.05g) — праг cruise↔maneuver
+
+// Adaptive bias noise (v3.1):
+BIAS_NOISE_DENSITY_CRUISE   = 0.001  // m/s³/√Hz — плавно движение
+BIAS_NOISE_DENSITY_MANEUVER = 0.05   // m/s³/√Hz — 50× при маневри
 ```
 
 Q се изчислява автоматично за всеки predict от `dt` × noise_density²:
 - По-малък dt → по-малко Q → по-стабилна оценка
 - По-голям dt → по-голямо Q → повече свобода за корекция
+
+При ускорение ≥ `HIGH_ACCEL_THRESHOLD` (0.5 m/s²):
+- Position noise: 0.02 → 0.3 (15×)
+- Bias noise: 0.001 → 0.05 (50×)
+- Throttle: макс веднъж на 2 секунди (да не overfit-ва)
+
+⚠️ **Bias се коригира САМО при GPS update.** При pure DR (без GPS),
+bias стойностите остават на последната оценка. Адаптивният Qb подготвя
+ковариацията за бърза корекция при следващ GPS fix.
 
 ### 3.6 Measurement Noise (R)
 
@@ -114,8 +129,12 @@ R = diag(σ_pos², σ_pos², σ_vel², σ_vel²)
 
 | Параметър | Стойност | Описание |
 |-----------|----------|----------|
-| `ACCEL_NOISE_DENSITY` | 0.3 m/s²/√Hz | Process noise за акселерометър |
-| `BIAS_NOISE_DENSITY` | 0.001 m/s³/√Hz | Random walk за bias |
+| `ACCEL_NOISE_DENSITY_CRUISE` | 0.02 m/s²/√Hz | Process noise при плавно движение |
+| `ACCEL_NOISE_DENSITY_MANEUVER` | 0.3 m/s²/√Hz | Process noise при маневри |
+| `HIGH_ACCEL_THRESHOLD` | 0.5 m/s² | Праг cruise↔maneuver (~0.05g) |
+| `HIGH_ACCEL_Q_INTERVAL_MS` | 2,000 | Throttle интервал за Q injection |
+| `BIAS_NOISE_DENSITY_CRUISE` | 0.001 m/s³/√Hz | Bias random walk (cruise) |
+| `BIAS_NOISE_DENSITY_MANEUVER` | 0.05 m/s³/√Hz | Bias random walk (maneuver) |
 | `MAX_DT` | 1.0s | Safety clamp за predict стъпка |
 | `P[0][0], P[1][1]` | 0.1 | Начална позиционна несигурност |
 | `P[2][2], P[3][3]` | 0.5 | Начална скоростна несигурност |
@@ -230,7 +249,8 @@ SENSOR_SNAPSHOT: accel=[x,y,z], gyro=[x,y,z], mag=[x,y,z], rot=[x,y,z], earthAcc
 ```
 DR_DISPATCH: lat=X, lon=Y, speed=S, bearing=B, distFromGPS=Dm
 DR_KALMAN: heading=H°, speed=Sm/s, posN=Pn, posE=Pe, velN=Vn, velE=Ve,
-           biasN=Bn, biasE=Be, covPos=Cp, covVel=Cv, gpsAge=Ams, pred=N#
+           biasN=Bn, biasE=Be, covPos=Cp, covVel=Cv, gpsAge=As(#N), Q=Qa, Qb=Qb, pred=N#
+TRACK_DR: point written lat=X lon=Y speed=S
 ```
 
 Toast съобщения за UX обратна връзка:
