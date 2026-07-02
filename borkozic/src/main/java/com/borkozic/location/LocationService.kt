@@ -286,14 +286,21 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 updateProvider(LocationManager.GPS_PROVIDER, false)
                 updateProvider(LocationManager.NETWORK_PROVIDER, false)
                 // Стартирай DR ако GPS-ът се изключва ръчно
-                if (!drActive) {
+                val isStartingDr = !drActive
+                if (isStartingDr) {
                     drLog("DISABLE_LOCATIONS: starting DR")
                     startDeadReckoning()
                 }
                 sendBroadcast(Intent(BROADCAST_LOCATING_STATUS))
                 if (trackingEnabled) {
-                    closeDatabase()
-                    sendBroadcast(Intent(BROADCAST_TRACKING_STATUS))
+                    if (isStartingDr) {
+                        // DR ще продължи да записва трака през updateLocation()
+                        drLog("DISABLE_LOCATIONS: keeping track DB open for DR recording")
+                        sendBroadcast(Intent(BROADCAST_TRACKING_STATUS))
+                    } else {
+                        closeDatabase()
+                        sendBroadcast(Intent(BROADCAST_TRACKING_STATUS))
+                    }
                 }
             }
             action == ENABLE_TRACK && !trackingEnabled -> {
