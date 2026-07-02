@@ -1,6 +1,6 @@
 # 📖 Borkozic Documentation (Документация)
 
-> **Last updated:** 2026-07-02 (Dead Reckoning documentation)
+> **Last updated:** 2026-07-02 16:15 (DR v3: 6-state Kalman Filter)
 > **Kotlin migration:** ~350+ .kt files, 2 Java files remaining (3rd party)
 > **Compose migration:** 3/5 screens migrated (AreaList ✅, RouteList ✅, RouteDetails ✅)
 > **Build status:** 0 compilation errors, BUILD SUCCESSFUL ✅
@@ -32,7 +32,7 @@
 | Map Activity | 🟡 Compose planned | Main map screen (главен екран с карта) |
 | Map View | 🟢 Kotlin | Custom map rendering with touch coordinate fix (MapView.kt — view-local event.x/y) |
 | Waypoint Overlay | 🟢 Kotlin | Waypoint hit testing on map (WaypointsOverlay.kt) |
-| [Dead Reckoning](components/dead-reckoning.md) | 🟡 В процес | Autonomous position from IMU sensors — Kalman Filter (автономна позиция от сензори) |
+| [Dead Reckoning](components/dead-reckoning.md) | 🟡 v3 — чака тест | Autonomous position from IMU sensors — 6-state Kalman (автономна позиция от сензори) |
 | Navigation Service | 🟢 Kotlin | Route navigation service (услуга за навигация по маршрут) |
 | Location Service | 🟢 Kotlin | GPS location service (услуга за GPS локация) |
 
@@ -56,6 +56,9 @@
 | Document (Документ) | Description (Описание) |
 |---|---|
 | [Fix Batch 2026-06-15](fixes/2026-06-15-fix-batch.md) | 6 fixes: list refresh, duplicate sets, numeric keyboard, text size, locale switching |
+| [Route Edit Cursor 2026-06-18](fixes/2026-06-18-route-edit-cursor.md) | Route edit: waypointTapped, cursor dialog, PointList recalc |
+| [Tile Rotation Fixes 2026-07-01](fixes/2026-07-01-rotated-tile-bounds.md) | ViewportTileBounds, OnlineMap double radian, lookAhead rotation |
+| [DR Kalman v3 2026-07-02](fixes/2026-07-02-dr-kalman-v3.md) | 6-state Kalman filter, continuous sensors, heading sanity filter |
 
 ---
 
