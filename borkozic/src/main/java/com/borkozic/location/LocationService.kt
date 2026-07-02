@@ -30,6 +30,8 @@ import android.location.LocationProvider
 import android.location.OnNmeaMessageListener
 import android.os.*
 import androidx.annotation.RequiresApi
+import java.io.File
+import java.io.PrintWriter
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
@@ -40,7 +42,9 @@ import com.borkozic.Borkozic
 import com.borkozic.R
 import com.borkozic.Splash
 import com.borkozic.data.Track
-import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 open class LocationService : BaseLocationService(), LocationListener, OnNmeaMessageListener, OnSharedPreferenceChangeListener, SensorEventListener {
     private val TAG = "Location"
@@ -132,9 +136,31 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private var drStartTime: Long = 0
     private var drActivationTime: Long = 0
     private var drLastBroadcastTime: Long = 0
+    private var dispatchCount: Int = 0  // брояч за rate-limited logging
 
     private var drState = DR_IDLE
     private var lastFsats: Int = 0  // брояч за ring buffer
+
+    // === DR debug лог файл (вътрешна памет — винаги достъпен) ===
+    private var drLogFile: File? = null
+    private var drLogWriter: PrintWriter? = null
+    private val drLogDateFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
+    private var drSensorFirstEvent: Boolean = true  // за логване на първото събитие
+
+    private fun drLog(msg: String) {
+        val ts = drLogDateFormat.format(Date())
+        val line = "[$ts] $msg"
+        Log.i(TAG, line)
+        try {
+            drLogWriter?.let {
+                it.println(line)
+                it.flush()
+            }
+        } catch (_: Exception) {}
+        // Също и в DRLogger за backup
+        try { DRLogger.log(msg) } catch (_: Exception) {}
+    }
+
     private val locationRemoteCallbacks = RemoteCallbackList<ILocationCallback>()
     private val locationCallbacks = HashSet<ILocationListener>()
     private val trackingRemoteCallbacks = RemoteCallbackList<ITrackingCallback>()
@@ -163,6 +189,20 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         drBarometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_PRESSURE)
         drRotationVector = drSensorManager?.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
             ?: drSensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+
+        // Инициализация на DR debug лог файл (вътрешна памет — без permissions)
+        try {
+            val logDir = File(filesDir, "dr_logs")
+            logDir.mkdirs()
+            val dateStr = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
+            drLogFile = File(logDir, "dr_$dateStr.txt")
+            drLogWriter = PrintWriter(drLogFile, "UTF-8")
+            drLog("=== DR Logger initialized ===")
+            drLog("Device: ${Build.MANUFACTURER} ${Build.MODEL}, SDK=${Build.VERSION.SDK_INT}")
+            drLog("Sensors: accel=${drAccelerometer != null}(${drAccelerometer?.name}), gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
+        } catch (e: Exception) {
+            Log.e(TAG, "DR log init failed: ${e.message}")
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             startMyOwnForeground()
@@ -218,6 +258,9 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     override fun onDestroy() {
         super.onDestroy()
         unregisterDrSensors()
+        drLog("=== DR Logger closing ===")
+        try { drLogWriter?.close() } catch (_: Exception) {}
+        drLogWriter = null
         getSharedPreferences(packageName + "_preferences", Context.MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this)
         disconnect()
         closeDatabase()
@@ -772,10 +815,14 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             lastLocationMillis = time
 
             // Обновяване на ring buffer за DR (последни 3 GPS точки)
+            val bufSizeBefore = gpsRingBuffer.size()
             gpsRingBuffer.add(
                 location.latitude, location.longitude, location.altitude,
                 location.speed, location.bearing, location.accuracy, lastFsats
             )
+            if (gpsRingBuffer.size() != bufSizeBefore) {
+                drLog("RINGBUF: add #${gpsRingBuffer.size()} lat=${location.latitude} lon=${location.longitude} speed=${location.speed} fsats=$lastFsats")
+            }
             sendUpdate = true
             if (!nmeaGeoidHeight.isNaN()) {
                 lastKnownLocation!!.altitude = lastKnownLocation!!.altitude + nmeaGeoidHeight
@@ -967,15 +1014,21 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
     override fun onProviderDisabled(provider: String) {
         updateProvider(provider, false)
-        if (LocationManager.GPS_PROVIDER == provider && !drActive) {
-            startDeadReckoning()
+        if (LocationManager.GPS_PROVIDER == provider) {
+            drLog("GPS_DISABLED: drActive=$drActive, ringBuf=${gpsRingBuffer.size()}, fsats=$fsats")
+            if (!drActive) {
+                startDeadReckoning()
+            }
         }
     }
 
     override fun onProviderEnabled(provider: String) {
         updateProvider(provider, true)
-        if (LocationManager.GPS_PROVIDER == provider && drActive) {
-            stopDeadReckoning()
+        if (LocationManager.GPS_PROVIDER == provider) {
+            drLog("GPS_ENABLED: drActive=$drActive")
+            if (drActive) {
+                stopDeadReckoning()
+            }
         }
     }
 
@@ -993,21 +1046,28 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     // ========================================================================
 
     private fun registerDrSensors() {
+        var count = 0
         drAccelerometer?.let {
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+            count++
         }
         drGyroscope?.let {
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+            count++
         }
         drMagnetometer?.let {
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+            count++
         }
         drBarometer?.let {
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+            count++
         }
         drRotationVector?.let {
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
+            count++
         }
+        drLog("DR_SENSORS: registered $count sensors")
     }
 
     private fun unregisterDrSensors() {
@@ -1015,9 +1075,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     }
 
     private fun startDeadReckoning() {
+        drLog("DR_START: requested")
         val snapshots = gpsRingBuffer.getAll()
+        drLog("DR_START: ringBuffer size=${snapshots.size}")
         if (snapshots.isEmpty()) {
-            Log.w(TAG, "DR: ring buffer empty, cannot start")
+            drLog("DR_START: FAILED — ring buffer empty, cannot start")
             return
         }
 
@@ -1027,17 +1089,15 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         drStartTime = SystemClock.elapsedRealtime()
         drLastBroadcastTime = 0
 
-        // Запазване за backward compat
-        lastFsats = fsats
-
         registerDrSensors()
 
-        Log.i(TAG, "DR started: ${snapshots.size} snapshots, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}")
-        DRLogger.log(this, "DR_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
-        DRLogger.log(this, "DR_START: sensors — accel=${drAccelerometer != null}, gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
+        drLog("DR_START: OK — snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
+        DRLogger.log(this, "DR_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}")
     }
 
     private fun stopDeadReckoning() {
+        val elapsed = if (drStartTime > 0) SystemClock.elapsedRealtime() - drStartTime else 0
+        drLog("DR_STOP: duration=${elapsed}ms, state=$drState")
         unregisterDrSensors()
         drCalculator.reset()
 
@@ -1045,10 +1105,9 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             drState = DR_STOPPED
         }
         drActive = false
+        drSensorFirstEvent = true  // ресет за следващата сесия
 
-        Log.i(TAG, "DR stopped")
-        DRLogger.log(this, "DR_STOP: duration=${if (drStartTime > 0) SystemClock.elapsedRealtime() - drStartTime else 0}ms")
-        DRLogger.log(this, "=== DR session ended ===")
+        DRLogger.log(this, "DR_STOP: duration=$elapsed")
         DRLogger.close()
     }
 
@@ -1056,6 +1115,13 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         val sensorType = event.sensor?.type ?: return
 
         try {
+            // Логване на първото сензорно събитие (потвърждава че регистрацията работи)
+            if (drSensorFirstEvent) {
+                drSensorFirstEvent = false
+                val sensorName = event.sensor?.name ?: "unknown"
+                drLog("DR_FIRST_SENSOR: $sensorName, state=$drState")
+            }
+
             // ============================================================
             // 1. Активиране на DR (ПРЕДИ обработка на сензорните данни)
             //    Така сензорното събитие което тригерира активацията
@@ -1068,8 +1134,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     drState = DR_ACTIVE
                     drActive = true
                     drStartTime = SystemClock.elapsedRealtime()
-                    Log.i(TAG, "DR activated")
+                    val initSpeed = snapshots[0].speed
+                    drLog("DR_ACTIVATE: ${snapshots.size} snapshots, initSpeed=$initSpeed m/s, sensors init OK")
                     DRLogger.log(this, "DR_ACTIVATED: ${snapshots.size} snapshots, sensors initialized")
+                } else {
+                    drLog("DR_ACTIVATE: ring buffer empty at activation time — waiting...")
                 }
             }
 
@@ -1133,11 +1202,15 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     location.accuracy = drLoc.accuracy
                     location.time = drLoc.timestamp
 
-                    // Debug: log delta from last GPS position
-                    val prevLoc = lastKnownLocation
-                    if (prevLoc != null && prevLoc.provider != "dead_reckoning") {
-                        val dist = location.distanceTo(prevLoc)
-                        Log.d(TAG, "DR dispatch: lat=${drLoc.latitude}, lon=${drLoc.longitude}, speed=${drLoc.speed}, bearing=${drLoc.bearing}, distFromGPS=${"%.2f".format(dist)}m")
+                    // Debug: log delta from last GPS position (всеки 10-ти dispatch ≈ на 2 сек)
+                    dispatchCount++
+                    if (dispatchCount % 10 == 0) {
+                        val prevLoc = lastKnownLocation
+                        if (prevLoc != null && prevLoc.provider != "dead_reckoning") {
+                            val dist = location.distanceTo(prevLoc)
+                            drLog("DR_DISPATCH: lat=${drLoc.latitude}, lon=${drLoc.longitude}, speed=${drLoc.speed}, bearing=${drLoc.bearing}, distFromGPS=${"%.2f".format(dist)}m")
+                        }
+                        drLog(drCalculator.getDebugState())
                     }
 
                     // Подаване през съществуващия pipeline
@@ -1145,14 +1218,10 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     lastKnownLocation = location
                     isContinous = false
                     updateLocation()
-
-                    DRLogger.logLocation(this, drLoc.latitude, drLoc.longitude, drLoc.altitude, drLoc.speed, drLoc.bearing, drLoc.accuracy)
-                    val debugState = drCalculator.getDebugState()
-                    DRLogger.log(this, debugState)
-                    Log.d(TAG, debugState)
                 }
             }
         } catch (e: Exception) {
+            drLog("DR_SENSOR_ERROR: ${e.javaClass.simpleName}: ${e.message}")
             DRLogger.log(this, "DR_SENSOR_ERROR: ${e.javaClass.simpleName}: ${e.message}")
         }
     }

@@ -23,12 +23,11 @@ class GpsRingBuffer {
 
     /**
      * Добавя нова GPS позиция в буфера.
-     * @param fsats брой сателити използвани във fix-а
+     * Вече приема ВСИЧКИ позиции — fsats филтърът е премахнат
+     * за да не блокира DR при временни NMEA проблеми.
      */
     fun add(lat: Double, lon: Double, alt: Double, speed: Float, bearing: Float,
             accuracy: Float, fsats: Int) {
-        if (fsats < 5) return // само валиден fix
-
         val snapshot = GpsSnapshot(lat, lon, alt, speed, bearing, accuracy, System.currentTimeMillis())
         // Избутване: buffer[0] става buffer[1], buffer[1] става buffer[2], новото в buffer[0]
         buffer[2] = buffer[1]
