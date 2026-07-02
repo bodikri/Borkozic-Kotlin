@@ -63,14 +63,16 @@ class DeadReckoningKalman {
     private val ACCEL_NOISE_DENSITY_CRUISE = 0.02    // плавно движение — почти без Q растеж
     private val ACCEL_NOISE_DENSITY_MANEUVER = 0.3   // маневри — пълно Q
 
-    // Adaptive Q: при ускорение > 1 m/s², allow Q injection само на всеки 2 секунди
-    private val HIGH_ACCEL_THRESHOLD = 1.0            // m/s² — граница за "маневра"
+    // Adaptive Q: при ускорение > threshold, allow Q injection само на всеки 2 секунди
+    private val HIGH_ACCEL_THRESHOLD = 0.5            // m/s² (~0.05g) — достатъчно за нормално каране
     private val HIGH_ACCEL_Q_INTERVAL_MS = 2_000L     // throttle интервал
     private var lastHighAccelQInjectMs: Long = 0
     private var lastNoiseDensity: Double = ACCEL_NOISE_DENSITY_CRUISE  // за debug
 
-    // Bias random walk (m/s³/√Hz) — много бавна промяна на bias-а
-    private val BIAS_NOISE_DENSITY = 0.001
+    // Bias random walk (m/s³/√Hz) — адаптивен: расте при маневри
+    private val BIAS_NOISE_DENSITY_CRUISE = 0.001     // почти никаква промяна при плавно движение
+    private val BIAS_NOISE_DENSITY_MANEUVER = 0.05   // 50x по-бърза оценка при ускорение > threshold
+    private var lastBiasDensity: Double = BIAS_NOISE_DENSITY_CRUISE      // за debug
 
     // Максимален dt за един predict (safety clamp)
     private val MAX_DT = 1.0
@@ -240,8 +242,14 @@ class DeadReckoningKalman {
         P[3][1] += qa2 * dt2h * dt
         P[3][3] += qa2 * dt * dt
 
-        // Bias process noise (very slow random walk)
-        val qb2 = BIAS_NOISE_DENSITY * BIAS_NOISE_DENSITY * dt
+        // Bias process noise — адаптивен: ускорява се при маневри
+        val biasDensity = if (accelMag < HIGH_ACCEL_THRESHOLD) {
+            BIAS_NOISE_DENSITY_CRUISE
+        } else {
+            BIAS_NOISE_DENSITY_MANEUVER
+        }
+        lastBiasDensity = biasDensity
+        val qb2 = biasDensity * biasDensity * dt
         P[4][4] += qb2
         P[5][5] += qb2
 
@@ -394,11 +402,11 @@ class DeadReckoningKalman {
             java.util.Locale.US,
             "DR_KALMAN: heading=%.2f, speed=%.2f, posN=%.2f, posE=%.2f, " +
             "velN=%.2f, velE=%.2f, biasN=%.4f, biasE=%.4f, " +
-            "covPos=%.1f, covVel=%.2f, gpsAge=%ds(#%d), Q=%.2f, pred=#%d",
+            "covPos=%.1f, covVel=%.2f, gpsAge=%ds(#%d), Q=%.2f, Qb=%.3f, pred=#%d",
             (bearing + 360.0) % 360.0, speed,
             x[0], x[1], x[2], x[3], x[4], x[5],
             posCov, sqrt(P[2][2] + P[3][3]),
-            gpsAge, updateCount, lastNoiseDensity, predictCount
+            gpsAge, updateCount, lastNoiseDensity, lastBiasDensity, predictCount
         )
     }
 
