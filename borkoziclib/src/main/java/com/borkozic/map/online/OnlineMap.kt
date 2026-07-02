@@ -350,17 +350,8 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
         // Това позиционира tile-овете така, че map_xy точката
         // (lookAhead курсорът) да е точно в центъра на екрана.
         //
-        // Ако zoom > 2^(srcZoom−defZoom) (надхвърляме max native zoom),
-        // прилагаме допълнителен canvas scale за плавно мащабиране без шевове.
-        val tileScale = zoom / 2.0.pow((srcZoom - defZoom).toDouble())
-        val useCanvasScale = abs(tileScale - 1.0) > 0.001
-
-        if (useCanvasScale) {
-            // Мащабираме целия canvas около центъра на екрана
-            c.save()
-            c.scale(tileScale.toFloat(), tileScale.toFloat(), width / 2f, height / 2f)
-        }
-
+        // За tile-ове с zoom извън native диапазона — TileProvider сам
+        // се грижи за мащабирането (връща tile-ове с по-нисък zoom при нужда).
         for (tx in tMinX..tMaxX) {
             for (ty in tMinY..tMaxY) {
                 // Екранна позиция на горния ляв ъгъл на tile-а
@@ -374,10 +365,6 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
                     c.drawBitmap(tile, sx.toFloat(), sy.toFloat(), null)
                 }
             }
-        }
-
-        if (useCanvasScale) {
-            c.restore()
         }
 
         return result
@@ -661,13 +648,8 @@ class OnlineMap(provider: TileProvider, z: Byte) : Map("http://...") {
             srcZoom = tileProvider.minZoom
         }
 
-        // Запазване на реалния zoom фактор, ограничен до 200% над max native zoom
-        // Когато srcZoom е клампнато към maxZoom (напр. 18 = max),
-        // nativeZoom = 2^(18-18) = 1.0, така maxOverZoom = 2.0 (200%)
-        // Това предотвратява прекомерно мащабиране което натоварва системата
-        val nativeZoom = 2.0.pow((srcZoom - defZoom).toDouble())
-        val maxOverZoom = nativeZoom * 2.0 // максимум 200% над native
-        zoom = minOf(z, maxOverZoom)
+        // Запазване на реалния zoom фактор
+        zoom = z
         // Log.e("ONLINE", "z: " + srcZoom + " zoom: " + zoom + " diff: " + zDiff)
 
         // Нулиране на tile controller — изчиства кеша и презарежда с новото zoom
