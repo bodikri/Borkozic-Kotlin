@@ -1,6 +1,6 @@
 # 📖 Borkozic Documentation (Документация)
 
-> **Last updated:** 2026-06-01 (RouteDetails Compose with drag-and-drop)
+> **Last updated:** 2026-07-02 (Dead Reckoning documentation)
 > **Kotlin migration:** ~350+ .kt files, 2 Java files remaining (3rd party)
 > **Compose migration:** 3/5 screens migrated (AreaList ✅, RouteList ✅, RouteDetails ✅)
 > **Build status:** 0 compilation errors, BUILD SUCCESSFUL ✅
@@ -32,6 +32,7 @@
 | Map Activity | 🟡 Compose planned | Main map screen (главен екран с карта) |
 | Map View | 🟢 Kotlin | Custom map rendering with touch coordinate fix (MapView.kt — view-local event.x/y) |
 | Waypoint Overlay | 🟢 Kotlin | Waypoint hit testing on map (WaypointsOverlay.kt) |
+| [Dead Reckoning](components/dead-reckoning.md) | 🟡 В процес | Autonomous position from IMU sensors — Kalman Filter (автономна позиция от сензори) |
 | Navigation Service | 🟢 Kotlin | Route navigation service (услуга за навигация по маршрут) |
 | Location Service | 🟢 Kotlin | GPS location service (услуга за GPS локация) |
 

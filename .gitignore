@@ -23,7 +23,6 @@ memory/
 borkozic/build/
 borkoziclib/build/
 .hprof
-docs/
 AGENTS.md
 SOUL.md
 IDENTITY.md
