@@ -60,7 +60,14 @@ class DeadReckoningKalman {
 
     // Process noise — акселерометър noise density (m/s²/√Hz)
     // Типичен MEMS: 0.1–0.5 m/s²/√Hz
-    private val ACCEL_NOISE_DENSITY = 0.3
+    private val ACCEL_NOISE_DENSITY_CRUISE = 0.02    // плавно движение — почти без Q растеж
+    private val ACCEL_NOISE_DENSITY_MANEUVER = 0.3   // маневри — пълно Q
+
+    // Adaptive Q: при ускорение > 1 m/s², allow Q injection само на всеки 2 секунди
+    private val HIGH_ACCEL_THRESHOLD = 1.0            // m/s² — граница за "маневра"
+    private val HIGH_ACCEL_Q_INTERVAL_MS = 2_000L     // throttle интервал
+    private var lastHighAccelQInjectMs: Long = 0
+    private var lastNoiseDensity: Double = ACCEL_NOISE_DENSITY_CRUISE  // за debug
 
     // Bias random walk (m/s³/√Hz) — много бавна промяна на bias-а
     private val BIAS_NOISE_DENSITY = 0.001
@@ -202,18 +209,28 @@ class DeadReckoningKalman {
             }
         }
 
-        // Add process noise: Q = G * Qa * G^T * dt
-        // G is noise input matrix (6×2) for accel:
-        //   G[0,0]=0.5*dt², G[1,1]=0.5*dt², G[2,0]=dt, G[3,1]=dt, rest=0
-        // Qa = diag(σa², σa²), σa = ACCEL_NOISE_DENSITY
-        // So: G·Qa·G^T = σa² * [G·G^T]
-        // G·G^T[0,0] = (0.5*dt²)² = 0.25*dt⁴
-        // G·G^T[2,0] = dt*0.5*dt² = 0.5*dt³, etc.
-        val qa2 = ACCEL_NOISE_DENSITY * ACCEL_NOISE_DENSITY * dt
-        val dt2h = dt2half
-        val dt3h = dt * dt * dt * 0.5  // dt³ * 0.5
+        // --- Adaptive process noise ---
+        // При плавно движение (|accel| < 1 m/s²): почти никакъв Q растеж
+        // При маневра (|accel| >= 1 m/s²): пълно Q, но throttle-нато на всеки 2 секунди
+        val accelMag = sqrt(accelN * accelN + accelE * accelE)
+        val now = System.currentTimeMillis()
+        val noiseDensity = if (accelMag < HIGH_ACCEL_THRESHOLD) {
+            // Cruise: минимален растеж на несигурността
+            ACCEL_NOISE_DENSITY_CRUISE
+        } else if (now - lastHighAccelQInjectMs >= HIGH_ACCEL_Q_INTERVAL_MS) {
+            // Maneuver + throttle изтекъл: инжектираме Q и обновяваме timestamp
+            lastHighAccelQInjectMs = now
+            ACCEL_NOISE_DENSITY_MANEUVER
+        } else {
+            // Maneuver но throttle не е изтекъл: cruise noise (чакаме 2s)
+            ACCEL_NOISE_DENSITY_CRUISE
+        }
+        lastNoiseDensity = noiseDensity
 
-        P[0][0] += qa2 * dt2h * dt2h  // 0.25*dt⁴ * σa²*dt → wait these are already multiplied by dt above
+        val qa2 = noiseDensity * noiseDensity * dt
+        val dt2h = dt2half
+
+        P[0][0] += qa2 * dt2h * dt2h
         P[0][2] += qa2 * dt2h * dt
         P[2][0] += qa2 * dt2h * dt
         P[2][2] += qa2 * dt * dt
@@ -222,8 +239,6 @@ class DeadReckoningKalman {
         P[1][3] += qa2 * dt2h * dt
         P[3][1] += qa2 * dt2h * dt
         P[3][3] += qa2 * dt * dt
-
-        // Cross-terms (N accel → E position correlations): none, independent axes
 
         // Bias process noise (very slow random walk)
         val qb2 = BIAS_NOISE_DENSITY * BIAS_NOISE_DENSITY * dt
@@ -379,11 +394,11 @@ class DeadReckoningKalman {
             java.util.Locale.US,
             "DR_KALMAN: heading=%.2f, speed=%.2f, posN=%.2f, posE=%.2f, " +
             "velN=%.2f, velE=%.2f, biasN=%.4f, biasE=%.4f, " +
-            "covPos=%.1f, covVel=%.2f, gpsAge=%ds(#%d), pred=#%d",
+            "covPos=%.1f, covVel=%.2f, gpsAge=%ds(#%d), Q=%.2f, pred=#%d",
             (bearing + 360.0) % 360.0, speed,
             x[0], x[1], x[2], x[3], x[4], x[5],
             posCov, sqrt(P[2][2] + P[3][3]),
-            gpsAge, updateCount, predictCount
+            gpsAge, updateCount, lastNoiseDensity, predictCount
         )
     }
 
@@ -414,6 +429,7 @@ class DeadReckoningKalman {
         updateCount = 0
         lastGpsCorrectionTimeMs = 0
         lastPredictTimestamp = 0
+        lastHighAccelQInjectMs = 0
     }
 
     // ========================================================================
