@@ -62,7 +62,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
         // DR константи
         private const val DR_MAX_DURATION_MS = 180_000L     // 3 минути
-        private const val DR_ACTIVATION_DELAY_MS = 5_000L   // 5 секунди
         private const val DR_BROADCAST_INTERVAL_MS = 200L   // 5Hz
         const val DR_IDLE = 0
         const val DR_ACTIVE = 1
@@ -119,33 +118,72 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
     // ========================================================================
     // Dead Reckoning (автономно изчисление при GPS загуба)
+    // Архитектура: Kalman 6-state filter [posN,posE,velN,velE,biasN,biasE]
+    // Сензорите работят ПОСТОЯННО (SENSOR_DELAY_GAME, ~50Hz)
+    // Kalman predict — при всяко accel събитие; GPS update — при всеки fix
     // ========================================================================
 
-    // Сензори за DR
+    // Сензори за DR (регистрирани постоянно)
     private var drSensorManager: SensorManager? = null
     private var drAccelerometer: Sensor? = null
     private var drGyroscope: Sensor? = null
     private var drMagnetometer: Sensor? = null
     private var drBarometer: Sensor? = null
     private var drRotationVector: Sensor? = null
+    private var sensorsRegistered: Boolean = false
 
-    // DR калкулатор и ring buffer
-    private val drCalculator = DeadReckoningCalculator()
+    // Kalman филтър (замества trajectory-based DeadReckoningCalculator)
+    private val drKalman = DeadReckoningKalman()
     private val gpsRingBuffer = GpsRingBuffer()
     private var drActive = false
     private var drStartTime: Long = 0
-    private var drActivationTime: Long = 0
     private var drLastBroadcastTime: Long = 0
-    private var dispatchCount: Int = 0  // брояч за rate-limited logging
+    private var dispatchCount: Int = 0
 
     private var drState = DR_IDLE
-    private var lastFsats: Int = 0  // брояч за ring buffer
+    private var lastFsats: Int = 0
 
-    // === DR debug лог файл (вътрешна памет — винаги достъпен) ===
+    // Rotation matrix (device → Earth frame) за gravity removal + accel transform
+    private val drRotMatrix3x3 = FloatArray(9)
+    private val drRotMatrix4x4 = FloatArray(16)
+    private var drRotMatrixReady: Boolean = false
+    private var drLastRotVectorTimestamp: Long = 0
+
+    // Gravity estimation (low-pass на raw акселерометър)
+    private var drGravityX: Double = 0.0
+    private var drGravityY: Double = 0.0
+    private var drGravityZ: Double = 9.81
+    private var drSensorIsLinearAccel: Boolean = false
+
+    // Accelerometer Earth-frame (за snapshot/debug)
+    private var drEarthAccelN: Double = 0.0
+    private var drEarthAccelE: Double = 0.0
+
+    // Heading filter — предотвратява скокове > 30°
+    private val drHeadingHistory = DoubleArray(5) { Double.NaN }
+    private var drHeadingHistoryIdx: Int = 0
+    private var drFilteredHeading: Double = Double.NaN
+
+    // Raw сензорни стойности за snapshot
+    private var drSnapshotAccelX: Float = 0f
+    private var drSnapshotAccelY: Float = 0f
+    private var drSnapshotAccelZ: Float = 0f
+    private var drSnapshotGyroX: Float = 0f
+    private var drSnapshotGyroY: Float = 0f
+    private var drSnapshotGyroZ: Float = 0f
+    private var drSnapshotMagX: Float = 0f
+    private var drSnapshotMagY: Float = 0f
+    private var drSnapshotMagZ: Float = 0f
+    private var drSnapshotRotX: Float = 0f
+    private var drSnapshotRotY: Float = 0f
+    private var drSnapshotRotZ: Float = 0f
+    private var drSensorValuesCaptured: Boolean = false
+
+    // === DR debug лог файл ===
     private var drLogFile: File? = null
     private var drLogWriter: PrintWriter? = null
     private val drLogDateFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
-    private var drSensorFirstEvent: Boolean = true  // за логване на първото събитие
+    private var drSensorFirstEvent: Boolean = true
 
     private fun drToast(msg: String) {
         Handler(Looper.getMainLooper()).post {
@@ -163,7 +201,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 it.flush()
             }
         } catch (_: Exception) {}
-        // Също и в DRLogger за backup
         try { DRLogger.log(msg) } catch (_: Exception) {}
     }
 
@@ -186,15 +223,19 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
         sharedPreferences.registerOnSharedPreferenceChangeListener(this)
 
-        // Инициализация на DR сензори
+        // Инициализация на DR сензори — РЕГИСТРИРАНИ ПОСТОЯННО
         drSensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
         drAccelerometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
             ?: drSensorManager?.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        drSensorIsLinearAccel = (drSensorManager?.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null)
         drGyroscope = drSensorManager?.getDefaultSensor(Sensor.TYPE_GYROSCOPE)
         drMagnetometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
         drBarometer = drSensorManager?.getDefaultSensor(Sensor.TYPE_PRESSURE)
         drRotationVector = drSensorManager?.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
             ?: drSensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
+
+        // Регистриране на сензори ПОСТОЯННО (SENSOR_DELAY_GAME ~50Hz, ~7mA общо)
+        registerDrSensorsContinuously()
 
         // Инициализация на DR debug лог файл
         // Ползваме getExternalFilesDir() → достъпен без root/adb
@@ -207,7 +248,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             drLogWriter = PrintWriter(drLogFile, "UTF-8")
             drLog("=== DR Logger initialized ===")
             drLog("Device: ${Build.MANUFACTURER} ${Build.MODEL}, SDK=${Build.VERSION.SDK_INT}")
-            drLog("Sensors: accel=${drAccelerometer != null}(${drAccelerometer?.name}), gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
+            drLog("Sensors: accel=${drAccelerometer != null}(${drAccelerometer?.name}) linearAccel=$drSensorIsLinearAccel, gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
             drLog("Log path: ${drLogFile!!.absolutePath}")
             Log.i(TAG, "DR log file: ${drLogFile!!.absolutePath}")
         } catch (e: Exception) {
@@ -838,6 +879,23 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             if (gpsRingBuffer.size() != bufSizeBefore) {
                 drLog("RINGBUF: add #${gpsRingBuffer.size()} lat=${location.latitude} lon=${location.longitude} speed=${location.speed} fsats=$lastFsats")
             }
+
+            // Kalman GPS update — lazy init при първи GPS fix, после update всеки път
+            // Това учи accelerometer bias дори преди GPS да се изключи
+            if (!drKalman.isActive()) {
+                drKalman.initialize(
+                    location.latitude, location.longitude, location.altitude,
+                    location.speed.toDouble(), location.bearing.toDouble(),
+                    location.accuracy
+                )
+                drLog("KALMAN_INIT: lazy init from GPS fix, speed=${location.speed}")
+            } else {
+                val relPos = drKalman.gpsToRelative(location.latitude, location.longitude)
+                val velN = location.speed.toDouble() * kotlin.math.cos(Math.toRadians(location.bearing.toDouble()))
+                val velE = location.speed.toDouble() * kotlin.math.sin(Math.toRadians(location.bearing.toDouble()))
+                drKalman.updateWithGPS(relPos[0], relPos[1], velN, velE, location.accuracy)
+            }
+
             sendUpdate = true
             if (!nmeaGeoidHeight.isNaN()) {
                 lastKnownLocation!!.altitude = lastKnownLocation!!.altitude + nmeaGeoidHeight
@@ -1057,10 +1115,15 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     }
 
     // ========================================================================
-    // Dead Reckoning — автономно изчисление при GPS загуба
+    // Dead Reckoning — Kalman 6-state архитектура
+    // Сензорите са регистрирани ПОСТОЯННО (registerDrSensorsContinuously в onCreate)
+    // Kalman.predict() → всяко accel събитие (Earth-frame, gravity-removed)
+    // Kalman.updateWithGPS() → всеки GPS fix (в onLocationChanged)
+    // DR dispatch → 5Hz когато drActive=true
     // ========================================================================
 
-    private fun registerDrSensors() {
+    private fun registerDrSensorsContinuously() {
+        if (sensorsRegistered) return
         var count = 0
         drAccelerometer?.let {
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
@@ -1082,15 +1145,17 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             drSensorManager?.registerListener(this, it, SensorManager.SENSOR_DELAY_GAME)
             count++
         }
-        drLog("DR_SENSORS: registered $count sensors")
+        sensorsRegistered = true
+        drLog("DR_SENSORS_CONTINUOUS: registered $count sensors @SENSOR_DELAY_GAME")
     }
 
     private fun unregisterDrSensors() {
         drSensorManager?.unregisterListener(this)
+        sensorsRegistered = false
     }
 
     private fun startDeadReckoning() {
-        drLog("DR_START: requested")
+        drLog("DR_START: requested (Kalman)")
         val snapshots = gpsRingBuffer.getAll()
         drLog("DR_START: ringBuffer size=${snapshots.size}")
         if (snapshots.isEmpty()) {
@@ -1100,109 +1165,219 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         }
 
         val latest = snapshots[0]
-        drState = DR_IDLE
-        drActivationTime = SystemClock.elapsedRealtime() + DR_ACTIVATION_DELAY_MS
+
+        // Ре-инициализация на Kalman с последната GPS точка
+        // (Kalman вече работи от първия GPS fix, но refresh-ваме reference)
+        drKalman.initialize(
+            latest.lat, latest.lon, latest.alt,
+            latest.speed.toDouble(), latest.bearing.toDouble(),
+            latest.accuracy
+        )
+
+        drState = DR_ACTIVE
+        drActive = true
         drStartTime = SystemClock.elapsedRealtime()
         drLastBroadcastTime = 0
+        dispatchCount = 0
+        drHeadingHistory.fill(Double.NaN)
+        drHeadingHistoryIdx = 0
+        drFilteredHeading = Double.NaN
 
-        registerDrSensors()
+        // Log snapshot — 6-те компонента + начални условия
+        drLog("DR_START: OK (Kalman) — lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
+        drLog(drKalman.getInitialSnapshot())
 
-        drLog("DR_START: OK — snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
-        drToast("Starting in 5s... speed=${String.format("%.1f", latest.speed)}m/s")
-        DRLogger.log(this, "DR_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}")
+        // Ако вече имаме кеширани сензорни стойности, логваме ги като snapshot
+        if (drSensorValuesCaptured) {
+            drLog(String.format(java.util.Locale.US,
+                "SENSOR_SNAPSHOT: accel=[%.3f,%.3f,%.3f], gyro=[%.4f,%.4f,%.4f], mag=[%.1f,%.1f,%.1f], rot=[%.4f,%.4f,%.4f], earthAccel=[%.4f,%.4f]",
+                drSnapshotAccelX, drSnapshotAccelY, drSnapshotAccelZ,
+                drSnapshotGyroX, drSnapshotGyroY, drSnapshotGyroZ,
+                drSnapshotMagX, drSnapshotMagY, drSnapshotMagZ,
+                drSnapshotRotX, drSnapshotRotY, drSnapshotRotZ,
+                drEarthAccelN, drEarthAccelE))
+        }
+
+        drToast("ACTIVE (K)! speed=${String.format("%.1f", latest.speed)}m/s")
+        DRLogger.log(this, "DR_START_KALMAN: speed=${latest.speed}, bearing=${latest.bearing}")
     }
 
     private fun stopDeadReckoning() {
         val elapsed = if (drStartTime > 0) SystemClock.elapsedRealtime() - drStartTime else 0
-        drLog("DR_STOP: duration=${elapsed}ms, state=$drState")
+        drLog("DR_STOP: duration=${elapsed}ms, state=$drState, kalman=${drKalman.getDebugState()}")
         drToast("STOPPED (${elapsed/1000}s)")
-        unregisterDrSensors()
-        drCalculator.reset()
 
         if (drState != DR_STOPPED) {
             drState = DR_STOPPED
         }
         drActive = false
-        drSensorFirstEvent = true  // ресет за следващата сесия
+        // Kalman продължава да работи — bias estimation не спира
+        // Само спираме DR dispatch-а
+        drSensorValuesCaptured = false
 
-        DRLogger.log(this, "DR_STOP: duration=$elapsed")
+        DRLogger.log(this, "DR_STOP_KALMAN: duration=$elapsed")
         DRLogger.close()
+    }
+
+    /**
+     * Heading филтър — предотвратява скокове > 30°
+     * Ако нов heading се различава от медианата на последните 5 с > 30°:
+     *   - Игнорира се освен ако 3+ последователни показания са в новата посока
+     */
+    private fun filterHeading(newHeading: Double): Double {
+        // Добавяне в историята
+        drHeadingHistory[drHeadingHistoryIdx] = newHeading
+        drHeadingHistoryIdx = (drHeadingHistoryIdx + 1) % 5
+
+        val valid = drHeadingHistory.filter { !it.isNaN() }.sorted()
+        if (valid.size < 2) return newHeading
+
+        val median = valid[valid.size / 2]
+
+        // Изчисляване на ъглова разлика
+        var diff = newHeading - median
+        if (diff > 180.0) diff -= 360.0
+        if (diff < -180.0) diff += 360.0
+
+        if (kotlin.math.abs(diff) < 30.0) {
+            // В рамките на 30° → приемаме
+            drFilteredHeading = newHeading
+            return newHeading
+        }
+
+        // Голям скок — проверяваме дали е устойчив
+        val recentCount = drHeadingHistory.count { h ->
+            if (h.isNaN()) return@count false
+            var d = newHeading - h
+            if (d > 180.0) d -= 360.0
+            if (d < -180.0) d += 360.0
+            kotlin.math.abs(d) < 30.0
+        }
+
+        return if (recentCount >= 3) {
+            // 3+ показания в новата посока → реален завой, приемаме
+            drFilteredHeading = newHeading
+            newHeading
+        } else {
+            // Отхвърляме — връщаме филтрирания или медианата
+            if (drFilteredHeading.isNaN()) median else drFilteredHeading
+        }
     }
 
     override fun onSensorChanged(event: SensorEvent) {
         val sensorType = event.sensor?.type ?: return
 
         try {
-            // Логване на първото сензорно събитие (потвърждава че регистрацията работи)
+            // Логване на първото сензорно събитие (потвърждава че постоянната регистрация работи)
             if (drSensorFirstEvent) {
                 drSensorFirstEvent = false
                 val sensorName = event.sensor?.name ?: "unknown"
-                drLog("DR_FIRST_SENSOR: $sensorName, state=$drState")
+                drLog("DR_FIRST_SENSOR: $sensorName (continuous mode)")
             }
 
-            // ============================================================
-            // 1. Активиране на DR (ПРЕДИ обработка на сензорните данни)
-            //    Така сензорното събитие което тригерира активацията
-            //    се обработва от ВЕЧЕ инициализиран калкулатор.
-            // ============================================================
-            if (drState == DR_IDLE && SystemClock.elapsedRealtime() >= drActivationTime) {
-                val snapshots = gpsRingBuffer.getAll()
-                if (snapshots.isNotEmpty()) {
-                    drCalculator.initialize(snapshots, snapshots[0].accuracy)
-                    drState = DR_ACTIVE
-                    drActive = true
-                    drStartTime = SystemClock.elapsedRealtime()
-                    val initSpeed = snapshots[0].speed
-                    drLog("DR_ACTIVATE: ${snapshots.size} snapshots, initSpeed=$initSpeed m/s, sensors init OK")
-                    drToast("ACTIVE! speed=${String.format("%.1f", initSpeed)}m/s")
-                    DRLogger.log(this, "DR_ACTIVATED: ${snapshots.size} snapshots, sensors initialized")
-                } else {
-                    drLog("DR_ACTIVATE: ring buffer empty at activation time — waiting...")
-                }
-            }
+            when (sensorType) {
+                Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ACCELEROMETER -> {
+                    val isLinear = (sensorType == Sensor.TYPE_LINEAR_ACCELERATION)
+                    val ax = event.values[0].toDouble()
+                    val ay = event.values[1].toDouble()
+                    val az = event.values[2].toDouble()
 
-            // ============================================================
-            // 2. Обработка на сензорните данни
-            //    Активацията вече е станала (ако е било време) → initialized=true
-            //    и advancePosition ще работи веднага.
-            // ============================================================
-            val isDrSensor = when (sensorType) {
-                Sensor.TYPE_LINEAR_ACCELERATION -> {
-                    drCalculator.processAccelerometer(event.values, event.timestamp, true)
-                    true
+                    // Кеширане за snapshot
+                    drSnapshotAccelX = event.values[0]
+                    drSnapshotAccelY = event.values[1]
+                    drSnapshotAccelZ = event.values[2]
+
+                    // Gravity removal
+                    val linearAccelX: Double
+                    val linearAccelY: Double
+                    val linearAccelZ: Double
+                    if (isLinear) {
+                        linearAccelX = ax
+                        linearAccelY = ay
+                        linearAccelZ = az
+                    } else {
+                        val beta = 0.9
+                        drGravityX = beta * drGravityX + (1 - beta) * ax
+                        drGravityY = beta * drGravityY + (1 - beta) * ay
+                        drGravityZ = beta * drGravityZ + (1 - beta) * az
+                        linearAccelX = ax - drGravityX
+                        linearAccelY = ay - drGravityY
+                        linearAccelZ = az - drGravityZ
+                    }
+
+                    // Transform device→Earth frame
+                    val accelN: Double
+                    val accelE: Double
+                    if (drRotMatrixReady) {
+                        val deviceAccel = floatArrayOf(linearAccelX.toFloat(), linearAccelY.toFloat(), linearAccelZ.toFloat(), 0f)
+                        val earthAccel = FloatArray(4)
+                        android.opengl.Matrix.multiplyMV(earthAccel, 0, drRotMatrix4x4, 0, deviceAccel, 0)
+                        // Android: earthAccel[0]=East, earthAccel[1]=North
+                        accelE = earthAccel[0].toDouble()
+                        accelN = earthAccel[1].toDouble()
+                    } else {
+                        // Fallback: предполагаме хоризонтално устройство (phone X→North, Y→East)
+                        accelN = linearAccelX
+                        accelE = linearAccelY
+                    }
+
+                    drEarthAccelN = accelN
+                    drEarthAccelE = accelE
+                    drSensorValuesCaptured = true
+
+                    // Kalman prediction (винаги — и при GPS ON, и при DR)
+                    drKalman.predict(accelN, accelE, event.timestamp)
                 }
-                Sensor.TYPE_ACCELEROMETER -> {
-                    drCalculator.processAccelerometer(event.values, event.timestamp, false)
-                    true
-                }
-                Sensor.TYPE_GYROSCOPE -> {
-                    drCalculator.processGyroscope(event.values, event.timestamp)
-                    true
-                }
-                Sensor.TYPE_MAGNETIC_FIELD -> {
-                    drCalculator.processMagnetometer(event.values, event.timestamp)
-                    true
-                }
-                Sensor.TYPE_PRESSURE -> {
-                    drCalculator.processBarometer(event.values[0], event.timestamp)
-                    true
-                }
+
                 Sensor.TYPE_GAME_ROTATION_VECTOR, Sensor.TYPE_ROTATION_VECTOR -> {
-                    drCalculator.processRotationVector(event.values, event.timestamp)
-                    true
+                    drSnapshotRotX = if (event.values.size > 0) event.values[0] else 0f
+                    drSnapshotRotY = if (event.values.size > 1) event.values[1] else 0f
+                    drSnapshotRotZ = if (event.values.size > 2) event.values[2] else 0f
+                    drSensorValuesCaptured = true
+
+                    try {
+                        SensorManager.getRotationMatrixFromVector(drRotMatrix3x3, event.values)
+                        // Конвертиране 3×3 → 4×4
+                        drRotMatrix4x4[0] = drRotMatrix3x3[0]; drRotMatrix4x4[1] = drRotMatrix3x3[1]
+                        drRotMatrix4x4[2] = drRotMatrix3x3[2]; drRotMatrix4x4[3] = 0f
+                        drRotMatrix4x4[4] = drRotMatrix3x3[3]; drRotMatrix4x4[5] = drRotMatrix3x3[4]
+                        drRotMatrix4x4[6] = drRotMatrix3x3[5]; drRotMatrix4x4[7] = 0f
+                        drRotMatrix4x4[8] = drRotMatrix3x3[6]; drRotMatrix4x4[9] = drRotMatrix3x3[7]
+                        drRotMatrix4x4[10] = drRotMatrix3x3[8]; drRotMatrix4x4[11] = 0f
+                        drRotMatrix4x4[12] = 0f; drRotMatrix4x4[13] = 0f
+                        drRotMatrix4x4[14] = 0f; drRotMatrix4x4[15] = 1f
+                        drRotMatrixReady = true
+                        drLastRotVectorTimestamp = event.timestamp
+                    } catch (_: Exception) {}
                 }
-                else -> false
+
+                Sensor.TYPE_GYROSCOPE -> {
+                    drSnapshotGyroX = event.values[0]
+                    drSnapshotGyroY = event.values[1]
+                    drSnapshotGyroZ = event.values[2]
+                    drSensorValuesCaptured = true
+                }
+
+                Sensor.TYPE_MAGNETIC_FIELD -> {
+                    drSnapshotMagX = event.values[0]
+                    drSnapshotMagY = event.values[1]
+                    drSnapshotMagZ = event.values[2]
+                    drSensorValuesCaptured = true
+                }
+
+                Sensor.TYPE_PRESSURE -> {
+                    // Барометър — само кеширане
+                    drSensorValuesCaptured = true
+                }
             }
 
             // ============================================================
-            // 3. Изпращане на DR позиция през нормалния location pipeline
-            //    (само ако сензорът е DR-релевантен)
+            // DR Dispatch (5Hz, само когато GPS е изключен)
             // ============================================================
-            if (isDrSensor && drState == DR_ACTIVE && drCalculator.isActive()) {
+            if (drActive && drState == DR_ACTIVE && drKalman.isActive()) {
                 // Проверка за timeout
                 if (SystemClock.elapsedRealtime() - drStartTime > DR_MAX_DURATION_MS) {
-                    Log.i(TAG, "DR max duration reached")
-                    DRLogger.log(this, "DR_TIMEOUT: max duration reached")
+                    drLog("DR_TIMEOUT: max duration reached")
                     stopDeadReckoning()
                     return
                 }
@@ -1211,7 +1386,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 if (now - drLastBroadcastTime >= DR_BROADCAST_INTERVAL_MS) {
                     drLastBroadcastTime = now
 
-                    val drLoc = drCalculator.getCurrentLocation()
+                    val drLoc = drKalman.getCurrentLocation()
                     val location = Location("dead_reckoning")
                     location.latitude = drLoc.latitude
                     location.longitude = drLoc.longitude
@@ -1221,7 +1396,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     location.accuracy = drLoc.accuracy
                     location.time = drLoc.timestamp
 
-                    // Debug: log delta from last GPS position (всеки 10-ти dispatch ≈ на 2 сек)
+                    // Rate-limited logging (всеки 10-ти dispatch ≈ на 2 сек)
                     dispatchCount++
                     if (dispatchCount % 10 == 0) {
                         val prevLoc = lastKnownLocation
@@ -1229,11 +1404,10 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                             val dist = location.distanceTo(prevLoc)
                             drLog("DR_DISPATCH: lat=${drLoc.latitude}, lon=${drLoc.longitude}, speed=${drLoc.speed}, bearing=${drLoc.bearing}, distFromGPS=${"%.2f".format(dist)}m")
                         }
-                        drLog(drCalculator.getDebugState())
+                        drLog(drKalman.getDebugState())
                     }
 
                     // Подаване през съществуващия pipeline
-                    // lastKnownLocation се обновява и updateLocation() праща на всички слушатели
                     lastKnownLocation = location
                     isContinous = false
                     updateLocation()
@@ -1241,7 +1415,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             }
         } catch (e: Exception) {
             drLog("DR_SENSOR_ERROR: ${e.javaClass.simpleName}: ${e.message}")
-            DRLogger.log(this, "DR_SENSOR_ERROR: ${e.javaClass.simpleName}: ${e.message}")
         }
     }
 
