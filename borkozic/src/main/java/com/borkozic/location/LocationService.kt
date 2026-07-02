@@ -147,6 +147,12 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private val drLogDateFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
     private var drSensorFirstEvent: Boolean = true  // за логване на първото събитие
 
+    private fun drToast(msg: String) {
+        Handler(Looper.getMainLooper()).post {
+            Toast.makeText(this, "DR: $msg", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private fun drLog(msg: String) {
         val ts = drLogDateFormat.format(Date())
         val line = "[$ts] $msg"
@@ -190,9 +196,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         drRotationVector = drSensorManager?.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR)
             ?: drSensorManager?.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR)
 
-        // Инициализация на DR debug лог файл (вътрешна памет — без permissions)
+        // Инициализация на DR debug лог файл
+        // Ползваме getExternalFilesDir() → достъпен без root/adb
+        // на пътя Android/data/com.borkozic/files/dr_logs/
         try {
-            val logDir = File(filesDir, "dr_logs")
+            val logDir = File(getExternalFilesDir(null) ?: filesDir, "dr_logs")
             logDir.mkdirs()
             val dateStr = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
             drLogFile = File(logDir, "dr_$dateStr.txt")
@@ -200,8 +208,10 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             drLog("=== DR Logger initialized ===")
             drLog("Device: ${Build.MANUFACTURER} ${Build.MODEL}, SDK=${Build.VERSION.SDK_INT}")
             drLog("Sensors: accel=${drAccelerometer != null}(${drAccelerometer?.name}), gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
+            drLog("Log path: ${drLogFile!!.absolutePath}")
+            Log.i(TAG, "DR log file: ${drLogFile!!.absolutePath}")
         } catch (e: Exception) {
-            Log.e(TAG, "DR log init failed: ${e.message}")
+            Log.e(TAG, "DR log init failed: ${e.message}", e)
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -229,6 +239,11 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 disconnect()
                 updateProvider(LocationManager.GPS_PROVIDER, false)
                 updateProvider(LocationManager.NETWORK_PROVIDER, false)
+                // Стартирай DR ако GPS-ът се изключва ръчно
+                if (!drActive) {
+                    drLog("DISABLE_LOCATIONS: starting DR")
+                    startDeadReckoning()
+                }
                 sendBroadcast(Intent(BROADCAST_LOCATING_STATUS))
                 if (trackingEnabled) {
                     closeDatabase()
@@ -1080,6 +1095,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         drLog("DR_START: ringBuffer size=${snapshots.size}")
         if (snapshots.isEmpty()) {
             drLog("DR_START: FAILED — ring buffer empty, cannot start")
+            drToast("FAILED: ring buffer empty")
             return
         }
 
@@ -1092,12 +1108,14 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         registerDrSensors()
 
         drLog("DR_START: OK — snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
+        drToast("Starting in 5s... speed=${String.format("%.1f", latest.speed)}m/s")
         DRLogger.log(this, "DR_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}")
     }
 
     private fun stopDeadReckoning() {
         val elapsed = if (drStartTime > 0) SystemClock.elapsedRealtime() - drStartTime else 0
         drLog("DR_STOP: duration=${elapsed}ms, state=$drState")
+        drToast("STOPPED (${elapsed/1000}s)")
         unregisterDrSensors()
         drCalculator.reset()
 
@@ -1136,6 +1154,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     drStartTime = SystemClock.elapsedRealtime()
                     val initSpeed = snapshots[0].speed
                     drLog("DR_ACTIVATE: ${snapshots.size} snapshots, initSpeed=$initSpeed m/s, sensors init OK")
+                    drToast("ACTIVE! speed=${String.format("%.1f", initSpeed)}m/s")
                     DRLogger.log(this, "DR_ACTIVATED: ${snapshots.size} snapshots, sensors initialized")
                 } else {
                     drLog("DR_ACTIVATE: ring buffer empty at activation time — waiting...")
