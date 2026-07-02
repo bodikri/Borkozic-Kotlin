@@ -256,33 +256,26 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
     }
 
     /**
-     * Стартира Dead Reckoning алгоритъма с последните GPS данни.
+     * Стартира Dead Reckoning алгоритъма с GPS trajectory от ring buffer.
      *
      * Извиква се от MapActivity при GPS загуба (onProviderDisabled).
      * Запазва последните GPS данни като начална точка, регистрира сензори,
      * и стартира activation delay таймер.
      *
-     * @param lat последна известна ширина
-     * @param lon последна известна дължина
-     * @param alt последна известна височина
-     * @param speed последна известна скорост (m/s)
-     * @param bearing последен известен heading (истински, след fixDeclination)
-     * @param accuracy последна известна точност (m)
+     * @param snapshots последните 1-3 GPS точки от GpsRingBuffer (най-новата е първа)
      */
-    fun startDeadReckoning(
-        lat: Double, lon: Double, alt: Double,
-        speed: Float, bearing: Float, accuracy: Float
-    ) {
+    fun startDeadReckoning(snapshots: List<GpsRingBuffer.GpsSnapshot>) {
         // При автоматично стартиране manualMode винаги е false
         manualMode = false
-        
-        // Запазване на последните GPS данни
-        lastLat = lat
-        lastLon = lon
-        lastAltitude = alt
-        lastSpeed = speed
-        lastBearing = bearing
-        lastAccuracy = accuracy
+
+        val latest = snapshots[0]
+        // Запазване на последните GPS данни (за backward compatibility)
+        lastLat = latest.lat
+        lastLon = latest.lon
+        lastAltitude = latest.alt
+        lastSpeed = latest.speed
+        lastBearing = latest.bearing
+        lastAccuracy = latest.accuracy
         lastGpsTime = SystemClock.elapsedRealtime()
 
         // Задаване на време за активиране (след ACTIVATION_DELAY_MS секунди)
@@ -298,9 +291,9 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
         // Регистриране на сензорите
         registerSensors()
 
-        Log.i(TAG, "Dead Reckoning started with initial position: $lat, $lon, $alt, speed=$speed, bearing=$bearing")
+        Log.i(TAG, "Dead Reckoning started with ${snapshots.size} GPS snapshots: $latest")
         // Запис в файл за анализ след полет
-        DRLogger.log(this, "DR_START: lat=$lat, lon=$lon, alt=$alt, speed=$speed, bearing=$bearing, acc=$accuracy")
+        DRLogger.log(this, "DR_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
         DRLogger.log(this, "DR_START: activation delay=${ACTIVATION_DELAY_MS}ms, max duration=${MAX_DURATION_MS}ms")
         DRLogger.log(this, "DR_START: sensors — accel=${accelerometer != null} (${accelerometer?.name}), gyro=${gyroscope != null} (${gyroscope?.name}), mag=${magnetometer != null} (${magnetometer?.name}), baro=${barometer != null} (${barometer?.name}), rotVec=${rotationVector != null} (${rotationVector?.name})")
         DRLogger.log(this, "DR_START: accel type=${if (accelerometer?.type == Sensor.TYPE_LINEAR_ACCELERATION) "LINEAR_ACCELERATION" else "ACCELEROMETER"}")
@@ -409,8 +402,14 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
 
         // Проверка за активиране на DR след изтичане на ACTIVATION_DELAY_MS
         if (drState == DR_IDLE && SystemClock.elapsedRealtime() >= activationTime) {
-            // Иницизиране на калкулатора с последните GPS данни
-            calculator.initialize(lastLat, lastLon, lastAltitude, lastSpeed, lastBearing, lastAccuracy)
+            // Инициализиране на калкулатора с trajectory от ring buffer
+            // Подаваме последните запазени GPS данни като единичен snapshot
+            val initSnapshot = GpsRingBuffer.GpsSnapshot(
+                lastLat, lastLon, lastAltitude,
+                lastSpeed, lastBearing, lastAccuracy,
+                System.currentTimeMillis()
+            )
+            calculator.initialize(listOf(initSnapshot), lastAccuracy)
             drState = DR_ACTIVE
             drStartTime = SystemClock.elapsedRealtime()
             sendBroadcast(Intent(BROADCAST_DR_STATE).putExtra("state", drState).setPackage(packageName))
@@ -475,25 +474,25 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
      * Разликата с automatic startDeadReckoning:
      * - Няма activation delay (веднага е ACTIVE)
      * - manualMode=true → не се спира при GPS recovery
-     * - Използва последните GPS данни като стартова точка
+     * - Използва GPS trajectory от ring buffer като стартова точка
+     *
+     * @param snapshots последните 1-3 GPS точки от GpsRingBuffer (най-новата е първа)
      */
-    fun startManualDeadReckoning(
-        lat: Double, lon: Double, alt: Double,
-        speed: Float, bearing: Float, accuracy: Float
-    ) {
+    fun startManualDeadReckoning(snapshots: List<GpsRingBuffer.GpsSnapshot>) {
         manualMode = true
-        
+
+        val latest = snapshots[0]
         // Веднага ACTIVE без activation delay
         drStartTime = SystemClock.elapsedRealtime()
         activationTime = drStartTime  // Веднага активиран
         
         // Запазване на последните GPS данни
-        lastLat = lat
-        lastLon = lon
-        lastAltitude = alt
-        lastSpeed = speed
-        lastBearing = bearing
-        lastAccuracy = accuracy
+        lastLat = latest.lat
+        lastLon = latest.lon
+        lastAltitude = latest.alt
+        lastSpeed = latest.speed
+        lastBearing = latest.bearing
+        lastAccuracy = latest.accuracy
         lastGpsTime = SystemClock.elapsedRealtime()
         
         // Регистриране на сензорите
@@ -505,11 +504,11 @@ class DeadReckoningService : BaseLocationService(), SensorEventListener {
             sendBroadcast(Intent(BROADCAST_DR_STATE).putExtra("state", drState).setPackage(packageName))
         }
         
-        // Инициализиране на калкулатора
-        calculator.initialize(lat, lon, alt, speed, bearing, accuracy)
+        // Инициализиране на калкулатора с trajectory от ring buffer
+        calculator.initialize(snapshots, latest.accuracy)
         
-        Log.i(TAG, "Manual Dead Reckoning started: $lat, $lon, $alt, speed=$speed, bearing=$bearing")
-        DRLogger.log(this, "DR_MANUAL_START: lat=$lat, lon=$lon, alt=$alt, speed=$speed, bearing=$bearing, acc=$accuracy")
+        Log.i(TAG, "Manual Dead Reckoning started: snapshots=${snapshots.size}, $latest")
+        DRLogger.log(this, "DR_MANUAL_START: snapshots=${snapshots.size}, lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
         DRLogger.log(this, "DR_MANUAL_START: manual mode — DR will NOT stop on GPS recovery")
         DRLogger.log(this, "DR_START: sensors — accel=${accelerometer != null} (${accelerometer?.name}), gyro=${gyroscope != null} (${gyroscope?.name}), mag=${magnetometer != null} (${magnetometer?.name}), baro=${barometer != null} (${barometer?.name})")
     }

@@ -1,127 +1,69 @@
 package com.borkozic.location
 
-import android.hardware.Sensor
 import android.hardware.SensorManager
+import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.max
 import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
- * Dead Reckoning Calculator — Kalman Filter версия.
+ * Dead Reckoning Calculator — Trajectory-based версия.
  *
- * Изчислява позиция от IMU сензори (accelerometer, rotation vector, barometer)
- * когато GPS не е наличен. Използва 4-state Kalman filter за fusion на IMU и GPS.
+ * Вместо double-integration на акселерометър (Kalman Filter), този алгоритъм:
  *
- * Координатна система: North, East, Up (ENU — Earth frame)
+ * 1. Извлича вектори на движение от последните 3 GPS точки:
+ *    - Текуща скорост и посока (speed, bearing) от най-новата точка
+ *    - Тренд на ускорението от разликата между двата velocity вектора
  *
- * State vector (4D):
- *   x = [ posN, posE, velN, velE ]
+ * 2. Коригира тези вектори със сензорни данни във времето:
+ *    - Gyro / Rotation Vector → променя bearing (завой)
+ *    - Accelerometer → променя speed (ускоряване/забавяне, проектирано по посоката)
+ *    - Барометър → височина
  *
- * Control input (2D):
- *   u = [ accelN, accelE ]  (линейно ускорение в Earth frame)
+ * 3. Позиция = интеграл на (скорост × посока) — единична интеграция
+ *    (не двойна като при acceleration→velocity→position)
  *
- * Prediction (IMU, 20Hz):
- *   x = F*x + B*u
- *   P = F*P*F^T + Q
+ * Предимства пред двойната интеграция:
+ * - Началната скорост идва от GPS, не от интеграция на acceleration
+ * - Accelerometer bias влияе само върху speed (m/s), не position (m²/s²)
+ * - Gyro drift влияе върху bearing, но bearing грешката е линейна, не квадратична
  *
- * Correction (GPS, ~1Hz, когато е наличен):
- *   K = P*H^T * (H*P*H^T + R)^{-1}
- *   x = x + K*(z - H*x)
- *   P = (I - K*H)*P
- *
- * Алгоритъм:
- * 1. Rotation vector → rotation matrix → трансформация device→Earth frame
- * 2. Accelerometer (linear) в Earth frame → Kalman prediction
- * 3. GPS (когато е наличен) → Kalman correction
- * 4. Heading от rotation matrix (азимут)
- * 5. Altitude от барометър (точно) или стартова GPS височина
- *
- * Предимства спрямо старата имплементация:
- * - Няма нефизичен drag decay — скоростта се поддържа от инерция + GPS корекция
- * - Правилна координатна трансформация чрез rotation matrix (не се предполага хоризонтално устройство)
- * - Kalman filter оптимално комбинира IMU и GPS с noise модели
- * - Accelerometer bias се компенсира индиректно чрез GPS innovation
+ * Координатна система: North, East (метри от стартовата GPS точка)
  */
 class DeadReckoningCalculator {
 
     // ========================================================================
-    // State vector и covariance
+    // Trajectory state (основно състояние)
     // ========================================================================
 
-    // x = [posN, posE, velN, velE] — 4-state
-    private val x = DoubleArray(4)
+    private var posNorth: Double = 0.0    // метри North от стартовата точка
+    private var posEast: Double = 0.0     // метри East от стартовата точка
+    private var speed: Double = 0.0       // текуща скорост (m/s)
+    private var heading: Double = 0.0     // текуща посока (градуси, 0-360)
 
-    // P = 4×4 covariance matrix (row-major: P[i*4+j])
-    private val P = DoubleArray(16)
-
-    // ========================================================================
-    // Kalman filter матрици (пребuild-ват се при всеки step)
-    // ========================================================================
-
-    // F = state transition (4×4)
-    private val F = DoubleArray(16)
-    // B = control matrix (4×2)
-    private val B = DoubleArray(8)
-    // Q = process noise (4×4)
-    private val Q = DoubleArray(16)
-    // H = measurement matrix (4×4 identity)
-    private val H = doubleArrayOf(
-        1.0, 0.0, 0.0, 0.0,
-        0.0, 1.0, 0.0, 0.0,
-        0.0, 0.0, 1.0, 0.0,
-        0.0, 0.0, 0.0, 1.0
-    )
-    // R = measurement noise (4×4) — rebuild при всеки GPS correction
-    private val R = DoubleArray(16)
-    // K = Kalman gain (4×4)
-    private val K = DoubleArray(16)
-
-    // Temporary matrices за изчисления
-    private val tmp4 = DoubleArray(4)
-    private val tmp44a = DoubleArray(16)
-    private val tmp44b = DoubleArray(16)
-    private val tmp44c = DoubleArray(16)
-    private val tmpMat = DoubleArray(16)
-    private val tmpVec = DoubleArray(4)
-    private val innov = DoubleArray(4) // innovation = z - H*x
-
-    // ========================================================================
-    // Процес noise параметри (tunable)
-    // ========================================================================
-
-    // Process noise spectral density за ускорение (m/s²/√s)
-    // MEMS accelerometer на телефон: ~0.1-0.3 m/s²/√s
-    private var sigmaAccel = 0.15 // m/s²/√s
-
-    // Measurement noise за GPS скорост (m/s) — GPS speed е сравнително точен
-    private var sigmaGpsVel = 0.5 // m/s
-
-    // ========================================================================
-    // Позиция в Earth frame (относително стартовата точка)
-    // ========================================================================
-
-    private var posNorth: Double = 0.0
-    private var posEast: Double = 0.0
-    private var velNorth: Double = 0.0
-    private var velEast: Double = 0.0
+    // --- Начален velocity вектор (от GPS, не се нулира) ---
+    private var initialSpeed: Double = 0.0
+    private var initialHeading: Double = 0.0
 
     // --- Височина ---
     private var altitude: Double = 0.0
     private var hasBarometer: Boolean = false
 
-    // --- Heading (градуси, 0-360) ---
-    private var heading: Double = 0.0
+    // ========================================================================
+    // Rotation matrix (device → Earth frame)
+    // ========================================================================
 
-    // --- Rotation matrix (device → Earth) ---
-    // Обновява се при всеки rotation vector sensor event
-    // rotMatrix3x3: от SensorManager.getRotationMatrixFromVector (3×3, 9 елемента)
-    // rotMatrix4x4: конвертирана 4×4 за Matrix.multiplyMV (16 елемента)
     private val rotMatrix3x3 = FloatArray(9)
     private val rotMatrix4x4 = FloatArray(16)
-    private val rotMatrixInitialized = BooleanArray(1)
+    private var rotMatrixReady: Boolean = false
 
-    // --- Compass heading (fallback, от magnetometer + accel) ---
+    // ========================================================================
+    // Heading източници
+    // ========================================================================
+
+    // --- Compass fallback ---
     private var compassHeading: Double = 0.0
     private var hasCompassData: Boolean = false
     private var firstCompassComputed: Boolean = false
@@ -130,20 +72,30 @@ class DeadReckoningCalculator {
     private var hasAccelForCompass: Boolean = false
     private var hasMagForCompass: Boolean = false
 
-    // --- Timestamps (наносекунди от SensorEvent) ---
+    // ========================================================================
+    // Timestamps
+    // ========================================================================
+
     private var lastAccelTimestamp: Long = 0
     private var lastGyroTimestamp: Long = 0
     private var lastMagTimestamp: Long = 0
     private var lastBaroTimestamp: Long = 0
     private var lastRotVectorTimestamp: Long = 0
+    private var lastUpdateTimestamp: Long = 0  // общ timestamp за position advance
 
-    // --- Филтрирани сензорни стойности ---
+    // ========================================================================
+    // Филтрирани сензорни стойности
+    // ========================================================================
+
     private var filteredAccelX: Double = 0.0
     private var filteredAccelY: Double = 0.0
     private var filteredAccelZ: Double = 0.0
     private var filteredGyroZ: Double = 0.0
 
-    // --- Последни raw сензорни стойности за debug ---
+    // ========================================================================
+    // Raw сензорни стойности (за debug)
+    // ========================================================================
+
     private var rawAccelX: Float = 0f
     private var rawAccelY: Float = 0f
     private var rawAccelZ: Float = 0f
@@ -157,95 +109,163 @@ class DeadReckoningCalculator {
     private var rawRotY: Float = 0f
     private var rawRotZ: Float = 0f
 
-    // --- Gravity оценка (за compass heading при LINEAR_ACCELERATION сензор) ---
+    // ========================================================================
+    // Gravity & bias
+    // ========================================================================
+
     private var gravityX: Double = 0.0
     private var gravityY: Double = 0.0
     private var gravityZ: Double = 9.81
     private var sensorIsLinearAcceleration: Boolean = false
 
-    // --- Accelerometer bias estimation (running average при нулева скорост) ---
-    private var accelBiasN: Double = 0.0
-    private var accelBiasE: Double = 0.0
-    private var biasLearnRate: Double = 0.005 // бавно учене
+    // Along-track accelerometer bias (m/s²) — оценен при GPS-налични периоди
+    private var accelBiasAlong: Double = 0.0
+    private var biasLearnCount: Int = 0
 
-    // --- GPS correction tracking ---
-    private var lastGpsCorrectionTime: Long = 0  // System.currentTimeMillis()
-    private var gpsCorrectionCount: Int = 0
+    // ========================================================================
+    // Earth-frame acceleration (за debug)
+    // ========================================================================
 
-    // --- Последни Earth-frame ускорения (след трансформация + bias) за debug ---
     private var earthAccelN: Double = 0.0
     private var earthAccelE: Double = 0.0
 
-    // --- Стартова GPS точка ---
+    // ========================================================================
+    // Стартова GPS точка (reference за lat/lon конверсия)
+    // ========================================================================
+
     private var refLatitude: Double = 0.0
     private var refLongitude: Double = 0.0
     private var refAltitude: Double = 0.0
 
-    // --- Accuracy tracking ---
+    // ========================================================================
+    // Accuracy & tracking
+    // ========================================================================
+
     private var initialAccuracy: Float = 0.0f
     private var estimatedAccuracy: Float = 0.0f
     private var startTime: Long = 0
-    private val DRIFT_RATE = 2.0f // m/s drift rate за авиация
 
-    // --- Състояние ---
+    // Drift rate: градуси/сек gyro drift × скорост → позиционна грешка
+    // Типичен MEMS gyro drift: ~0.05°/s → при 10 m/s → ~0.5 m/s позиционен drift
+    private val GYRO_DRIFT_DEG_PER_S = 0.05   // °/s типичен gyro drift
+    private val ACCEL_BIAS_DRIFT = 0.02       // m/s² типичен accelerometer bias
+
+    // ========================================================================
+    // GPS correction tracking
+    // ========================================================================
+
+    private var lastGpsCorrectionTime: Long = 0
+    private var gpsCorrectionCount: Int = 0
+
+    // ========================================================================
+    // Състояние
+    // ========================================================================
+
     private var initialized: Boolean = false
 
-    // Complementary filter коефициент за heading (compass корекция на gyro)
-    private val COMPASS_WEIGHT = 0.02
+    // ========================================================================
+    // Tunable параметри
+    // ========================================================================
+
+    // Accelerometer: колко силно влияе върху скоростта (0-1)
+    // 1.0 = пълно доверие на accelerometer, 0.0 = игнорирай accelerometer
+    private val ACCEL_GAIN = 0.3
+
+    // Deadzone: под това ускорение се третира като шум (m/s²)
+    private val ACCEL_DEADZONE = 0.1
+
+    // Maximum speed change per second from accelerometer (m/s²) — safety clamp
+    private val MAX_ACCEL = 5.0  // 0.5g ≈ нормално возило
+
+    // Gyro: maximum turn rate (°/s) — safety clamp
+    private val MAX_TURN_RATE = 90.0
+
+    // GPS correction smoothing factor (0-1)
+    // По-голямо = по-бързо връщане към GPS, по-малко = по-плавно
+    private val GPS_CORRECTION_ALPHA_POS = 0.3
+    private val GPS_CORRECTION_ALPHA_SPEED = 0.5
+    private val GPS_CORRECTION_ALPHA_HEADING = 0.3
 
     // ========================================================================
     // Инициализация
     // ========================================================================
 
     /**
-     * Инициализира калкулатора с последните GPS данни.
-     * Това е стартовата точка за dead reckoning.
+     * Инициализира калкулатора с GPS точки от ring buffer.
      *
-     * @param lat Latitude в градуси
-     * @param lon Longitude в градуси
-     * @param alt Височина в метри
-     * @param speed Скорост в m/s
-     * @param bearing Heading в градуси (истински heading след fixDeclination)
+     * От трите точки извлича:
+     * - Текуща скорост и посока (speed, bearing) от най-новата точка
+     * - Тренд на скоростта от предходните точки (използва се за начална оценка
+     *   на ускорението, но основното коригиране идва от сензорите)
+     *
+     * @param snapshots последните 1-3 GPS точки (най-новата е първа — index 0)
      * @param accuracy GPS точност в метри
      */
-    fun initialize(lat: Double, lon: Double, alt: Double, speed: Float, bearing: Float, accuracy: Float) {
-        refLatitude = lat
-        refLongitude = lon
-        refAltitude = alt
-        altitude = alt
+    fun initialize(snapshots: List<GpsRingBuffer.GpsSnapshot>, accuracy: Float) {
+        require(snapshots.isNotEmpty()) { "Нужна е поне 1 GPS точка за инициализация" }
 
-        // State vector: позиция = 0 (относителна), скорост = GPS скорост в N/E
+        val latest = snapshots[0]
+
+        refLatitude = latest.lat
+        refLongitude = latest.lon
+        refAltitude = latest.alt
+        altitude = latest.alt
+
+        // Начална позиция = 0 (относителна)
         posNorth = 0.0
         posEast = 0.0
-        val br = Math.toRadians(bearing.toDouble())
-        velNorth = speed * cos(br).toDouble()
-        velEast = speed * sin(br).toDouble()
 
-        x[0] = posNorth
-        x[1] = posEast
-        x[2] = velNorth
-        x[3] = velEast
+        // Начална скорост и посока от GPS
+        speed = latest.speed.toDouble()
+        heading = latest.bearing.toDouble() % 360.0
+        if (heading < 0) heading += 360.0
 
-        // Covariance: голяма несигурност в позицията, малка в скоростта
-        // P = diag(accuracy², accuracy², 1.0, 1.0)
-        fillIdentity(P, 4)
-        P[0] = accuracy.toDouble() * accuracy.toDouble() // P[0,0]
-        P[5] = accuracy.toDouble() * accuracy.toDouble() // P[1,1]
-        P[10] = 1.0 // P[2,2] — скорост несигурност 1 m/s
-        P[15] = 1.0 // P[3,3]
+        initialSpeed = speed
+        initialHeading = heading
 
-        heading = bearing.toDouble()
+        // Ако имаме 2+ точки, изчисляваме тренд на скоростта
+        // за по-добра начална оценка на acceleration очакването
+        if (snapshots.size >= 2) {
+            val prev = snapshots[1]
+            val dt = ((latest.timestamp - prev.timestamp) / 1000.0).coerceIn(0.5, 10.0)
+
+            // Ако скоростта се променя значително, ползваме средна скорост
+            // (по-стабилна от моментната)
+            val speedDiff = abs(latest.speed - prev.speed)
+            if (speedDiff > 2.0 && dt > 0) {
+                // Значителна промяна — усредняваме с предходната точка
+                speed = (latest.speed + prev.speed) / 2.0
+            }
+
+            // Ако посоката е стабилна (разлика < 10°), ползваме я директно
+            val bearingDiff = angleDiff(latest.bearing.toDouble(), prev.bearing.toDouble())
+            if (bearingDiff < 10.0 && latest.speed > 1.0) {
+                // Посоката е стабилна — достоверна
+            } else if (snapshots.size >= 3) {
+                // 3 точки — изчисляваме посока от позиционния вектор
+                // (по-стабилна от моментния GPS bearing при ниска скорост)
+                val oldest = snapshots[2]
+                val dN = latest.lat - oldest.lat
+                val dE = latest.lon - oldest.lon
+                val dist = sqrt(dN * dN + dE * dE)
+                if (dist > 0.00001) { // ~1 метър
+                    val trajectoryBearing = Math.toDegrees(atan2(dE, dN))
+                    heading = (trajectoryBearing + 360.0) % 360.0
+                }
+            }
+        }
 
         initialAccuracy = accuracy
         estimatedAccuracy = accuracy
         startTime = System.currentTimeMillis()
 
-        // Нулиране на timestamps и филтри
+        // Нулиране на сензорно състояние
         lastAccelTimestamp = 0
         lastGyroTimestamp = 0
         lastMagTimestamp = 0
         lastBaroTimestamp = 0
         lastRotVectorTimestamp = 0
+        lastUpdateTimestamp = 0
         filteredAccelX = 0.0
         filteredAccelY = 0.0
         filteredAccelZ = 0.0
@@ -259,35 +279,70 @@ class DeadReckoningCalculator {
         hasAccelForCompass = false
         hasMagForCompass = false
         hasBarometer = false
-        rotMatrixInitialized[0] = false
-        accelBiasN = 0.0
-        accelBiasE = 0.0
+        rotMatrixReady = false
+        accelBiasAlong = 0.0
+        biasLearnCount = 0
+        earthAccelN = 0.0
+        earthAccelE = 0.0
+        lastGpsCorrectionTime = 0
+        gpsCorrectionCount = 0
 
         initialized = true
     }
 
     // ========================================================================
-    // Prediction step (IMU)
+    // Общ метод за придвижване на позицията
+    // Извиква се при всеки сензорен event
     // ========================================================================
 
     /**
-     * Обработка на акселерометър данни — Kalman prediction step.
+     * Придвижва позицията напред с текущите speed и heading.
      *
-     * Стъпки:
+     * Това е ядрото на trajectory-based подхода:
+     * позиция += скорост × посока × dt
+     * (единична интеграция, не двойна)
+     *
+     * @param dt времеви интервал в секунди
+     */
+    private fun advancePosition(dt: Double) {
+        if (dt <= 0 || dt > 2.0) return  // safety clamp: макс 2 секунди
+
+        val headingRad = Math.toRadians(heading)
+
+        // Обновяване на velocity компонентите от speed и heading
+        val velN = speed * cos(headingRad)
+        val velE = speed * sin(headingRad)
+
+        // Придвижване на позицията
+        posNorth += velN * dt
+        posEast += velE * dt
+
+        // Обновяване на очакваната точност (расте с времето)
+        val elapsed = (System.currentTimeMillis() - startTime) / 1000.0
+        val gyroDriftError = GYRO_DRIFT_DEG_PER_S * elapsed * speed * elapsed / 2.0  // m
+        val accelBiasError = ACCEL_BIAS_DRIFT * elapsed * elapsed / 2.0               // m
+        estimatedAccuracy = (initialAccuracy + gyroDriftError + accelBiasError).toFloat()
+    }
+
+    // ========================================================================
+    // Акселерометър — коригира скоростта (speed)
+    // ========================================================================
+
+    /**
+     * Обработка на акселерометър данни.
+     *
+     * Алгоритъм:
      * 1. Low-pass филтър на raw данни
-     * 2. Трансформация device→Earth frame чрез rotation matrix (ако е наличен)
-     *    или fallback към директно mapping (ако устройството е хоризонтално)
-     * 3. Bias корекция
-     * 4. Kalman prediction: x = F*x + B*u, P = F*P*F^T + Q
-     *
-     * @param values [x, y, z] ускорение в m/s² (device frame)
-     * @param timestamp Timestamp в наносекунди (от SensorEvent.timestamp)
-     * @param isLinearAcceleration true ако сензорът е TYPE_LINEAR_ACCELERATION (gravity премахнато)
+     * 2. Премахване на gravity (ако не е LINEAR_ACCELERATION)
+     * 3. Трансформация device→Earth frame чрез rotation matrix
+     * 4. Проекция на ускорението по посоката на движение
+     * 5. Корекция на скоростта: speed += projectedAccel * dt * GAIN
+     * 6. Придвижване на позицията
      */
     fun processAccelerometer(values: FloatArray, timestamp: Long, isLinearAcceleration: Boolean) {
         if (!initialized) return
 
-        // Запазване за compass heading (споделя се с magnetometer)
+        // Запазване за compass heading
         sensorIsLinearAcceleration = isLinearAcceleration
         System.arraycopy(values, 0, accelForCompass, 0, 3)
         hasAccelForCompass = true
@@ -295,27 +350,30 @@ class DeadReckoningCalculator {
             computeCompassHeading()
         }
 
-        // Запазване на raw данни за debug
         rawAccelX = values[0]
         rawAccelY = values[1]
         rawAccelZ = values[2]
 
-        // Изчисляване на time delta
+        // Time delta
         val dt = if (lastAccelTimestamp > 0) {
             (timestamp - lastAccelTimestamp) / 1_000_000_000.0
         } else {
             0.0
         }
         lastAccelTimestamp = timestamp
-        if (dt <= 0 || dt > 1.0) return // игнорирай невалидни dt (>1s = пропуск на сензор)
+        if (dt <= 0 || dt > 1.0) {
+            // Дори без валиден dt, придвижваме позицията ако имаме общ timestamp
+            advanceWithCommonTimestamp(timestamp)
+            return
+        }
 
-        // Low-pass филтър на raw акселерометър (alpha=0.7 — лек филтър)
+        // Low-pass филтър
         val alpha = 0.7
         filteredAccelX = alpha * filteredAccelX + (1 - alpha) * values[0]
         filteredAccelY = alpha * filteredAccelY + (1 - alpha) * values[1]
         filteredAccelZ = alpha * filteredAccelZ + (1 - alpha) * values[2]
 
-        // Премахване на gravity само ако не е LINEAR_ACCELERATION
+        // Премахване на gravity
         val linearAccelX: Double
         val linearAccelY: Double
         val linearAccelZ: Double
@@ -324,12 +382,10 @@ class DeadReckoningCalculator {
             linearAccelY = filteredAccelY
             linearAccelZ = filteredAccelZ
         } else {
-            // Обновяване на gravity оценката чрез low-pass
             val beta = 0.9
             gravityX = beta * gravityX + (1 - beta) * values[0]
             gravityY = beta * gravityY + (1 - beta) * values[1]
             gravityZ = beta * gravityZ + (1 - beta) * values[2]
-
             linearAccelX = filteredAccelX - gravityX
             linearAccelY = filteredAccelY - gravityY
             linearAccelZ = filteredAccelZ - gravityZ
@@ -338,308 +394,116 @@ class DeadReckoningCalculator {
         // Трансформация device→Earth frame
         val accelN: Double
         val accelE: Double
-        if (rotMatrixInitialized[0]) {
-            // Използваме rotation matrix за точна трансформация
-            // Android: R трансформира device→world, world = [East, North, Up]
-            // earthAccel = R * deviceAccel
-            // Matrix.multiplyMV работи с 4D хомогенни координати (4x4 mat × 4-vec = 4-vec)
+        if (rotMatrixReady) {
             val deviceAccel = floatArrayOf(linearAccelX.toFloat(), linearAccelY.toFloat(), linearAccelZ.toFloat(), 0f)
             val earthAccel = FloatArray(4)
             android.opengl.Matrix.multiplyMV(earthAccel, 0, rotMatrix4x4, 0, deviceAccel, 0)
-
-            // Android rotation matrix: earthAccel[0]=East, earthAccel[1]=North, earthAccel[2]=Up
+            // Android: earthAccel[0]=East, earthAccel[1]=North
             accelE = earthAccel[0].toDouble()
             accelN = earthAccel[1].toDouble()
-            // earthAccel[2] (Up) не се използва за 2D позиция — височината е от барометър
         } else {
-            // Fallback: предполагаме хоризонтално устройство (Phone X→North, Y→East)
-            // Това е същото като стария алгоритъм — работи ако устройството е идеално хоризонтално
+            // Fallback: предполагаме хоризонтално устройство
             accelN = linearAccelX
             accelE = linearAccelY
         }
 
-        // Bias корекция
-        val correctedAccelN = accelN - accelBiasN
-        val correctedAccelE = accelE - accelBiasE
+        earthAccelN = accelN
+        earthAccelE = accelE
 
-        // Deadzone: много малки ускорения са noise (под 0.05 m/s²)
-        // По-малък от стария 0.3 — Kalman filter обработва noise по-добре
-        val ACCEL_DEADZONE = 0.05
-        val effectiveAccelN = if (kotlin.math.abs(correctedAccelN) < ACCEL_DEADZONE) 0.0 else correctedAccelN
-        val effectiveAccelE = if (kotlin.math.abs(correctedAccelE) < ACCEL_DEADZONE) 0.0 else correctedAccelE
+        // --- КЛЮЧОВА РАЗЛИКА от Kalman Filter: ---
+        // Проектираме ускорението по посоката на движение
+        // и коригираме САМО скоростта (не интегрираме позиция директно от acceleration)
+        val headingRad = Math.toRadians(heading)
+        val alongTrackAccel = accelN * cos(headingRad) + accelE * sin(headingRad)
 
-        // Запазване за debug лог
-        earthAccelN = effectiveAccelN
-        earthAccelE = effectiveAccelE
+        // Deadzone + bias корекция
+        val effectiveAccel = if (abs(alongTrackAccel - accelBiasAlong) < ACCEL_DEADZONE) {
+            0.0
+        } else {
+            (alongTrackAccel - accelBiasAlong).coerceIn(-MAX_ACCEL, MAX_ACCEL)
+        }
 
-        // Kalman prediction step
-        predict(effectiveAccelN, effectiveAccelE, dt)
+        // Коригиране на скоростта с along-track ускорение
+        // GAIN < 1.0 → не се доверяваме напълно на accelerometer-а
+        speed += effectiveAccel * dt * ACCEL_GAIN
+        speed = max(0.0, speed)  // скоростта не може да е отрицателна
 
-        // Обновяване на локалните state променливи от x[]
-        posNorth = x[0]
-        posEast = x[1]
-        velNorth = x[2]
-        velEast = x[3]
+        // Придвижване на позицията
+        advancePosition(dt)
+        lastUpdateTimestamp = timestamp
 
-        // Височина: само от барометър. Без барометър — стартова GPS височина.
+        // Височина
         if (!hasBarometer) {
             altitude = refAltitude
         }
     }
 
-    /**
-     * Kalman prediction step: x = F*x + B*u, P = F*P*F^T + Q
-     *
-     * @param accelN Ускорение North (m/s²), вече в Earth frame + bias коригирано
-     * @param accelE Ускорение East (m/s²), вече в Earth frame + bias коригирано
-     * @param dt Времеви интервал в секунди
-     */
-    private fun predict(accelN: Double, accelE: Double, dt: Double) {
-        // Build F (state transition matrix)
-        // F = [ 1  0  dt  0  ]
-        //     [ 0  1  0   dt ]
-        //     [ 0  0  1   0  ]
-        //     [ 0  0  0   1  ]
-        fillIdentity(F, 4)
-        F[2] = dt   // F[0,2] = dt
-        F[7] = dt   // F[1,3] = dt
-
-        // Build B (control matrix)
-        // B = [ 0.5*dt²   0      ]
-        //     [ 0         0.5*dt²]
-        //     [ dt        0      ]
-        //     [ 0         dt     ]
-        B[0] = 0.5 * dt * dt  // B[0,0]
-        B[1] = 0.0            // B[0,1]
-        B[2] = 0.0            // B[1,0]
-        B[3] = 0.5 * dt * dt  // B[1,1]
-        B[4] = dt             // B[2,0]
-        B[5] = 0.0            // B[2,1]
-        B[6] = 0.0            // B[3,0]
-        B[7] = dt             // B[3,1]
-
-        // Build Q (process noise)
-        // Q = sigma² * [ dt⁴/4  0      dt³/2  0     ]
-        //              [ 0      dt⁴/4  0      dt³/2 ]
-        //              [ dt³/2  0      dt²    0     ]
-        //              [ 0      dt³/2  0      dt²   ]
-        val s2 = sigmaAccel * sigmaAccel
-        val dt2 = dt * dt
-        val dt3 = dt2 * dt
-        val dt4 = dt3 * dt
-        fillZero(Q, 4)
-        Q[0] = s2 * dt4 / 4.0  // Q[0,0]
-        Q[5] = s2 * dt4 / 4.0  // Q[1,1]
-        Q[10] = s2 * dt2       // Q[2,2]
-        Q[15] = s2 * dt2       // Q[3,3]
-        Q[2] = s2 * dt3 / 2.0  // Q[0,2]
-        Q[7] = s2 * dt3 / 2.0  // Q[1,3]
-        Q[8] = s2 * dt3 / 2.0  // Q[2,0]
-        Q[13] = s2 * dt3 / 2.0 // Q[3,1]
-
-        // x = F*x + B*u
-        // tmp4 = F*x
-        matVecMul(F, x, tmp4, 4, 4)
-        // tmp4 += B*u (u = [accelN, accelE])
-        tmp4[0] += B[0] * accelN + B[1] * accelE
-        tmp4[1] += B[2] * accelN + B[3] * accelE
-        tmp4[2] += B[4] * accelN + B[5] * accelE
-        tmp4[3] += B[6] * accelN + B[7] * accelE
-        // x = tmp4
-        System.arraycopy(tmp4, 0, x, 0, 4)
-
-        // P = F*P*F^T + Q
-        // tmp44a = F*P
-        matMatMul(F, P, tmp44a, 4, 4, 4)
-        // tmp44b = F^T (transpose of F)
-        transpose(F, tmp44b, 4)
-        // tmp44c = tmp44a * tmp44b = F*P*F^T
-        matMatMul(tmp44a, tmp44b, tmp44c, 4, 4, 4)
-        // P = tmp44c + Q
-        for (i in 0 until 16) {
-            P[i] = tmp44c[i] + Q[i]
-        }
-    }
-
     // ========================================================================
-    // Correction step (GPS)
+    // Rotation Vector — абсолютен heading (приоритетен)
     // ========================================================================
 
     /**
-     * GPS correction step — обновява state и covariance с GPS измерване.
+     * Обработка на rotation vector данни.
      *
-     * Извиква се от DeadReckoningService когато GPS fix е наличен
-     * (в manual mode или когато GPS се възстанови).
-     *
-     * Kalman update:
-     *   K = P*H^T * (H*P*H^T + R)^{-1}
-     *   x = x + K*(z - H*x)
-     *   P = (I - K*H)*P
-     *
-     * @param gpsPosN GPS позиция North (метри от стартовата точка)
-     * @param gpsPosE GPS позиция East (метри от стартовата точка)
-     * @param gpsVelN GPS скорост North (m/s)
-     * @param gpsVelE GPS скорост East (m/s)
-     * @param gpsAccuracy GPS позиционна точност (метри)
-     */
-    fun correctWithGPS(
-        gpsPosN: Double, gpsPosE: Double,
-        gpsVelN: Double, gpsVelE: Double,
-        gpsAccuracy: Float
-    ) {
-        if (!initialized) return
-
-        // Measurement vector z = [gpsPosN, gpsPosE, gpsVelN, gpsVelE]
-        val z = doubleArrayOf(gpsPosN, gpsPosE, gpsVelN, gpsVelE)
-
-        // R = measurement noise covariance
-        // R = diag(gpsAcc², gpsAcc², sigmaGpsVel², sigmaGpsVel²)
-        fillZero(R, 4)
-        val acc2 = gpsAccuracy.toDouble() * gpsAccuracy.toDouble()
-        val vel2 = sigmaGpsVel * sigmaGpsVel
-        R[0] = acc2
-        R[5] = acc2
-        R[10] = vel2
-        R[15] = vel2
-
-        // Innovation: innov = z - H*x = z - x (тъй като H = I)
-        innov[0] = z[0] - x[0]
-        innov[1] = z[1] - x[1]
-        innov[2] = z[2] - x[2]
-        innov[3] = z[3] - x[3]
-
-        // S = H*P*H^T + R = P + R (тъй като H = I)
-        // tmp44a = S = P + R
-        for (i in 0 until 16) {
-            tmp44a[i] = P[i] + R[i]
-        }
-
-        // S^{-1} — 4×4 matrix inversion
-        // tmp44b = S^{-1}
-        if (!invert4x4(tmp44a, tmp44b)) {
-            // Сингулярна матрица — прескачаме корекцията
-            return
-        }
-
-        // K = P * H^T * S^{-1} = P * S^{-1} (тъй като H = I)
-        matMatMul(P, tmp44b, K, 4, 4, 4)
-
-        // x = x + K*innov
-        for (i in 0 until 4) {
-            var sum = 0.0
-            for (j in 0 until 4) {
-                sum += K[i * 4 + j] * innov[j]
-            }
-            x[i] += sum
-        }
-
-        // P = (I - K*H)*P = (I - K)*P (тъй като H = I)
-        // tmp44a = I - K
-        fillIdentity(tmp44a, 4)
-        for (i in 0 until 16) {
-            tmp44a[i] -= K[i]
-        }
-        // tmp44b = (I - K)*P
-        matMatMul(tmp44a, P, tmp44b, 4, 4, 4)
-        // P = tmp44b
-        System.arraycopy(tmp44b, 0, P, 0, 16)
-
-        // Обновяване на локалните state променливи
-        posNorth = x[0]
-        posEast = x[1]
-        velNorth = x[2]
-        velEast = x[3]
-
-        // Accelerometer bias estimation: когато GPS коригира скоростта,
-        // разликата (innovation в velocity) индиректно показва accelerometer bias
-        // Бавно учене: bias += learnRate * velocity_innovation
-        if (kotlin.math.abs(innov[2]) < 5.0 && kotlin.math.abs(innov[3]) < 5.0) {
-            accelBiasN += biasLearnRate * innov[2]
-            accelBiasE += biasLearnRate * innov[3]
-        }
-
-        // Обновяване на heading от GPS bearing (ако има скорост)
-        val speed = sqrt(velNorth * velNorth + velEast * velEast)
-        if (speed > 0.5) {
-            val gpsBearing = Math.toDegrees(atan2(velEast, velNorth))
-            heading = (gpsBearing + 360.0) % 360.0
-        }
-
-        // Track GPS correction stats
-        lastGpsCorrectionTime = System.currentTimeMillis()
-        gpsCorrectionCount++
-    }
-
-    // ========================================================================
-    // Rotation Vector обработка
-    // ========================================================================
-
-    /**
-     * Обработка на rotation vector данни — обновява rotation matrix.
-     *
-     * TYPE_GAME_ROTATION_VECTOR (без magnetometer) или TYPE_ROTATION_VECTOR.
-     *
-     * Rotation vector е quaternion [x, y, z, w] (или 5-елементен с heading accuracy).
-     * SensorManager.getRotationMatrixFromVector го конвертира в 3×3 rotation matrix.
-     *
-     * Rotation matrix R трансформира device frame → world frame:
-     *   world_vector = R * device_vector
-     *
-     * Android world frame: [East, North, Up] (X=East, Y=North, Z=Up)
-     *
-     * @param values [x, y, z, w] (или 5-елементен) quaternion от rotation vector сензор
-     * @param timestamp Timestamp в наносекунди
+     * Rotation vector дава абсолютна ориентация на устройството.
+     * Използваме го за:
+     * 1. Обновяване на rotation matrix (за accelerometer трансформация)
+     * 2. Абсолютен heading (азимут) — по-точен от gyro интеграция
      */
     fun processRotationVector(values: FloatArray, timestamp: Long) {
         if (!initialized) return
 
-        // Запазване на raw данни за debug
         rawRotX = if (values.size > 0) values[0] else 0f
         rawRotY = if (values.size > 1) values[1] else 0f
         rawRotZ = if (values.size > 2) values[2] else 0f
 
-        // Изчисляване на rotation matrix от rotation vector
         try {
             SensorManager.getRotationMatrixFromVector(rotMatrix3x3, values)
-            // Конвертиране 3×3 → 4×4 хомогенна матрица за Matrix.multiplyMV
-            rotMatrix4x4[0] = rotMatrix3x3[0]; rotMatrix4x4[1] = rotMatrix3x3[1]; rotMatrix4x4[2] = rotMatrix3x3[2]; rotMatrix4x4[3] = 0f
-            rotMatrix4x4[4] = rotMatrix3x3[3]; rotMatrix4x4[5] = rotMatrix3x3[4]; rotMatrix4x4[6] = rotMatrix3x3[5]; rotMatrix4x4[7] = 0f
-            rotMatrix4x4[8] = rotMatrix3x3[6]; rotMatrix4x4[9] = rotMatrix3x3[7]; rotMatrix4x4[10] = rotMatrix3x3[8]; rotMatrix4x4[11] = 0f
-            rotMatrix4x4[12] = 0f; rotMatrix4x4[13] = 0f; rotMatrix4x4[14] = 0f; rotMatrix4x4[15] = 1f
-            rotMatrixInitialized[0] = true
+            // Конвертиране 3×3 → 4×4
+            rotMatrix4x4[0] = rotMatrix3x3[0]; rotMatrix4x4[1] = rotMatrix3x3[1]
+            rotMatrix4x4[2] = rotMatrix3x3[2]; rotMatrix4x4[3] = 0f
+            rotMatrix4x4[4] = rotMatrix3x3[3]; rotMatrix4x4[5] = rotMatrix3x3[4]
+            rotMatrix4x4[6] = rotMatrix3x3[5]; rotMatrix4x4[7] = 0f
+            rotMatrix4x4[8] = rotMatrix3x3[6]; rotMatrix4x4[9] = rotMatrix3x3[7]
+            rotMatrix4x4[10] = rotMatrix3x3[8]; rotMatrix4x4[11] = 0f
+            rotMatrix4x4[12] = 0f; rotMatrix4x4[13] = 0f
+            rotMatrix4x4[14] = 0f; rotMatrix4x4[15] = 1f
+            rotMatrixReady = true
             lastRotVectorTimestamp = timestamp
 
-            // Heading от rotation matrix (азимут)
+            // Абсолютен heading от rotation matrix
             val orientation = FloatArray(3)
             SensorManager.getOrientation(rotMatrix3x3, orientation)
-            // orientation[0] = azimuth в радиани [-π, π]
             val azimuthDeg = Math.toDegrees(orientation[0].toDouble())
-            // Нормализиране към [0, 360)
-            val normalizedAzimuth = (azimuthDeg + 360.0) % 360.0
+            val newHeading = (azimuthDeg + 360.0) % 360.0
 
-            // Heading от rotation matrix е по-точен от gyro интеграция
-            // Използваме го директно (компас/gyro е fallback)
-            heading = normalizedAzimuth
-        } catch (e: Exception) {
-            // getRotationMatrixFromVector може да хвърли exception при невалидни стойности
-            // Игнорираме и продължаваме с предишния heading
+            // Плавно обновяване на heading-а (не скача рязко)
+            // Това е важно: rotation vector може да има краткотрайни аномалии
+            val diff = angleDiff(newHeading, heading)
+            if (abs(diff) < 30.0) {
+                // Малка разлика → плавна корекция
+                heading = (heading + diff * 0.3 + 360.0) % 360.0
+            } else {
+                // Голяма разлика → вероятно реален завой, обнови директно
+                heading = newHeading
+            }
+
+            // Придвижване на позицията с новия heading
+            advanceWithCommonTimestamp(timestamp)
+        } catch (_: Exception) {
+            // getRotationMatrixFromVector може да хвърли exception
         }
     }
 
     // ========================================================================
-    // Gyroscope обработка (fallback за heading, когато няма rotation vector)
+    // Gyroscope — относителен heading (fallback)
     // ========================================================================
 
     /**
-     * Обработка на жироскоп данни — complementary filter за heading.
+     * Обработка на жироскоп данни.
      *
-     * Използва се само когато rotation vector сензор НЕ е наличен.
-     * Ако rotation vector-ът работи, heading се обновява от него (по-точен).
-     *
-     * heading = gyro интеграция + compass корекция (complementary filter)
-     *
-     * @param values [x, y, z] ъглова скорост в rad/s
-     * @param timestamp Timestamp в наносекунди
+     * Използва се САМО когато rotation vector НЕ е наличен или не е свеж.
+     * Gyro Z → промяна на heading (Δheading = gyroZ * dt в градуси).
      */
     fun processGyroscope(values: FloatArray, timestamp: Long) {
         if (!initialized) return
@@ -654,50 +518,45 @@ class DeadReckoningCalculator {
             0.0
         }
         lastGyroTimestamp = timestamp
-        if (dt <= 0) return
+        if (dt <= 0 || dt > 1.0) {
+            advanceWithCommonTimestamp(timestamp)
+            return
+        }
 
-        // Low-pass филтър на gyro Z
+        // Low-pass филтър
         val alpha = 0.7
         filteredGyroZ = alpha * filteredGyroZ + (1 - alpha) * values[2]
 
-        // Ако rotation vector-ът е активен и наскоро обновен, не ползваме gyro за heading
-        // (rotation vector е по-точен)
+        // Ако rotation vector е свеж (< 500ms), не ползваме gyro
         val rotVectorFresh = (lastRotVectorTimestamp > 0 &&
-                (timestamp - lastRotVectorTimestamp) < 500_000_000L) // < 500ms
-        if (rotVectorFresh) return
-
-        // Gyro интеграция (rad/s → deg)
-        val gyroDelta = Math.toDegrees(filteredGyroZ * dt)
-
-        // Rate limit: максимум 15°/сек
-        val maxRate = 15.0
-        val effectiveGyroDelta = gyroDelta.coerceIn(-maxRate * dt, maxRate * dt)
-
-        heading += effectiveGyroDelta
-        heading %= 360.0
-        if (heading < 0) heading += 360.0
-
-        // Complementary filter с compass
-        val speed = sqrt(velNorth * velNorth + velEast * velEast)
-        if (hasCompassData) {
-            val compassInfluence = if (speed < 2.0) (1.0 - speed / 4.0) else 0.5
-            val diff = ((compassHeading - heading + 540.0) % 360.0) - 180.0
-            heading = (heading + diff * compassInfluence * COMPASS_WEIGHT * 10.0 + 360.0) % 360.0
+                (timestamp - lastRotVectorTimestamp) < 500_000_000L)
+        if (rotVectorFresh) {
+            advanceWithCommonTimestamp(timestamp)
+            return
         }
+
+        // Gyro интеграция: rad/s → °
+        val gyroDeltaDeg = Math.toDegrees(filteredGyroZ * dt)
+        val clampedDelta = gyroDeltaDeg.coerceIn(-MAX_TURN_RATE * dt, MAX_TURN_RATE * dt)
+
+        heading += clampedDelta
+        heading = (heading + 360.0) % 360.0
+
+        // Complementary filter с compass (ако има)
+        if (hasCompassData && speed < 5.0) {
+            val compassDiff = angleDiff(compassHeading, heading)
+            heading = (heading + compassDiff * 0.02 + 360.0) % 360.0
+        }
+
+        // Придвижване на позицията
+        advancePosition(dt)
+        lastUpdateTimestamp = timestamp
     }
 
     // ========================================================================
-    // Magnetometer обработка (fallback за compass heading)
+    // Magnetometer — compass heading (fallback за gyro)
     // ========================================================================
 
-    /**
-     * Обработка на магнитометър данни — изчислява абсолютен compass heading.
-     *
-     * Използва се само когато rotation vector сензор НЕ е наличен.
-     *
-     * @param values [x, y, z] magnetic field в μT
-     * @param timestamp Timestamp в наносекунди
-     */
     fun processMagnetometer(values: FloatArray, timestamp: Long) {
         if (!initialized) return
 
@@ -714,10 +573,6 @@ class DeadReckoningCalculator {
         }
     }
 
-    /**
-     * Изчислява compass heading от последните accel + mag данни.
-     * Tilt-компенсиран heading за хоризонтално устройство.
-     */
     private fun computeCompassHeading() {
         val magX = magForCompass[0].toDouble()
         val magY = magForCompass[1].toDouble()
@@ -758,8 +613,8 @@ class DeadReckoningCalculator {
             compassHeading = newCompass
             firstCompassComputed = true
         } else {
-            val diff = ((newCompass - compassHeading + 540.0) % 360.0) - 180.0
-            if (kotlin.math.abs(diff) > 45.0) return
+            val diff = angleDiff(newCompass, compassHeading)
+            if (abs(diff) > 45.0) return
             compassHeading = (compassHeading + diff * 0.05 + 360.0) % 360.0
         }
         hasCompassData = true
@@ -769,34 +624,76 @@ class DeadReckoningCalculator {
     // Барометър
     // ========================================================================
 
-    /**
-     * Обработка на барометър данни — височина от атмосферно налягане.
-     *
-     * h = 44330 * (1 - (P/P0)^(1/5.255))
-     *
-     * @param pressure Атмосферно налягане в hPa
-     * @param timestamp Timestamp в наносекунди
-     */
     fun processBarometer(pressure: Float, timestamp: Long) {
         if (!initialized) return
         lastBaroTimestamp = timestamp
         hasBarometer = true
-
-        val P0 = 1013.25f
-        altitude = 44330.0 * (1.0 - Math.pow(pressure.toDouble() / P0.toDouble(), 1.0 / 5.255))
+        val P0 = 1013.25
+        altitude = 44330.0 * (1.0 - Math.pow(pressure.toDouble() / P0, 1.0 / 5.255))
     }
 
     // ========================================================================
-    // GPS helper: конвертира GPS lat/lon в относителна позиция N/E
+    // GPS correction — експоненциално изглаждане (вместо Kalman)
     // ========================================================================
 
     /**
-     * Конвертира GPS lat/lon в относителна позиция North/East (метри от стартовата точка).
+     * Коригира trajectory-то с GPS измерване.
      *
-     * Използва плоска Earth апроксимация (валидна за малки разстояния до ~100 km).
+     * Използва експоненциално изглаждане (не Kalman filter):
+     * - Позиция: pos = α*gps + (1-α)*pos
+     * - Скорост: speed = α*gps_speed + (1-α)*speed
+     * - Посока: heading = α*gps_bearing + (1-α)*heading
      *
-     * @return doubleArrayOf(posN, posE) в метри
+     * Това е по-просто и по-стабилно от Kalman filter за този use case.
+     * При добра GPS точност → бърза корекция (голямо α).
+     * При лоша GPS точност → бавна корекция (малко α).
      */
+    fun correctWithGPS(
+        gpsPosN: Double, gpsPosE: Double,
+        gpsVelN: Double, gpsVelE: Double,
+        gpsAccuracy: Float
+    ) {
+        if (!initialized) return
+
+        // Адаптивен alpha: колкото по-точен GPS, толкова по-силна корекция
+        val accFactor = (gpsAccuracy / 20.0).coerceIn(0.2, 1.5)
+
+        // Корекция на позиция
+        posNorth += (gpsPosN - posNorth) * GPS_CORRECTION_ALPHA_POS * accFactor
+        posEast += (gpsPosE - posEast) * GPS_CORRECTION_ALPHA_POS * accFactor
+
+        // Корекция на скорост
+        val gpsSpeed = sqrt(gpsVelN * gpsVelN + gpsVelE * gpsVelE)
+        if (gpsSpeed > 0.5) {
+            speed += (gpsSpeed - speed) * GPS_CORRECTION_ALPHA_SPEED * accFactor
+
+            // Корекция на heading
+            val gpsBearing = Math.toDegrees(atan2(gpsVelE, gpsVelN))
+            val gpsHeading = (gpsBearing + 360.0) % 360.0
+            val hDiff = angleDiff(gpsHeading, heading)
+            heading = (heading + hDiff * GPS_CORRECTION_ALPHA_HEADING * accFactor + 360.0) % 360.0
+        }
+
+        // Оценка на accelerometer bias от разликата в скоростите
+        // Ако GPS показва различна скорост от нашата, акумулираме bias
+        if (gpsSpeed > 1.0 && speed > 1.0 && abs(gpsSpeed - speed) < 5.0) {
+            // Разлика в скоростта → вероятен accelerometer bias
+            // Бавно учене (голяма инерция)
+            val biasDelta = (gpsSpeed - speed) * 0.001  // много бавно
+            accelBiasAlong += biasDelta
+            accelBiasAlong = accelBiasAlong.coerceIn(-0.5, 0.5)
+            biasLearnCount++
+        }
+
+        estimatedAccuracy = gpsAccuracy  // GPS дава реална точност
+        lastGpsCorrectionTime = System.currentTimeMillis()
+        gpsCorrectionCount++
+    }
+
+    // ========================================================================
+    // GPS helper
+    // ========================================================================
+
     fun gpsToRelative(lat: Double, lon: Double): DoubleArray {
         val latRad = Math.toRadians(refLatitude)
         val deltaLat = (lat - refLatitude) * 111320.0
@@ -808,11 +705,6 @@ class DeadReckoningCalculator {
     // Резултати
     // ========================================================================
 
-    /**
-     * Връща текущата изчислена позиция.
-     *
-     * @return DRLocation с текущата позиция, heading, скорост и оценка на точността
-     */
     fun getCurrentLocation(): DRLocation {
         if (!initialized) {
             throw IllegalStateException("Калкулаторът не е инициализиран")
@@ -822,46 +714,31 @@ class DeadReckoningCalculator {
         val deltaLat = posNorth / 111320.0
         val deltaLon = posEast / (111320.0 * cos(latRad))
 
-        val currentLat = refLatitude + deltaLat
-        val currentLon = refLongitude + deltaLon
-
-        val speed = sqrt(velNorth * velNorth + velEast * velEast).toFloat()
-
-        estimatedAccuracy = initialAccuracy + DRIFT_RATE * getElapsedSeconds()
-
         return DRLocation(
-            latitude = currentLat,
-            longitude = currentLon,
+            latitude = refLatitude + deltaLat,
+            longitude = refLongitude + deltaLon,
             altitude = altitude,
             bearing = heading.toFloat(),
-            speed = speed,
+            speed = speed.toFloat(),
             accuracy = estimatedAccuracy,
             timestamp = System.currentTimeMillis()
         )
     }
 
-    /**
-     * Връща текст с всички вътрешни стойности за debug.
-     * Включва: heading, velocity, position, Earth-frame acceleration,
-     * covariance diagonal (несигурност), bias, GPS correction stats.
-     */
     fun getDebugState(): String {
-        val gpsAge = if (lastGpsCorrectionTime > 0) (System.currentTimeMillis() - lastGpsCorrectionTime) / 1000 else -1
+        val gpsAge = if (lastGpsCorrectionTime > 0)
+            (System.currentTimeMillis() - lastGpsCorrectionTime) / 1000 else -1
         return String.format(
             java.util.Locale.US,
-            "DR_DEBUG: heading=%.2f, compassHeading=%.2f, " +
-            "velN=%.3f, velE=%.3f, posN=%.3f, posE=%.3f, " +
-            "earthAccelN=%.4f, earthAccelE=%.4f, " +
-            "P_diag=[%.2f,%.2f,%.2f,%.2f], " +
-            "biasN=%.4f, biasE=%.4f, " +
-            "rotMat=${rotMatrixInitialized[0]}, gpsAge=${gpsAge}s, gpsCorr=#${gpsCorrectionCount}, " +
-            "altitude=%.1f, " +
-            "accel=[%.4f,%.4f,%.4f], gyro=[%.4f,%.4f,%.4f], mag=[%.4f,%.4f,%.4f], rot=[%.4f,%.4f,%.4f]",
-            heading, compassHeading,
-            velNorth, velEast, posNorth, posEast,
-            earthAccelN, earthAccelE,
-            P[0], P[5], P[10], P[15],
-            accelBiasN, accelBiasE,
+            "DR_DEBUG: heading=%.2f, compassHeading=%.2f, speed=%.2f, " +
+            "posN=%.2f, posE=%.2f, earthAccelN=%.4f, earthAccelE=%.4f, " +
+            "alongBias=%.4f(#%d), rotMat=$rotMatrixReady, " +
+            "gpsAge=${gpsAge}s, gpsCorr=#$gpsCorrectionCount, altitude=%.1f, " +
+            "accel=[%.3f,%.3f,%.3f], gyro=[%.4f,%.4f,%.4f], mag=[%.1f,%.1f,%.1f], " +
+            "rot=[%.4f,%.4f,%.4f]",
+            heading, compassHeading, speed,
+            posNorth, posEast, earthAccelN, earthAccelE,
+            accelBiasAlong, biasLearnCount,
             altitude,
             rawAccelX, rawAccelY, rawAccelZ,
             rawGyroX, rawGyroY, rawGyroZ,
@@ -870,236 +747,81 @@ class DeadReckoningCalculator {
         )
     }
 
-    /**
-     * Изминало време от инициализацията в секунди.
-     */
     fun getElapsedSeconds(): Long {
-        return if (initialized) {
-            (System.currentTimeMillis() - startTime) / 1000
-        } else {
-            0
-        }
+        return if (initialized) (System.currentTimeMillis() - startTime) / 1000 else 0
     }
 
-    /**
-     * Очаквана точност в метри (нараства с времето).
-     */
-    fun getEstimatedAccuracy(): Float {
-        return estimatedAccuracy
-    }
+    fun getEstimatedAccuracy(): Float = estimatedAccuracy
 
-    /**
-     * Нулиране на калкулатора.
-     */
+    fun isActive(): Boolean = initialized
+
     fun reset() {
-        x.fill(0.0)
-        fillZero(P, 4)
-        posNorth = 0.0
-        posEast = 0.0
-        velNorth = 0.0
-        velEast = 0.0
+        posNorth = 0.0; posEast = 0.0
+        speed = 0.0; heading = 0.0
         altitude = 0.0
-        heading = 0.0
-        lastAccelTimestamp = 0
-        lastGyroTimestamp = 0
-        lastMagTimestamp = 0
-        lastBaroTimestamp = 0
-        lastRotVectorTimestamp = 0
-        filteredAccelX = 0.0
-        filteredAccelY = 0.0
-        filteredAccelZ = 0.0
+        lastAccelTimestamp = 0; lastGyroTimestamp = 0
+        lastMagTimestamp = 0; lastBaroTimestamp = 0
+        lastRotVectorTimestamp = 0; lastUpdateTimestamp = 0
+        filteredAccelX = 0.0; filteredAccelY = 0.0; filteredAccelZ = 0.0
         filteredGyroZ = 0.0
-        rawAccelX = 0f
-        rawAccelY = 0f
-        rawAccelZ = 0f
-        rawGyroX = 0f
-        rawGyroY = 0f
-        rawGyroZ = 0f
-        rawMagX = 0f
-        rawMagY = 0f
-        rawMagZ = 0f
-        rawRotX = 0f
-        rawRotY = 0f
-        rawRotZ = 0f
-        gravityX = 0.0
-        gravityY = 0.0
-        gravityZ = 9.81
+        rawAccelX = 0f; rawAccelY = 0f; rawAccelZ = 0f
+        rawGyroX = 0f; rawGyroY = 0f; rawGyroZ = 0f
+        rawMagX = 0f; rawMagY = 0f; rawMagZ = 0f
+        rawRotX = 0f; rawRotY = 0f; rawRotZ = 0f
+        gravityX = 0.0; gravityY = 0.0; gravityZ = 9.81
         initialized = false
-        hasBarometer = false
-        hasCompassData = false
+        hasBarometer = false; hasCompassData = false
         firstCompassComputed = false
-        hasAccelForCompass = false
-        hasMagForCompass = false
+        hasAccelForCompass = false; hasMagForCompass = false
         sensorIsLinearAcceleration = false
-        rotMatrixInitialized[0] = false
-        accelBiasN = 0.0
-        accelBiasE = 0.0
-        lastGpsCorrectionTime = 0
-        gpsCorrectionCount = 0
-        earthAccelN = 0.0
-        earthAccelE = 0.0
+        rotMatrixReady = false
+        accelBiasAlong = 0.0; biasLearnCount = 0
+        lastGpsCorrectionTime = 0; gpsCorrectionCount = 0
+        earthAccelN = 0.0; earthAccelE = 0.0
         estimatedAccuracy = initialAccuracy
     }
 
-    /**
-     * Дали калкулаторът е активен (инициализиран).
-     */
-    fun isActive(): Boolean {
-        return initialized
-    }
-
     // ========================================================================
-    // Matrix utility функции (4×4 и 4×1)
+    // Utility
     // ========================================================================
 
     /**
-     * Запълва n×n матрица (row-major) с identity.
+     * Изчислява разликата между два ъгъла в градуси (най-късият път).
+     * @return разлика в [-180, 180]
      */
-    private fun fillIdentity(m: DoubleArray, n: Int) {
-        fillZero(m, n)
-        for (i in 0 until n) {
-            m[i * n + i] = 1.0
-        }
+    private fun angleDiff(a: Double, b: Double): Double {
+        var diff = (a - b + 540.0) % 360.0 - 180.0
+        // Нормализиране (handle floating point)
+        if (diff > 180.0) diff -= 360.0
+        if (diff < -180.0) diff += 360.0
+        return diff
     }
 
     /**
-     * Запълва n×n матрица (row-major) с нули.
+     * Придвижва позицията напред използвайки общ timestamp.
+     * Извиква се от сензорни handler-и които нямат собствен dt
+     * (напр. rotation vector, magnetometer).
      */
-    private fun fillZero(m: DoubleArray, n: Int) {
-        for (i in 0 until n * n) {
-            m[i] = 0.0
+    private fun advanceWithCommonTimestamp(timestamp: Long) {
+        if (lastUpdateTimestamp > 0 && speed > 0.01) {
+            val dt = (timestamp - lastUpdateTimestamp) / 1_000_000_000.0
+            if (dt > 0 && dt < 2.0) {
+                advancePosition(dt)
+            }
         }
+        lastUpdateTimestamp = timestamp
     }
-
-    /**
-     * Matrix-vector multiply: result = M * v
-     * M is rows×cols (row-major), v is cols×1, result is rows×1
-     */
-    private fun matVecMul(M: DoubleArray, v: DoubleArray, result: DoubleArray, rows: Int, cols: Int) {
-        for (i in 0 until rows) {
-            var sum = 0.0
-            for (j in 0 until cols) {
-                sum += M[i * cols + j] * v[j]
-            }
-            result[i] = sum
-        }
-    }
-
-    /**
-     * Matrix-matrix multiply: result = A * B
-     * A is rowsA×colsA (row-major), B is colsA×colsB (row-major), result is rowsA×colsB
-     */
-    private fun matMatMul(A: DoubleArray, B: DoubleArray, result: DoubleArray, rowsA: Int, colsA: Int, colsB: Int) {
-        for (i in 0 until rowsA) {
-            for (j in 0 until colsB) {
-                var sum = 0.0
-                for (k in 0 until colsA) {
-                    sum += A[i * colsA + k] * B[k * colsB + j]
-                }
-                result[i * colsB + j] = sum
-            }
-        }
-    }
-
-    /**
-     * Transpose: result = M^T
-     * M is n×n (row-major), result is n×n (row-major)
-     */
-    private fun transpose(M: DoubleArray, result: DoubleArray, n: Int) {
-        for (i in 0 until n) {
-            for (j in 0 until n) {
-                result[j * n + i] = M[i * n + j]
-            }
-        }
-    }
-
-    /**
-     * 4×4 matrix inversion using Gauss-Jordan elimination.
-     *
-     * @param m 4×4 matrix (row-major, 16 elements)
-     * @param result 4×4 inverted matrix (row-major, 16 elements)
-     * @return true ако успешно, false ако матрицата е сингулярна
-     */
-    private fun invert4x4(m: DoubleArray, result: DoubleArray): Boolean {
-        // Создаваме augmented matrix [m | I]
-        val aug = DoubleArray(32) // 4 rows × 8 cols
-        for (i in 0 until 4) {
-            for (j in 0 until 4) {
-                aug[i * 8 + j] = m[i * 4 + j]
-            }
-            aug[i * 8 + 4 + i] = 1.0
-        }
-
-        // Gauss-Jordan елиминация
-        for (col in 0 until 4) {
-            // Намиране на pivot (най-голям абсолютен стойност в колоната)
-            var maxRow = col
-            var maxVal = kotlin.math.abs(aug[col * 8 + col])
-            for (row in (col + 1) until 4) {
-                val val_ = kotlin.math.abs(aug[row * 8 + col])
-                if (val_ > maxVal) {
-                    maxVal = val_
-                    maxRow = row
-                }
-            }
-
-            // Проверка за сингулярност
-            if (maxVal < 1e-12) return false
-
-            // Размяна на редове
-            if (maxRow != col) {
-                for (j in 0 until 8) {
-                    val tmp = aug[col * 8 + j]
-                    aug[col * 8 + j] = aug[maxRow * 8 + j]
-                    aug[maxRow * 8 + j] = tmp
-                }
-            }
-
-            // Нормализиране на pivot реда
-            val pivot = aug[col * 8 + col]
-            for (j in 0 until 8) {
-                aug[col * 8 + j] /= pivot
-            }
-
-            // Елиминация на другите редове
-            for (row in 0 until 4) {
-                if (row == col) continue
-                val factor = aug[row * 8 + col]
-                for (j in 0 until 8) {
-                    aug[row * 8 + j] -= factor * aug[col * 8 + j]
-                }
-            }
-        }
-
-        // Извличане на резултата (десните 4 колони)
-        for (i in 0 until 4) {
-            for (j in 0 until 4) {
-                result[i * 4 + j] = aug[i * 8 + 4 + j]
-            }
-        }
-
-        return true
-    }
-
 }
 
 /**
  * Data class представляваща изчислена позиция от dead reckoning.
- *
- * @property latitude Ширина в градуси
- * @property longitude Дължина в градуси
- * @property altitude Височина в метри
- * @property bearing Heading в градуси (0-360)
- * @property speed Скорост в m/s
- * @property accuracy Очаквана точност в метри
- * @property timestamp Време на изчисление (System.currentTimeMillis())
  */
 data class DRLocation(
     val latitude: Double,
     val longitude: Double,
     val altitude: Double,
-    val bearing: Float,    // degrees 0-360
-    val speed: Float,      // m/s
-    val accuracy: Float,   // estimated accuracy in meters
+    val bearing: Float,
+    val speed: Float,
+    val accuracy: Float,
     val timestamp: Long
 )

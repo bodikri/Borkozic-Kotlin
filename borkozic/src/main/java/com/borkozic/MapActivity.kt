@@ -1151,16 +1151,14 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                                         R.color.gpsdisabled
                                     )
                                 )
-                                // GPS загубен — стартиране на Dead Reckoning с усреднени данни от ring buffer
+                                // GPS загубен — стартиране на Dead Reckoning с trajectory от ring buffer
                                 if (deadReckoningService != null && !deadReckoningService!!.isDeadReckoningActive()) {
-                                    val avg = gpsRingBuffer.average()
-                                    if (avg != null) {
-                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: starting Dead Reckoning")
-                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: avg lat=${avg.lat}, lon=${avg.lon}, alt=${avg.alt}, speed=${avg.speed}, bearing=${avg.bearing}")
-                                        deadReckoningService!!.startDeadReckoning(
-                                            avg.lat, avg.lon, avg.alt,
-                                            avg.speed, avg.bearing, avg.accuracy
-                                        )
+                                    val snapshots = gpsRingBuffer.getAll()
+                                    if (snapshots.isNotEmpty()) {
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: starting Dead Reckoning with ${snapshots.size} snapshots")
+                                        val latest = snapshots[0]
+                                        com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}")
+                                        deadReckoningService!!.startDeadReckoning(snapshots)
                                     } else {
                                         com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_LOST: ring buffer empty, cannot start DR")
                                     }
@@ -1338,14 +1336,12 @@ class MapActivity : AppCompatActivity(), View.OnClickListener, OnSharedPreferenc
                         // НЕ викаме setMoving(false) и updateGPSStatus() — DR ще поддържа позицията
                         // GPS доставчик изключен (ръчно от Settings) — стартиране на Dead Reckoning
                         if (deadReckoningService != null && !deadReckoningService!!.isDeadReckoningActive()) {
-                            val avg = gpsRingBuffer.average()
-                            if (avg != null) {
-                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: starting Dead Reckoning")
-                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: avg lat=${avg.lat}, lon=${avg.lon}, alt=${avg.alt}, speed=${avg.speed}, bearing=${avg.bearing}")
-                                deadReckoningService!!.startDeadReckoning(
-                                    avg.lat, avg.lon, avg.alt,
-                                    avg.speed, avg.bearing, avg.accuracy
-                                )
+                            val snapshots = gpsRingBuffer.getAll()
+                            if (snapshots.isNotEmpty()) {
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: starting Dead Reckoning with ${snapshots.size} snapshots")
+                                val latest = snapshots[0]
+                                com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}")
+                                deadReckoningService!!.startDeadReckoning(snapshots)
                             } else {
                                 com.borkozic.location.DRLogger.log(this@MapActivity, "GPS_PROVIDER_DISABLED: ring buffer empty, cannot start DR")
                             }
