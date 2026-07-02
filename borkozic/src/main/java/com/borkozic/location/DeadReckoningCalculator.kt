@@ -259,15 +259,14 @@ class DeadReckoningCalculator {
         estimatedAccuracy = accuracy
         startTime = System.currentTimeMillis()
 
-        // Инициализация на сензорни таймстампове с текущото време
-        // (използваме наносекунди, съвместими със SensorEvent.timestamp)
-        val now = System.nanoTime()
-        lastAccelTimestamp = now
-        lastGyroTimestamp = now
-        lastMagTimestamp = now
-        lastBaroTimestamp = now
-        lastRotVectorTimestamp = now
-        lastUpdateTimestamp = now
+        // Нулиране на сензорни таймстампове — първото събитие
+        // след init ще ги инициализира с реални стойности.
+        lastAccelTimestamp = 0
+        lastGyroTimestamp = 0
+        lastMagTimestamp = 0
+        lastBaroTimestamp = 0
+        lastRotVectorTimestamp = 0
+        lastUpdateTimestamp = 0
         filteredAccelX = 0.0
         filteredAccelY = 0.0
         filteredAccelZ = 0.0

@@ -675,7 +675,8 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         val smoothspeed = smoothSpeed
         val avgspeed = avgSpeed
 
-        val handler = Handler()
+        // Винаги main looper — DR callbacks идват от sensor thread
+        val handler = Handler(Looper.getMainLooper())
 
         if (trackingEnabled) {
             handler.post { writeTrack(location, continous) }
@@ -1132,6 +1133,13 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     location.accuracy = drLoc.accuracy
                     location.time = drLoc.timestamp
 
+                    // Debug: log delta from last GPS position
+                    val prevLoc = lastKnownLocation
+                    if (prevLoc != null && prevLoc.provider != "dead_reckoning") {
+                        val dist = location.distanceTo(prevLoc)
+                        Log.d(TAG, "DR dispatch: lat=${drLoc.latitude}, lon=${drLoc.longitude}, speed=${drLoc.speed}, bearing=${drLoc.bearing}, distFromGPS=${"%.2f".format(dist)}m")
+                    }
+
                     // Подаване през съществуващия pipeline
                     // lastKnownLocation се обновява и updateLocation() праща на всички слушатели
                     lastKnownLocation = location
@@ -1139,7 +1147,9 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     updateLocation()
 
                     DRLogger.logLocation(this, drLoc.latitude, drLoc.longitude, drLoc.altitude, drLoc.speed, drLoc.bearing, drLoc.accuracy)
-                    DRLogger.log(this, drCalculator.getDebugState())
+                    val debugState = drCalculator.getDebugState()
+                    DRLogger.log(this, debugState)
+                    Log.d(TAG, debugState)
                 }
             }
         } catch (e: Exception) {
