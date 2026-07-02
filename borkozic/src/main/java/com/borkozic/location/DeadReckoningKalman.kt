@@ -67,12 +67,10 @@ class DeadReckoningKalman {
     private val HIGH_ACCEL_THRESHOLD = 0.5            // m/s² (~0.05g) — достатъчно за нормално каране
     private val HIGH_ACCEL_Q_INTERVAL_MS = 2_000L     // throttle интервал
     private var lastHighAccelQInjectMs: Long = 0
-    private var lastNoiseDensity: Double = ACCEL_NOISE_DENSITY_CRUISE  // за debug
 
     // Bias random walk (m/s³/√Hz) — адаптивен: расте при маневри
     private val BIAS_NOISE_DENSITY_CRUISE = 0.001     // почти никаква промяна при плавно движение
     private val BIAS_NOISE_DENSITY_MANEUVER = 0.05   // 50x по-бърза оценка при ускорение > threshold
-    private var lastBiasDensity: Double = BIAS_NOISE_DENSITY_CRUISE      // за debug
 
     // Максимален dt за един predict (safety clamp)
     private val MAX_DT = 1.0
@@ -227,7 +225,6 @@ class DeadReckoningKalman {
             // Maneuver но throttle не е изтекъл: cruise noise (чакаме 2s)
             ACCEL_NOISE_DENSITY_CRUISE
         }
-        lastNoiseDensity = noiseDensity
 
         val qa2 = noiseDensity * noiseDensity * dt
         val dt2h = dt2half
@@ -248,7 +245,6 @@ class DeadReckoningKalman {
         } else {
             BIAS_NOISE_DENSITY_MANEUVER
         }
-        lastBiasDensity = biasDensity
         val qb2 = biasDensity * biasDensity * dt
         P[4][4] += qb2
         P[5][5] += qb2
@@ -388,36 +384,6 @@ class DeadReckoningKalman {
             speed = speed.toFloat(),
             accuracy = accuracy,
             timestamp = System.currentTimeMillis()
-        )
-    }
-
-    fun getDebugState(): String {
-        val speed = sqrt(x[2] * x[2] + x[3] * x[3])
-        val bearing = Math.toDegrees(atan2(x[3], x[2]))
-        val gpsAge = if (lastGpsCorrectionTimeMs > 0)
-            (System.currentTimeMillis() - lastGpsCorrectionTimeMs) / 1000 else -1
-        val posCov = sqrt(P[0][0] + P[1][1])
-
-        return String.format(
-            java.util.Locale.US,
-            "DR_KALMAN: heading=%.2f, speed=%.2f, posN=%.2f, posE=%.2f, " +
-            "velN=%.2f, velE=%.2f, biasN=%.4f, biasE=%.4f, " +
-            "covPos=%.1f, covVel=%.2f, gpsAge=%ds(#%d), Q=%.2f, Qb=%.3f, pred=#%d",
-            (bearing + 360.0) % 360.0, speed,
-            x[0], x[1], x[2], x[3], x[4], x[5],
-            posCov, sqrt(P[2][2] + P[3][3]),
-            gpsAge, updateCount, lastNoiseDensity, lastBiasDensity, predictCount
-        )
-    }
-
-    /** Начален snapshot за логване — връща 6-те компонента като текст */
-    fun getInitialSnapshot(): String {
-        val speed = sqrt(x[2] * x[2] + x[3] * x[3])
-        val bearing = Math.toDegrees(atan2(x[3], x[2]))
-        return String.format(
-            java.util.Locale.US,
-            "INIT_SNAPSHOT: velN=%.2f, velE=%.2f, speed=%.2f, bearing=%.0f, biasN=0, biasE=0",
-            x[2], x[3], speed, (bearing + 360.0) % 360.0
         )
     }
 

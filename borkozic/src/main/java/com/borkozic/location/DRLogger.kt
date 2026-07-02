@@ -78,10 +78,8 @@ object DRLogger {
             }
             val dateStr = SimpleDateFormat("yyyy-MM-dd_HHmmss", Locale.getDefault()).format(Date())
             logFile = File(dir, "$LOG_PREFIX$dateStr.txt")
-            writer = PrintWriter(FileWriter(logFile, true), true) // append mode, auto-flush
-            log("=== DRLogger initialized ===")
-            log("Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}")
-            log("Android: ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})")
+            writer = PrintWriter(FileWriter(logFile, true), true)
+            log("=== DR log started")
         } catch (e: Exception) {
             Log.e(TAG, "Не може да създаде лог файл: ${e.message}")
             initialized = false

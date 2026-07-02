@@ -138,7 +138,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private var drActive = false
     private var drStartTime: Long = 0
     private var drLastBroadcastTime: Long = 0
-    private var dispatchCount: Int = 0
 
     private var drState = DR_IDLE
     private var lastFsats: Int = 0
@@ -183,7 +182,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     private var drLogFile: File? = null
     private var drLogWriter: PrintWriter? = null
     private val drLogDateFormat = SimpleDateFormat("HH:mm:ss.SSS", Locale.US)
-    private var drSensorFirstEvent: Boolean = true
 
     private fun drToast(msg: String) {
         Handler(Looper.getMainLooper()).post {
@@ -246,11 +244,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             val dateStr = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())
             drLogFile = File(logDir, "dr_$dateStr.txt")
             drLogWriter = PrintWriter(drLogFile, "UTF-8")
-            drLog("=== DR Logger initialized ===")
-            drLog("Device: ${Build.MANUFACTURER} ${Build.MODEL}, SDK=${Build.VERSION.SDK_INT}")
-            drLog("Sensors: accel=${drAccelerometer != null}(${drAccelerometer?.name}) linearAccel=$drSensorIsLinearAccel, gyro=${drGyroscope != null}, mag=${drMagnetometer != null}, baro=${drBarometer != null}, rotVec=${drRotationVector != null}")
-            drLog("Log path: ${drLogFile!!.absolutePath}")
-            Log.i(TAG, "DR log file: ${drLogFile!!.absolutePath}")
+            drLog("DR log started — ${Build.MANUFACTURER} ${Build.MODEL}")
         } catch (e: Exception) {
             Log.e(TAG, "DR log init failed: ${e.message}", e)
         }
@@ -271,7 +265,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 locationsEnabled = true
                 // Ако DR е бил активен, спираме го преди connect
                 if (drActive) {
-                    drLog("ENABLE_LOCATIONS: stopping active DR")
                     stopDeadReckoning()
                 }
                 connect()
@@ -288,14 +281,12 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                 // Стартирай DR ако GPS-ът се изключва ръчно
                 val isStartingDr = !drActive
                 if (isStartingDr) {
-                    drLog("DISABLE_LOCATIONS: starting DR")
                     startDeadReckoning()
                 }
                 sendBroadcast(Intent(BROADCAST_LOCATING_STATUS))
                 if (trackingEnabled) {
                     if (isStartingDr) {
                         // DR ще продължи да записва трака през updateLocation()
-                        drLog("DISABLE_LOCATIONS: keeping track DB open for DR recording")
                         sendBroadcast(Intent(BROADCAST_TRACKING_STATUS))
                     } else {
                         closeDatabase()
@@ -326,7 +317,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     override fun onDestroy() {
         super.onDestroy()
         unregisterDrSensors()
-        drLog("=== DR Logger closing ===")
+        drLog("DR log closed")
         try { drLogWriter?.close() } catch (_: Exception) {}
         drLogWriter = null
         getSharedPreferences(packageName + "_preferences", Context.MODE_PRIVATE).unregisterOnSharedPreferenceChangeListener(this)
@@ -714,9 +705,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
 
         try {
             trackDB!!.insertOrThrow("track", null, values)
-            if (drActive) {
-                drLog("TRACK_DR: point written lat=$latitude lon=$longitude speed=$speed")
-            }
         } catch (e: SQLException) {
             //Log.e(TAG, "addPoint", e)
             errorMsg = e.message ?: "Unknown error"
@@ -886,14 +874,10 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
             lastLocationMillis = time
 
             // Обновяване на ring buffer за DR (последни 3 GPS точки)
-            val bufSizeBefore = gpsRingBuffer.size()
             gpsRingBuffer.add(
                 location.latitude, location.longitude, location.altitude,
                 location.speed, location.bearing, location.accuracy, lastFsats
             )
-            if (gpsRingBuffer.size() != bufSizeBefore) {
-                drLog("RINGBUF: add #${gpsRingBuffer.size()} lat=${location.latitude} lon=${location.longitude} speed=${location.speed} fsats=$lastFsats")
-            }
 
             // Kalman GPS update
             if (!drKalman.isActive()) {
@@ -903,22 +887,18 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     location.speed.toDouble(), location.bearing.toDouble(),
                     location.accuracy
                 )
-                drLog("KALMAN_INIT: lazy init from GPS fix, speed=${location.speed}")
             } else if (drActive) {
                 // GPS се е върнал по време на активен DR
-                // ПЪРВО спираме DR dispatch, ПОСЛЕ реинициализираме
-                drLog("GPS_RECOVERY: GPS fix arrived during active DR, stopping...")
                 drActive = false
                 drState = DR_STOPPED
-                drToast("GPS recovered")
-                DRLogger.log(this, "GPS_RECOVERY: reinitializing Kalman")
+                drToast("GPS restored")
+                DRLogger.log(this, "GPS_RECOVERED: duration=${drStartTime.let { if (it > 0) SystemClock.elapsedRealtime() - it else 0 }}ms")
                 DRLogger.close()
                 drKalman.initialize(
                     location.latitude, location.longitude, location.altitude,
                     location.speed.toDouble(), location.bearing.toDouble(),
                     location.accuracy
                 )
-                drLog("GPS_RECOVERY: Kalman reinitialized, GPS will take over")
             } else {
                 // Нормален режим: GPS е наличен, DR не е активен → учим bias и обновяваме
                 drKalman.estimateBiasFromVelocity(
@@ -1123,7 +1103,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     override fun onProviderDisabled(provider: String) {
         updateProvider(provider, false)
         if (LocationManager.GPS_PROVIDER == provider) {
-            drLog("GPS_DISABLED: drActive=$drActive, ringBuf=${gpsRingBuffer.size()}, fsats=$fsats")
             if (!drActive) {
                 startDeadReckoning()
             }
@@ -1190,19 +1169,15 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
     }
 
     private fun startDeadReckoning() {
-        drLog("DR_START: requested (Kalman)")
         val snapshots = gpsRingBuffer.getAll()
-        drLog("DR_START: ringBuffer size=${snapshots.size}")
         if (snapshots.isEmpty()) {
-            drLog("DR_START: FAILED — ring buffer empty, cannot start")
-            drToast("FAILED: ring buffer empty")
+            DRLogger.log(this, "DR_START: FAILED — ring buffer empty")
+            drToast("No GPS data")
             return
         }
 
         val latest = snapshots[0]
 
-        // Ре-инициализация на Kalman с последната GPS точка
-        // (Kalman вече работи от първия GPS fix, но refresh-ваме reference)
         drKalman.initialize(
             latest.lat, latest.lon, latest.alt,
             latest.speed.toDouble(), latest.bearing.toDouble(),
@@ -1213,34 +1188,16 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         drActive = true
         drStartTime = SystemClock.elapsedRealtime()
         drLastBroadcastTime = 0
-        dispatchCount = 0
         drHeadingHistory.fill(Double.NaN)
         drHeadingHistoryIdx = 0
         drFilteredHeading = Double.NaN
 
-        // Log snapshot — 6-те компонента + начални условия
-        drLog("DR_START: OK (Kalman) — lat=${latest.lat}, lon=${latest.lon}, speed=${latest.speed}, bearing=${latest.bearing}, acc=${latest.accuracy}")
-        drLog(drKalman.getInitialSnapshot())
-
-        // Ако вече имаме кеширани сензорни стойности, логваме ги като snapshot
-        if (drSensorValuesCaptured) {
-            drLog(String.format(java.util.Locale.US,
-                "SENSOR_SNAPSHOT: accel=[%.3f,%.3f,%.3f], gyro=[%.4f,%.4f,%.4f], mag=[%.1f,%.1f,%.1f], rot=[%.4f,%.4f,%.4f], earthAccel=[%.4f,%.4f]",
-                drSnapshotAccelX, drSnapshotAccelY, drSnapshotAccelZ,
-                drSnapshotGyroX, drSnapshotGyroY, drSnapshotGyroZ,
-                drSnapshotMagX, drSnapshotMagY, drSnapshotMagZ,
-                drSnapshotRotX, drSnapshotRotY, drSnapshotRotZ,
-                drEarthAccelN, drEarthAccelE))
-        }
-
-        drToast("ACTIVE (K)! speed=${String.format("%.1f", latest.speed)}m/s")
-        DRLogger.log(this, "DR_START_KALMAN: speed=${latest.speed}, bearing=${latest.bearing}")
+        drToast("Автономно")
+        DRLogger.log(this, "DR_START: speed=${latest.speed}, bearing=${latest.bearing}")
     }
 
     private fun stopDeadReckoning() {
         val elapsed = if (drStartTime > 0) SystemClock.elapsedRealtime() - drStartTime else 0
-        drLog("DR_STOP: duration=${elapsed}ms, state=$drState, kalman=${drKalman.getDebugState()}")
-        drToast("STOPPED (${elapsed/1000}s)")
 
         if (drState != DR_STOPPED) {
             drState = DR_STOPPED
@@ -1250,7 +1207,7 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         // Само спираме DR dispatch-а
         drSensorValuesCaptured = false
 
-        DRLogger.log(this, "DR_STOP_KALMAN: duration=$elapsed")
+        DRLogger.log(this, "DR_STOP: duration=${elapsed}ms")
         DRLogger.close()
     }
 
@@ -1303,13 +1260,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
         val sensorType = event.sensor?.type ?: return
 
         try {
-            // Логване на първото сензорно събитие (потвърждава че постоянната регистрация работи)
-            if (drSensorFirstEvent) {
-                drSensorFirstEvent = false
-                val sensorName = event.sensor?.name ?: "unknown"
-                drLog("DR_FIRST_SENSOR: $sensorName (continuous mode)")
-            }
-
             when (sensorType) {
                 Sensor.TYPE_LINEAR_ACCELERATION, Sensor.TYPE_ACCELEROMETER -> {
                     val isLinear = (sensorType == Sensor.TYPE_LINEAR_ACCELERATION)
@@ -1430,17 +1380,6 @@ open class LocationService : BaseLocationService(), LocationListener, OnNmeaMess
                     location.bearing = drLoc.bearing
                     location.accuracy = drLoc.accuracy
                     location.time = drLoc.timestamp
-
-                    // Rate-limited logging (всеки 10-ти dispatch ≈ на 2 сек)
-                    dispatchCount++
-                    if (dispatchCount % 10 == 0) {
-                        val prevLoc = lastKnownLocation
-                        if (prevLoc != null && prevLoc.provider != "dead_reckoning") {
-                            val dist = location.distanceTo(prevLoc)
-                            drLog("DR_DISPATCH: lat=${drLoc.latitude}, lon=${drLoc.longitude}, speed=${drLoc.speed}, bearing=${drLoc.bearing}, distFromGPS=${"%.2f".format(dist)}m")
-                        }
-                        drLog(drKalman.getDebugState())
-                    }
 
                     // Подаване през съществуващия pipeline
                     lastKnownLocation = location
